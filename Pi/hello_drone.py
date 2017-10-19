@@ -12,39 +12,37 @@ import dronekit
 import dronekit_sitl
 import socket
 import exceptions
-import thread
-import Modules.connection as MC  # MC is short for Monitor Connection
+import threading
+import Modules.connection as MC
+import Modules.drone_controller as Controller
 
 # Connect to the Vehicle
-sitl = dronekit_sitl.start_default()
-connection_string = sitl.connection_string()
+# To start a simulator drone in SEU: dronekit-sitl copter-3.3 --home=31.8896296,118.8137637,7,353
+connection_string = 'tcp:127.0.0.1:5760'
 print("Connecting to vehicle on: %s" % (connection_string,))
-try:
-    vehicle = dronekit.connect(connection_string, heartbeat_timeout=15, wait_ready=True)
-except socket.error:
-    print 'No server exists!'
-except exceptions.OSError as e:
-    print 'No serial exists!'
-except dronekit.APIException:
-    print 'Timeout!'
-except:
-    print 'Some other error while connecting to the drone!'
+vehicle = Controller.connect_vehicle(connection_string)
 
 # Connect to the Monitor
 host = "127.0.0.1"
 port = "6336"
-mc = MC.Connection(host, port)
+mc = MC.Connection(vehicle, host, port)   # MC is short for Monitor Connection
 try:
-    thread.start_new_thread(mc.report_to_monitor, ())
-    thread.start_new_thread(mc.hear_from_monitor, ())
+    report = threading.Thread(target=mc.report_to_monitor, name='Report-To-Monitor')
+    hear = threading.Thread(target=mc.hear_from_monitor, name='Hear-From-Monitor')
+    report.start()
+    hear.start()
 except:
     print "Error: unable to start new thread!"
     exit(0)
 
+# Arm and take off
+Controller.arm_and_takeoff(vehicle, 5)
+Controller.go_to(vehicle, 5, 5)
+while True:
+    pass
 
 # Close vehicle object before exiting script
 vehicle.close()
 
 # Shut down simulator
-sitl.stop()
 print("Completed")
