@@ -6,11 +6,18 @@ Modules.connection
 
 Implement the methods for the communication between monitor and drone mainly through TCP connection.
 """
+import dronekit
+import time
+from threading import Timer
+
+
 class Connection():
     """Maintain an connection between the drone and monitor."""
-    def __init__(self, host, port):
-        self.__CID = -1;  # Connection ID used to identify specific the drone while communicating with the monitor.
-        self.establish_connection(host, port)
+    def __init__(self, vehicle, host, port):
+        self.__CID = -1  # Connection ID used to identify specific the drone while communicating with the monitor.
+        self.__task_done = False  # Indicate that whether the connection should be closed
+        self.__vehicle = vehicle
+        # self.establish_connection(host, port)
 
     def establish_connection(self, host, port):
         """
@@ -23,7 +30,27 @@ class Connection():
         """
 
     def report_to_monitor(self):
-        """Report the states of drone to the monitor on time."""
+        """Report the states of drone to the monitor on time while task hasn't done."""
+
+        print "Start reporting to the monitor"
+
+        t = None
+
+        def send_state_to_monitor():
+            """Get current state of drone and send to monitor"""
+            location = self.__vehicle.location.global_relative_frame
+            msg = "***Location(Lat, Lon, Alt): (%s, %s, %s)" % (location.lat, location.lon, location.alt)
+            self.send_msg_to_monitor(msg)
+            if not self.__task_done:
+                t = Timer(1, send_state_to_monitor)
+                t.start()
+
+        t = Timer(1, send_state_to_monitor)
+        t.start()
+
+    def send_msg_to_monitor(self, msg):
+        """Send message to monitor"""
+        print(msg)
 
     def hear_from_monitor(self):
         """Deal with instructions sent by monitor.
@@ -38,5 +65,5 @@ class Connection():
         """Close the connection that maintained by the instance
 
         Returns:
-            A boolean variable that indicate whether the connection closed sucessfully.
+            A boolean variable that indicate whether the connection closed successfully.
         """
