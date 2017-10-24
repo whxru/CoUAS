@@ -83,14 +83,13 @@ class Connection:
         """
 
         # Send msg to monitor to ask CID
-        msg_dict = [
+        msg = [
             {
                 'Header': 'MAVCluster_Drone',
                 'Type': MAVC_REQ_CID
             }
         ]
-        msg_str = json.dumps(msg_dict)
-        s = self.send_msg_to_monitor(msg_str)
+        s = self.send_msg_to_monitor(msg)
 
         # Listen to the monitor to get CID
         while True:
@@ -117,8 +116,7 @@ class Connection:
         def send_state_to_monitor():
             """Get current state of drone and send to monitor"""
             location = self.__vehicle.location.global_relative_frame
-            # msg = "***Location(Lat, Lon, Alt): (%s, %s, %s)" % (location.lat, location.lon, location.alt)
-            stat_dict = [
+            state = [
                 {
                     'Header': 'MAVCluster_Drone',
                     'Type': MAVC_STAT
@@ -131,7 +129,7 @@ class Connection:
                     'Alt': location.alt
                 }
             ]
-            self.send_msg_to_monitor(json.dumps(stat_dict))
+            self.send_msg_to_monitor(state)
             if not self.__task_done:
                 t = Timer(1, send_state_to_monitor)
                 t.start()
@@ -141,6 +139,7 @@ class Connection:
 
     def send_msg_to_monitor(self, msg):
         """Send message to monitor"""
+        msg = json.dumps(msg)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.bind((self.__host, self.__port))
         s.sendto(msg)
