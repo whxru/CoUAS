@@ -24,16 +24,8 @@ vehicle = Controller.connect_vehicle(connection_string)
 
 # Connect to the Monitor
 host = "127.0.0.1"
-port = "6336"
+port = "4396"
 mc = MC.Connection(vehicle, host, port)   # MC is short for Monitor Connection
-try:
-    report = threading.Thread(target=mc.report_to_monitor, name='Report-To-Monitor')
-    hear = threading.Thread(target=mc.hear_from_monitor, name='Hear-From-Monitor')
-    report.start()
-    hear.start()
-except:
-    print "Error: unable to start new thread!"
-    exit(0)
 
 # Arm and take off
 Controller.arm_and_takeoff(vehicle, 5)

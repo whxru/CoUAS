@@ -4,12 +4,12 @@
 Modules.connection
 ~~~~~~~~~~~~~~~
 
-Implement the methods for the communication between monitor and drone mainly through UDP connection.
+Implement the methods for the communication between monitor and drone mainly through UDP protocol.
 
-The message should follow the example below:
+The message should follow the example below (we will call it "MAVC message later"):
 [
     {
-        'Header‘： 'MAVCluster_Drone',   # or 'MAVCluster_Monitor'
+        'Header‘: 'MAVCluster_Drone',   # or 'MAVCluster_Monitor'
         'Type': MAVC_REQ_CID            # values defined later
     },
     # If the value of 'Type' begins with 'MAVC_REQ_',then the message should contain the information above only
@@ -23,6 +23,7 @@ The message should follow the example below:
     {
         'CID' : 2,
         'Armed': True,      # Is armed or not
+        'Mode': 'Guided',   # Flight mode that the drone currently in
         'Lat' : 38.13421,   # Latitude
         'Lon' : -114.31341, # Longitude
         'Alt' : 4           # Altitude(meters)
@@ -49,7 +50,7 @@ The message should follow the example below:
 import dronekit
 import time
 import socket, json
-from threading import Timer
+from threading import Thread,Timer
 
 # Constant value definition of communication type
 MAVC_REQ_CID = 0     # Request the Connection ID
@@ -68,9 +69,9 @@ class Connection:
         self.__CID = -1             # Connection ID used to identify specific the drone.
         self.__task_done = False    # Indicate that whether the connection should be closed
         self.__vehicle = vehicle
-        self.establish_connection()
+        self.__establish_connection()
 
-    def establish_connection(self):
+    def __establish_connection(self):
         """
         Once the main process has connected to the drone successfully, this method will be called to initialize the
         drone state in the monitor process, then they should "maintain" the connection identified by an unique ID
@@ -94,7 +95,7 @@ class Connection:
         # Listen to the monitor to get CID
         while True:
             data_str, addr = s.recvfrom(1024)
-            if not addr['ipaddr'] == self.__host:  # Diagram is not sent from the Monitor
+            if not addr['ipaddr'] == self.__host:  # This message is not sent from the Monitor
                 continue
 
             data_dict = json.loads(data_str)
@@ -103,10 +104,20 @@ class Connection:
                     self.__CID = data_dict[0]
                     print 'Receive the CID from %s:%s' % (addr['ipaddr'], addr['port'])
                     break
-            except KeyError:  # Diagram received from monitor isn't the one we need
+            except KeyError:  # This message is not a MAVC message
                 continue
 
-    def report_to_monitor(self):
+        # Start listening and reporting
+        try:
+            report = Thread(target=self.__report_to_monitor, name='Report-To-Monitor')
+            hear = Thread(target=self.__listen_to_monitor, name='Hear-From-Monitor')
+            report.start()
+            hear.start()
+        except:
+            print "Error: unable to start new thread!"
+            exit(0)
+
+    def __report_to_monitor(self):
         """Report the states of drone to the monitor on time while task hasn't done."""
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         print "Start reporting to the monitor"
@@ -124,6 +135,7 @@ class Connection:
                 {
                     'CID': self.__CID,
                     'Armed': self.__vehicle.armed,
+                    'Mode': self.__vehicle.mode,
                     'Lat': location.lat,
                     'Lon': location.lon,
                     'Alt': location.alt
@@ -138,7 +150,12 @@ class Connection:
         t.start()
 
     def send_msg_to_monitor(self, msg):
-        """Send message to monitor"""
+        """Send message to monitor
+
+        Args:
+            msg: MAVC message
+        """
+
         msg = json.dumps(msg)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.bind((self.__host, self.__port))
@@ -146,7 +163,7 @@ class Connection:
         print(msg)
         return s  # Return the socket in case the caller function need to call s.recvfrom() later
 
-    def hear_from_monitor(self):
+    def __listen_to_monitor(self):
         """Deal with instructions sent by monitor.
 
         Keeping listening to the monitor, once messages arrived this method will start analyzing and translate them into
