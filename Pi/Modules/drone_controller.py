@@ -77,7 +77,7 @@ def arm_and_takeoff(vehicle, altitude):
         time.sleep(1)
 
 
-def go_to(vehicle, dNorth, dEast):
+def go_by(vehicle, dNorth, dEast, t=0):
     """Make an movement of drone according to the distance at North and East inputted
 
     We think that the drone has arrived the target position when the remaining distance decreases to a so small
@@ -88,11 +88,17 @@ def go_to(vehicle, dNorth, dEast):
         vehicle: Object of drone.
         dNorth: Distance at North direction
         dEast: Distance at East direction
+        t: Expected time of the task (second)
     """
 
     current_location = vehicle.location.global_relative_frame
     target_location = get_location_metres(current_location, dNorth, dEast)
     target_distance = get_distance_metres(current_location, target_location)
+
+    # Set the airspeed
+    if not t == -1:
+        vehicle.airspeed = target_distance/t
+
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
@@ -104,7 +110,7 @@ def go_to(vehicle, dNorth, dEast):
         time.sleep(2)
 
 
-def go_to_position(vehicle, lat, lon):
+def go_to(vehicle, lat, lon, t=0):
     """Make an movement of drone according to the latitude/longitude inputted
 
     We think that the drone has arrived the target position when the remaining distance decreases to a so small
@@ -115,11 +121,17 @@ def go_to_position(vehicle, lat, lon):
         vehicle: Object of drone.
         lat: Latitude of target position
         lon: Longitude of target position
+        t: Expected time of the task (second)
     """
 
     current_location = vehicle.location.global_relative_frame
     target_location = dronekit.LocationGlobalRelative(lat, lon, current_location.alt)
     target_distance = get_distance_metres(current_location, target_location)
+
+    # Set the airspeed
+    if not t == 0:
+        vehicle.airspeed = target_distance/t
+        
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.

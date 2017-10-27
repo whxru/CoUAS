@@ -29,7 +29,7 @@ mc = MC.Connection(vehicle, host, port)   # MC is short for Monitor Connection
 
 # Arm and take off
 Controller.arm_and_takeoff(vehicle, 5)
-Controller.go_to(vehicle, 5, 5)
+Controller.go_by(vehicle, 5, 5)
 while True:
     pass
 
