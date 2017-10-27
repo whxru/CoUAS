@@ -66,12 +66,12 @@ class Drone:
         * Manage state of one single drone.
         * "Maintain" the connection between monitor and one single drone(actually the Raspberry Pi 3)
     """
-    def __init__(self):
+    def __init__(self, CID):
         # Initialize private attributes
         self.__task_done = False    # Whether the task has been done
         self.__host = ''            # Host name of the Pi connected
         self.__state = {            # Information of state the drone connected
-            'CID': -1,
+            'CID': CID,
             'Armed': False,
             'Mode': '',
             'Lat': 361,
@@ -82,17 +82,37 @@ class Drone:
         self.__establish_connection()
 
     def __establish_connection(self):
+        """Use port 4396 to handle the request of CID."""
+
         # Wait for the request of CID
+        print('Waiting the request of CID...')
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.bind((socket.gethostbyname(socket.gethostname()), 4396))
+        addr = ()
         while True:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             data_json, addr = s.recvfrom(1024)
+            print(data_json)
             data_dict = json.loads(data_json)
             try:
                 if data_dict[0]['Header'] == 'MAVCluster_Drone' and data_dict[0]['Type'] == MAVC_REQ_CID:
-                    self.__host = addr['ipaddr']
+                    self.__host = addr[0]
+                    print('The request of CID from IP address %s:%s has been received.' % (self.__host, addr[1]))
                     break
             except KeyError:
                 continue
+
+        # Send the CID back
+        msg = [
+            {
+                'Header': 'MAVCluster_Monitor',
+                'Type': MAVC_CID
+            },
+            {
+                'CID': self.__state['CID']
+            }
+        ]
+        s.sendto(json.dumps(msg), (addr[0], addr[1]))
+        s.close()
 
     def __update_state(self, state_dict):
         """Deep copy of drone state.
@@ -106,21 +126,28 @@ class Drone:
 
     def get_pi_host(self):
         """Return the hostname of Pi connected"""
-
         return self.__host
 
     def listen_to_pi(self):
-        """Keep listening the message sent frome the Pi"""
+        """Keep listening the message sent from the Pi
 
+        By default we use port 4396+CID on Monitor to handle the message from Pi.
+        """
+
+        print("Start listening to the Pi on %s:%s" % (socket.gethostbyname(socket.gethostname()), 4396+self.__state['CID']))
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.bind((socket.gethostbyname(socket.gethostname()), 4396+self.__state['CID']))
         while not self.__task_done:
-            state_json, addr = s.recvfrom()
+            state_json, addr = s.recvfrom(1024)
             state_dict = json.loads(state_json)
-            if not addr['ipaddr'] == self.__host:  # The message is not sent from the Pi
+            print(state_json)
+            if not addr[0] == self.__host:  # The message is not sent from the Pi
                 continue
             try:
-                if state_dict[0]['Header'] == 'MAVCluster_Monitor' and state_dict[0]['Type'] == MAVC_STAT:
+                if state_dict[0]['Header'] == 'MAVCluster_Drone' and state_dict[0]['Type'] == MAVC_STAT:
                     self.__update_state(state_dict[1])
+                    print(state_dict[1])
                     continue
             except KeyError:  # This message is not a MAVC message
                 continue
+        s.close()
