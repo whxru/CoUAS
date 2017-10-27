@@ -85,7 +85,7 @@ class Drone:
         # Wait for the request of CID
         while True:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            data_json, addr = s.recvfrom()
+            data_json, addr = s.recvfrom(1024)
             data_dict = json.loads(data_json)
             try:
                 if data_dict[0]['Header'] == 'MAVCluster_Drone' and data_dict[0]['Type'] == MAVC_REQ_CID:

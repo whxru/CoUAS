@@ -101,7 +101,7 @@ class Connection:
             data_dict = json.loads(data_str)
             try:
                 if data_dict[0]['Header'] == 'MAVCluster_Monitor' and data_dict[0]['Type'] == MAVC_CID:
-                    self.__CID = data_dict[0]
+                    self.__CID = data_dict[1]['CID']
                     print 'Receive the CID from %s:%s' % (addr['ipaddr'], addr['port'])
                     break
             except KeyError:  # This message is not a MAVC message

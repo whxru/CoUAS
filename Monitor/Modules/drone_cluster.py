@@ -55,11 +55,13 @@ class DroneCluster:
 
         # Start listeng to the message from the Pi
         t = Thread(target=drone.listen_to_pi, name='Drone %d Listener' % CID)
+        t.start()
 
     def __send_msg_to_pi(self, host, msg):
         """Send message to the Pi specified by the hostname
 
         Args:
+            host: Hostname of Pi
             msg: MAVC message
         """
 
