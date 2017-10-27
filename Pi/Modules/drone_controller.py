@@ -97,7 +97,7 @@ def go_to(vehicle, dNorth, dEast):
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = get_distance_metres(vehicle.location.global_frame, target_location)
-        print "Distance to target: ", remaining_distance
+        # print "Distance to target: ", remaining_distance
         if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
             print "Reached target"
             break
@@ -124,7 +124,7 @@ def go_to_position(vehicle, lat, lon):
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = get_distance_metres(vehicle.location.global_frame, target_location)
-        print "Distance to target: ", remaining_distance
+        # print "Distance to target: ", remaining_distance
         if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
             print "Reached target"
             break

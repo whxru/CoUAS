@@ -64,8 +64,8 @@ MAVC_GO_BY = 5       # Ask drone to fly to next target specified by the distance
 class Connection:
     """Maintain an connection between the drone and monitor."""
     def __init__(self, vehicle, host, port):
-        self.__host = host
-        self.__port = port
+        self.__host = host          # The host of Monitor
+        self.__port = port          # The port of Monitor
         self.__CID = -1             # Connection ID used to identify specific the drone.
         self.__task_done = False    # Indicate that whether the connection should be closed
         self.__vehicle = vehicle
@@ -93,16 +93,20 @@ class Connection:
         s = self.send_msg_to_monitor(msg)
 
         # Listen to the monitor to get CID
+        print('Start listening to the report of CID request')
         while True:
-            data_str, addr = s.recvfrom(1024)
-            if not addr['ipaddr'] == self.__host:  # This message is not sent from the Monitor
+            data_json, addr = s.recvfrom(1024)
+            print(data_json)
+            if not addr[0] == self.__host:  # This message is not sent from the Monitor
                 continue
 
-            data_dict = json.loads(data_str)
+            data_dict = json.loads(data_json)
             try:
                 if data_dict[0]['Header'] == 'MAVCluster_Monitor' and data_dict[0]['Type'] == MAVC_CID:
                     self.__CID = data_dict[1]['CID']
-                    print 'Receive the CID from %s:%s' % (addr['ipaddr'], addr['port'])
+                    self.__port = self.__port + self.__CID
+                    s.close()
+                    print 'Receive the CID from %s:%s' % (addr[0], addr[1])
                     break
             except KeyError:  # This message is not a MAVC message
                 continue
@@ -135,13 +139,13 @@ class Connection:
                 {
                     'CID': self.__CID,
                     'Armed': self.__vehicle.armed,
-                    'Mode': self.__vehicle.mode,
+                    'Mode': self.__vehicle.mode.name,
                     'Lat': location.lat,
                     'Lon': location.lon,
                     'Alt': location.alt
                 }
             ]
-            self.send_msg_to_monitor(state)
+            s = self.send_msg_to_monitor(state)
             if not self.__task_done:
                 t = Timer(1, send_state_to_monitor)
                 t.start()
@@ -152,15 +156,16 @@ class Connection:
     def send_msg_to_monitor(self, msg):
         """Send message to monitor
 
+        By Deafult we use port 4396 on Monitor to handle the request of CID and port 4396+cid to handle other
+        messages from the the Pi whose CID=cid.
+
         Args:
             msg: MAVC message
         """
 
         msg = json.dumps(msg)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.bind((self.__host, self.__port))
-        s.sendto(msg)
-        print(msg)
+        s.sendto(msg, (self.__host, self.__port))
         return s  # Return the socket in case the caller function need to call s.recvfrom() later
 
     def __listen_to_monitor(self):

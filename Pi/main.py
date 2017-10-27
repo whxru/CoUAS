@@ -23,8 +23,8 @@ print("Connecting to vehicle on: %s" % (connection_string,))
 vehicle = Controller.connect_vehicle(connection_string)
 
 # Connect to the Monitor
-host = "127.0.0.1"
-port = "4396"
+host = "172.20.10.5"
+port = 4396
 mc = MC.Connection(vehicle, host, port)   # MC is short for Monitor Connection
 
 # Arm and take off
