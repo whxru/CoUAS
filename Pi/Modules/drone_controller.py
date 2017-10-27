@@ -131,7 +131,7 @@ def go_to(vehicle, lat, lon, t=0):
     # Set the airspeed
     if not t == 0:
         vehicle.airspeed = target_distance/t
-        
+
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
