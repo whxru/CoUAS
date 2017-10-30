@@ -41,6 +41,13 @@ The format of MAVC message should follow the example below:
         'Lon' : -114.31341, # Longitude
         'Alt' : 4           # Altitude(meters)
     }
+    
+    # Type = MAVC_ARM_AND_TAKEOFF
+    {
+    	'CID': 3,
+    	'Alt': 5		   # Altitude(meters)
+    }
+    
     # Type = MAVC_GO_TO
     {
         'CID': 3,
