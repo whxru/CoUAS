@@ -17,7 +17,7 @@ import Modules.connection as MC
 import Modules.drone_controller as Controller
 
 # Connect to the Vehicle
-# To start a simulator drone in SEU: dronekit-sitl copter-3.3 --home=31.8896296,118.8137637,7,353
+# To start a simulator drone in SEU: dronekit-sitl copter-3.3 --home=31.8872318,118.8193952,5,353
 connection_string = 'tcp:127.0.0.1:5760'
 print("Connecting to vehicle on: %s" % (connection_string,))
 vehicle = Controller.connect_vehicle(connection_string)
