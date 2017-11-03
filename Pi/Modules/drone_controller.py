@@ -77,7 +77,7 @@ def arm_and_takeoff(vehicle, altitude):
         time.sleep(1)
 
 
-def go_by(vehicle, dNorth, dEast, t=0):
+def go_by(vehicle, dNorth, dEast, t):
     """Make an movement of drone according to the distance at North and East inputted
 
     We think that the drone has arrived the target position when the remaining distance decreases to a so small
@@ -96,21 +96,21 @@ def go_by(vehicle, dNorth, dEast, t=0):
     target_distance = get_distance_metres(current_location, target_location)
 
     # Set the airspeed
-    if not t == -1:
-        vehicle.airspeed = target_distance/t
+    if not t == 0:
+        vehicle.airspeed = target_distance/(t*1.0)
 
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = get_distance_metres(vehicle.location.global_frame, target_location)
-        # print "Distance to target: ", remaining_distance
+        print "Distance to target: ", remaining_distance
         if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
             print "Reached target"
             break
         time.sleep(2)
 
 
-def go_to(vehicle, lat, lon, t=0):
+def go_to(vehicle, lat, lon, t):
     """Make an movement of drone according to the latitude/longitude inputted
 
     We think that the drone has arrived the target position when the remaining distance decreases to a so small
@@ -130,13 +130,13 @@ def go_to(vehicle, lat, lon, t=0):
 
     # Set the airspeed
     if not t == 0:
-        vehicle.airspeed = target_distance/t
+        vehicle.airspeed = target_distance/(t*1.0)
 
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = get_distance_metres(vehicle.location.global_frame, target_location)
-        # print "Distance to target: ", remaining_distance
+        print "Distance to target: ", remaining_distance
         if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
             print "Reached target"
             break

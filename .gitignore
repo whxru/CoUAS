@@ -1,4 +1,4 @@
 .idea
 *.pyc
-Monitor/node_modules/
+Monitor/node_modules
 Monitor/package-lock.json

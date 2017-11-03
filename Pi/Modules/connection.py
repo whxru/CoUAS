@@ -44,10 +44,15 @@ class Connection:
         """
 
         # Send msg to monitor to ask CID
+        home = self.__vehicle.location.global_relative_frame
         msg = [
             {
                 'Header': 'MAVCluster_Drone',
                 'Type': MAVC_REQ_CID
+            },
+            {
+                'Lat': home.lat,
+                'Lon': home.lon
             }
         ]
         s = self.send_msg_to_monitor(msg)
