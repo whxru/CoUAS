@@ -36,9 +36,9 @@
      }
 
      /**
-      * 1. Generate a unique CID and send to the Pi
-      * 2. New an instance of Drone (send the CID as soon as the request arrived)
-      * 3. Ask the instance to start keeping listening that the message Pi will send later
+      * Generate a unique CID and send to the Pi.
+      * New an instance of Drone (send the CID as soon as the request arrived).
+      * Ask the instance to start keeping listening that the message Pi will send later.
       * @summary Add one single drone into the cluster
       * @memberof DroneCluster
       */
@@ -52,13 +52,12 @@
 
          // Start listening to the message from the Pi
          drone.listenToPi();
-         
      }
 
      /**
       * Send message to the Pi specified by the host
-      * @param {any} host - Address of Pi
-      * @param {any} msg - MAVC message
+      * @param {string} host - Address of Pi
+      * @param {object} msg - MAVC message
       * @memberof DroneCluster
       */
      [_sendMsgToPi](host, msg) {
