@@ -4,13 +4,16 @@
  */
 
 const dgram = require('dgram');
-const publicIp = require('public-ip')
+const publicIp = require('public-ip');
+const Map = require('../monitor-app/monitor.js');
 
 // For the use of private attributes
 const _taskDone = Symbol('taskDone');
 const _host = Symbol('host');
 const _state = Symbol('state');
-const _publicIp = Symbol('_publicIp');
+const _home = Symbol('home');
+const _marker = Symbol('marker');
+const _publicIp = Symbol('publicIp');
 // For the use of private methods
 const _establishConnection = Symbol('establishConnection');
 const _updateState = Symbol('updateState');
@@ -36,68 +39,87 @@ class Drone {
             'Lon': 361,
             'Alt': 0
         };
+        this[_home] = {             // Location of home
+            'Lat': 361,
+            'Lon': 361
+        };
+        this[_marker] = null;       // Marker on map
         publicIp.v4().then(ip => {
             this[_publicIp] = ip;
         });
         this[_establishConnection]();
     }
 
-    /** Bind port 4396 to handle the request of CID. */
+    /**
+     * Bind port 4396 to handle the request of CID.
+     * @memberof Drone
+     */
     [_establishConnection]() {
         // Wait for the request of CID
         console.log('Waiting the request of CID...');
         const s = dgram.createSocket('udp4');
         s.bind(4396, this[_publicIp]);
-        while(true) {
-            var msg_obj, host, port;
-            // Receive UDP diagram on port 4396
-            s.on('message', (msg_buf, rinfo) => {
-                // Whether the message is a json string or not
-                try {
-                    msg_obj = JSON.parse(msg_buf.toString('utf8'));
-                } catch (error) {
-                    continue; // SyntaxError
-                }
-                // Whether the message is a MAVC message that request CID or not
-                try {
-                    if (msg_obj[0]['Header'] === 'MAVCluster_Drone' && msg_obj[0]['Type'] === MAVC_REQ_CID) {
-                        host = rinfo.address;
-                        port = rinfo.port;
-                        this[_host] = host;
-                        console.log(`The request of CIF from address:${this[_host]} has been received!`);
-                        break;
-                    }
-                } catch (error) {
-                    continue; // TypeError
-                }
-            });
-        }
+        var msg_obj, host, port;
 
-        // Send the CID back
-        msg = [
-            {
-                'Header': 'MAVCluster_Monitor',
-                'Type': MAVC_CID
-            },
-            {
-                'CID': self.__state['CID']
+        // Receive UDP diagram on port 4396
+        s.on('message', (msg_buf, rinfo) => {
+            // Whether the message is a json string or not
+            try {
+                msg_obj = JSON.parse(msg_buf.toString('utf8'));
+            } catch (error) {
+                return; // SyntaxError
             }
-        ];
-        s.send(JSON.stringify(msg), port, host, (err) => {
-            s.close();
+            // Whether the message is a MAVC message or not
+            try {
+                // MAVC message that request CID
+                if (msg_obj[0]['Header'] === 'MAVCluster_Drone' && msg_obj[0]['Type'] === MAVC_REQ_CID) {
+                    // Extract information 
+                    host = rinfo.address;
+                    port = rinfo.port;
+                    this[_host] = host;
+                    this[_home].Lat = msg_obj[1]['Lat'];
+                    this[_home].Lon = msg_obj[1]['Lon'];
+                    // Preload map resources
+                    this[_marker] = Map.preloadMap(self.__state['CID'], this[_home]);
+                    // Stop listening
+                    console.log(`The request of CID from address:${this[_host]} has been received!`);
+                    s.close();
+                    // Send CID back
+                    msg = [
+                        {
+                            'Header': 'MAVCluster_Monitor',
+                            'Type': MAVC_CID
+                        },
+                        {
+                            'CID': self.__state['CID']
+                        }
+                    ];
+                    s.send(JSON.stringify(msg), port, host, (err) => {
+                        s.close();
+                    });
+                    return;
+                }
+            } catch (error) {
+                return; // TypeError
+            }
         });
     }
 
     /**
-     * Deep copy of drone state.
-     * @param {any} state_obj - Dictionary of drone's state that monitor received from Raspberry Pi 3
+     * Deep copy of drone state and update the marker on map.
+     * @param {object} state_obj - Dictionary of drone's state that monitor received from Raspberry Pi 3
      * @memberof Drone
      */
     [_updateState](state_obj) {
+        // Update data
         var keys = Object.keys(state_obj);
         keys.forEach((attr) => {
             this[_state][attr] = state_obj[attr];
         });
+        // Update marker
+        var target = Map.LatLng(state_obj['Lat'], state_obj['Lon']);
+        this[_marker].moveTo(target);
+
     }
 
     /**
@@ -107,7 +129,7 @@ class Drone {
      */
     getPiHost() {
             return this[_host];
-        }
+    }
     
     /**
      * Get the CID of drone.
@@ -142,26 +164,27 @@ class Drone {
             // Whether this message is sent from the Pi or not
             addr = rinfo.address;
             if(!addr === this[_host]){ 
-                continue;
+                return;
             }
             // Whether the message is a json string or not
             try {
                 msg_obj = JSON.parse(msg_buf.toString('utf8'));
             } catch (error) {
-                continue; // SyntaxError
+                return; // SyntaxError
             }
             // Whether the message is a MAVC message from Pi
             try {
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone'){
                     // Message contains the state of drone
                     if(msg_obj[0]['Type'] === MAVC_STAT) {
-                        this[_updateState](msg_obj)
+                        // Update state
+                        this[_updateState](msg_obj);
                         console.log(this[_updateState]);
-                        break;
+                        return;
                     }
                 }
             } catch (error) {
-                continue; // TypeError
+                return; // TypeError
             }
         });
 }
