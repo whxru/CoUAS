@@ -3,7 +3,7 @@
  * @author whxru
  */
 
- const Drone = require('./drone.js');
+ const { Drone } = require('./drone.js');
  const dgram = require('dgram');
 
  // Constant value definition of communication type
@@ -38,20 +38,16 @@
      /**
       * Generate a unique CID and send to the Pi.
       * New an instance of Drone (send the CID as soon as the request arrived).
-      * Ask the instance to start keeping listening that the message Pi will send later.
       * @summary Add one single drone into the cluster
       * @memberof DroneCluster
       */
      addDrone() {
          // Generate CID
-         CID = this[_drones].length + 1;
+         var CID = this[_drones].length + 1;
         
          // Add drone to the container
          var drone = new Drone(CID);
          this[_drones].push(drone);
-
-         // Start listening to the message from the Pi
-         drone.listenToPi();
      }
 
      /**
