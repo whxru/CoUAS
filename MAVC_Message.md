@@ -22,10 +22,15 @@ The format of MAVC message should follow the example below:
 ```python
 [
     {
-        'Header': 'MAVCluster_Drone',   # or 'MAVCluster_Monitor'
-        'Type': MAVC_REQ_CID            # values defined later
-    },
-    # If the value of 'Type' begins with 'MAVC_REQ_',then the message should contain the information above only
+    	'Header': 'MAVCluster_Drone',   # Or 'MAVCluster_Monitor'
+    	'Type': MAVC_REQ_CID            # Values pre-defined
+	},
+	
+    # Type = MAVC_REQ_CID
+    {
+        'Lat': 38.13546,                # Latitude of home
+        'Lon': -113.546874              # Longitude of home
+    }
 
     # Type = MAVC_CID
     {
