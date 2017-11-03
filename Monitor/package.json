@@ -2,5 +2,7 @@
 	"name": "MAVCluster-Monitor",
 	"version": "1.0.0",
 	"main": "main.js",
-	"dependencies": {}
+	"dependencies": {
+		"public-ip": "^2.3.5"
+	}
 }
