@@ -14,6 +14,7 @@ There are some values predefined as follows to identify the type of MAVC message
 | MAVC_ARM_AND_TAKEOFF | 4     | Ask drone to arm and takeoff             |
 | MAVC_GO_TO           | 5     | Ask drone to fly to next target specified by latitude and longitude |
 | MAVC_GO_BY           | 6     | Ask drone to fly to next target specified by the distance in both North and East directions |
+| MAVC_ARRIVED         | 7     | Tell the monitor that the drone has arrived at the target |
 
 ## Format
 
@@ -59,7 +60,9 @@ The format of MAVC message should follow the example below:
         'Lat': 38.11523,
         'Lon': -118.53556,
         'Alt': 5,
-        'Time': 3           # Time limit(seconds)
+        'Time': 3,          # Time limit(seconds)
+        'Step': 1,          # Which step this target at in the drone's mission
+        'Report': False     # Whether report to monitor after reaching the target
     },...
 
     # Type = MAVC_GO_BY

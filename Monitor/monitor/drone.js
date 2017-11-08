@@ -15,6 +15,7 @@ const MAVC_STAT = 3               // Report the state of drone
 const MAVC_ARM_AND_TAKEOFF = 4    // Ask drone to arm and takeoff
 const MAVC_GO_TO = 5              // Ask drone to fly to target specified by latitude and longitude
 const MAVC_GO_BY = 6              // Ask drone to fly to target specified by the distance in both North and East directions
+const MAVC_ARRIVED = 7            // Tell the monitor that the drone has arrived at the target
 
 // For the use of private attributes
 const _taskDone = Symbol('taskDone');
