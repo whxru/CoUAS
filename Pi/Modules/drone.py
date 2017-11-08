@@ -22,13 +22,14 @@ MAVC_GO_BY = 6              # Ask drone to fly to target specified by the distan
 MAVC_ARRIVED = 7            # Tell the monitor that the drone has arrived at the target
 
 
-class Connection:
+class Drone:
     """Maintain an connection between the drone and monitor."""
     def __init__(self, vehicle, host, port):
         self.__host = host          # The host of Monitor
         self.__port = port          # The port of Monitor
         self.__CID = -1             # Connection ID used to identify specific the drone.
         self.__task_done = False    # Indicate that whether the connection should be closed
+        self.__tasks = []           # Pool of tasks
         self.__vehicle = vehicle
         self.__establish_connection()
 
@@ -137,12 +138,34 @@ class Connection:
     def __listen_to_monitor(self):
         """Deal with instructions sent by monitor.
 
-        Keeping listening to the monitor, once messages arrived this method will start analyzing and translate them into
-        the form that other modules can handle.
-
-        Returns: Dictionary that can be parsed by command execution module.
+        Keep listening to the monitor, once messages arrived this method will push them into a list and execute one
+        by one in another thread.
         """
 
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.bind((self.__host, 4396))
+
+        # Listen to the monitor
+        print('Start listening to the report of CID request')
+        while not self.__task_done:
+            data_json, addr = s.recvfrom(1024)
+            print(data_json)
+            if not addr[0] == self.__host:  # This message is not sent from the Monitor
+                continue
+
+            data_dict = json.loads(data_json)
+            try:
+                if (data_dict[0]['Header'] == 'MAVCluster_Monitor' and
+                        MAVC_ARM_AND_TAKEOFF <= data_dict[0]['Type'] <= MAVC_GO_BY):
+                    for n in range(1, len(data_dict)):
+                        # Pick tasks about this drone out
+                        CID = data_dict[n]['CID']
+                        if CID == self.__CID:
+                            self.__tasks.append(data_dict[n])
+            except KeyError:  # This message is not a MAVC message
+                continue
+
+        s.close()
     def close_connection(self):
         """Close the connection that maintained by the instance
 

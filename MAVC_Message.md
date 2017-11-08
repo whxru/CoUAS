@@ -51,7 +51,9 @@ The format of MAVC message should follow the example below:
     # Type = MAVC_ARM_AND_TAKEOFF
     {
     	'CID': 3,
-    	'Alt': 5		   # Altitude(meters)
+    	'Alt': 5,   	  
+    	'Step': 0,	       # This value can only be 0
+    	'Sync': False,	   # Whether synchronize all of the drones after reaching the altitude
     }
     
     # Type = MAVC_GO_TO
@@ -62,7 +64,7 @@ The format of MAVC message should follow the example below:
         'Alt': 5,
         'Time': 3,          # Time limit(seconds)
         'Step': 1,          # Which step this target at in the drone's mission
-        'Report': False     # Whether report to monitor after reaching the target
+        'Sync': True,       # Whether synchronize all of the drones after reaching the target
     },...
 
     # Type = MAVC_GO_BY
@@ -70,8 +72,16 @@ The format of MAVC message should follow the example below:
         'CID': 3,
         'N': 3,             # Distance in North direction(meters)
         'E': 5,             # Distance in East direction(meters)
-        'Alt': 5,           # Altitude(meters)
-        'Time': 3           # Time limit(seconds)
+        'Alt': 5,           
+        'Time': 3,          
+        'Step': 2,           
+        'Sync': False,      
     },...
+    
+    # Type = MAVC_ARRIVED
+    {
+        'CID': 3,
+        'Step': 1 
+    }
 ]
 ```
