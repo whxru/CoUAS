@@ -9,28 +9,26 @@ window.onload = () => {
     initMap();
 };
 
-/**
- * 初始化地图
- * @desc 会被异步加载的腾讯地图脚本回调
- */
+/** 初始化地图 */
 function initMap() {
-    // 初始化腾讯地图模块
-    var Maps = qq.maps;
+    // 初始化菜单
+    initMenu(droneCluster);
+    
+    // 初始化地图模块
     // var centerPos = new Maps.LatLng(31.8872318,118.8193952);
-    var centerPos = new Maps.LatLng(39.916527, 116.397128);
-    var map = new Maps.Map(document.getElementById('map-container'), {
-        mapTypeId: Maps.MapTypeId.HYBRID,
-        zoom: 18
+    var map = new AMap.Map('map-container', {
+        zoom: 18,
+        center: [116.397128, 39.916527],
+        layers: [new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()],
+        features: ['bg', 'point', 'road', 'building']
     });
-    map.panTo(centerPos);
-    global.Maps = Maps;
+
+    global.Map = AMap;
     global.map = map;
 
     // 创建无人机集群
     var droneCluster = new DroneCluster();
 
-    // 初始化菜单
-    initMenu(droneCluster);
 }
 
 /**
@@ -46,17 +44,17 @@ module.exports = {
      */
     'preloadMap': (CID, home) => {
         var map = global.map;
-        var Maps = global.Maps;
+        var Map = global.Map;
         // 移动地图
-        var centerPos = new Maps.LatLng(home.Lat, home.Lon);
+        var centerPos = new Map.LngLat(home.Lon, home.Lat);
         map.panTo(centerPos);
         // 设置Marker
         var marker = new Maps.Marker({
-            position: centerPos,
-            animation: Maps.MarkerAnimation.UP,
             map: map,
+            position: centerPos,
+            animation: "AMAP_ANIMATION_BOUNCE",
             // draggable: false,
-            icon: new Maps.MarkerImage(`img/drone-${CID}.png`),
+            icon: `img/drone-${CID}.png`,
             title: `drone-${CID}`,
             autoRotation: true
         });
@@ -69,8 +67,8 @@ module.exports = {
      * @param  {object} state_obj - 描述无人机当前的状态
      */
     'updateState': (marker, state_obj) => {
-        var Maps = global.Maps;
-        var target =new Maps.LatLng(state_obj.Lat, state_obj.Lon);
+        var Map = global.Map;
+        var target =new Map.LngLat(state_obj.Lon, state_obj.Lat);
         marker.moveTo(target);
     }
 }
