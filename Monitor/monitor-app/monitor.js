@@ -11,9 +11,6 @@ window.onload = () => {
 
 /** 初始化地图 */
 function initMap() {
-    // 初始化菜单
-    initMenu(droneCluster);
-    
     // 初始化地图模块
     // var centerPos = new Maps.LatLng(31.8872318,118.8193952);
     var map = new AMap.Map('map-container', {
@@ -29,6 +26,8 @@ function initMap() {
     // 创建无人机集群
     var droneCluster = new DroneCluster();
 
+    // 初始化菜单
+    initMenu(droneCluster);
 }
 
 /**
@@ -49,11 +48,10 @@ module.exports = {
         var centerPos = new Map.LngLat(home.Lon, home.Lat);
         map.panTo(centerPos);
         // 设置Marker
-        var marker = new Maps.Marker({
+        var marker = new Map.Marker({
             map: map,
             position: centerPos,
-            animation: "AMAP_ANIMATION_BOUNCE",
-            // draggable: false,
+            zoom: 18,
             icon: `img/drone-${CID}.png`,
             title: `drone-${CID}`,
             autoRotation: true
@@ -69,7 +67,7 @@ module.exports = {
     'updateState': (marker, state_obj) => {
         var Map = global.Map;
         var target =new Map.LngLat(state_obj.Lon, state_obj.Lat);
-        marker.moveTo(target);
+        marker.setPosition(target);
     }
 }
 
