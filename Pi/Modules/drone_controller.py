@@ -39,13 +39,18 @@ def connect_vehicle(connection_string):
         return vehicle
 
 
-def arm_and_takeoff(vehicle, altitude):
+def arm_and_takeoff(vehicle, args):
     """Arms vehicle and fly to the altitude.
 
     Args:
         vehicle: Object of drone.
-        altitude: The height which the drone should arrive at after the taking off.
+        args: Dictionary that contains task information
+            * Alt: The height which the drone should arrive at after the taking off.
+            * Report: Whether report to monitor after reaching the target.
     """
+
+    altitude = args['Alt']
+    report = args['Report']
 
     # Don't try to arm until autopilot is ready
     print "Basic pre-arm checks"
@@ -77,7 +82,7 @@ def arm_and_takeoff(vehicle, altitude):
         time.sleep(1)
 
 
-def go_by(vehicle, dNorth, dEast, t):
+def go_by(vehicle, args):
     """Make an movement of drone according to the distance at North and East inputted
 
     We think that the drone has arrived the target position when the remaining distance decreases to a so small
@@ -86,14 +91,19 @@ def go_by(vehicle, dNorth, dEast, t):
 
     Args:
         vehicle: Object of drone.
-        dNorth: Distance at North direction
-        dEast: Distance at East direction
-        t: Expected time of the task (second)
+        args: Dictionary that contains task information
+            * N: Distance at North direction.
+            * E: Distance at East direction.
+            * Time: Expected time of the task (second).
     """
 
+    dNorth = args['N']
+    dEast = args['E']
+    t = args['Time']
+
     current_location = vehicle.location.global_relative_frame
-    target_location = get_location_metres(current_location, dNorth, dEast)
-    target_distance = get_distance_metres(current_location, target_location)
+    target_location = _get_location_metres(current_location, dNorth, dEast)
+    target_distance = _get_distance_metres(current_location, target_location)
 
     # Set the airspeed
     if not t == 0:
@@ -102,7 +112,7 @@ def go_by(vehicle, dNorth, dEast, t):
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
-        remaining_distance = get_distance_metres(vehicle.location.global_frame, target_location)
+        remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
         print "Distance to target: ", remaining_distance
         if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
             print "Reached target"
@@ -110,7 +120,7 @@ def go_by(vehicle, dNorth, dEast, t):
         time.sleep(2)
 
 
-def go_to(vehicle, lat, lon, t):
+def go_to(vehicle, args):
     """Make an movement of drone according to the latitude/longitude inputted
 
     We think that the drone has arrived the target position when the remaining distance decreases to a so small
@@ -119,14 +129,19 @@ def go_to(vehicle, lat, lon, t):
 
     Args:
         vehicle: Object of drone.
-        lat: Latitude of target position
-        lon: Longitude of target position
-        t: Expected time of the task (second)
+        args: Dictionary that contains task information
+            * Lat: Latitude of target position.
+            * Lon: Longitude of target position.
+            * Time: Expected time of the task (second).
     """
+
+    lat = args['Lat']
+    lon = args['Lon']
+    t = args['Time']
 
     current_location = vehicle.location.global_relative_frame
     target_location = dronekit.LocationGlobalRelative(lat, lon, current_location.alt)
-    target_distance = get_distance_metres(current_location, target_location)
+    target_distance = _get_distance_metres(current_location, target_location)
 
     # Set the airspeed
     if not t == 0:
@@ -135,7 +150,7 @@ def go_to(vehicle, lat, lon, t):
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
-        remaining_distance = get_distance_metres(vehicle.location.global_frame, target_location)
+        remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
         print "Distance to target: ", remaining_distance
         if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
             print "Reached target"
@@ -143,7 +158,7 @@ def go_to(vehicle, lat, lon, t):
         time.sleep(2)
 
 
-def get_location_metres(original_location, dNorth, dEast):
+def _get_location_metres(original_location, dNorth, dEast):
     """
     Returns a LocationGlobal object containing the latitude/longitude `dNorth` and `dEast` metres from the
     specified `original_location`. The returned LocationGlobal has the same `alt` value
@@ -177,7 +192,7 @@ def get_location_metres(original_location, dNorth, dEast):
     return target_location
 
 
-def get_distance_metres(location1, location2):
+def _get_distance_metres(location1, location2):
     """
     Returns the ground distance in metres between two LocationGlobal objects.
 
