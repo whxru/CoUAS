@@ -1,14 +1,14 @@
 #  -*- coding: utf-8 -*-
 
 """
-Modules.connection
-~~~~~~~~~~~~~~~
+Modules.drone
+~~~~~~~~~~~~~
 
 Implement the methods for the communication between monitor and drone mainly through UDP protocol.
 """
-import dronekit
 import time
 import socket, json
+from drone_controller import *
 from threading import Thread,Timer
 
 # Constant value definition of communication type
@@ -29,7 +29,7 @@ class Drone:
         self.__port = port          # The port of Monitor
         self.__CID = -1             # Connection ID used to identify specific the drone.
         self.__task_done = False    # Indicate that whether the connection should be closed
-        self.__tasks = []           # Pool of tasks
+        self.__action_queue = []    # Queue of actions
         self.__vehicle = vehicle
         self.__establish_connection()
 
@@ -82,8 +82,10 @@ class Drone:
         try:
             report = Thread(target=self.__report_to_monitor, name='Report-To-Monitor')
             hear = Thread(target=self.__listen_to_monitor, name='Hear-From-Monitor')
+            execute = Thread(target=self.__perform_actions, name='Execute-Tasks-In-Queue')
             report.start()
             hear.start()
+            execute.start()
         except:
             print "Error: unable to start new thread!"
             exit(0)
@@ -138,12 +140,13 @@ class Drone:
     def __listen_to_monitor(self):
         """Deal with instructions sent by monitor.
 
-        Keep listening to the monitor, once messages arrived this method will push them into a list and execute one
-        by one in another thread.
+        Keep listening the broadcast message, once messages arrived this method will push the specified actions
+        sent from monitor into a queue and perfome them one by one in another thread.
         """
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.bind((self.__host, 4396))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        s.bind(('0.0.0.0', 4396))
 
         # Listen to the monitor
         print('Start listening to the report of CID request')
@@ -158,14 +161,53 @@ class Drone:
                 if (data_dict[0]['Header'] == 'MAVCluster_Monitor' and
                         MAVC_ARM_AND_TAKEOFF <= data_dict[0]['Type'] <= MAVC_GO_BY):
                     for n in range(1, len(data_dict)):
-                        # Pick tasks about this drone out
+                        # Pick actions about this drone out
                         CID = data_dict[n]['CID']
                         if CID == self.__CID:
-                            self.__tasks.append(data_dict[n])
+                            del data_dict[n]['CID']
+                            data_dict[n]['Type'] = data_dict[0]['Type']
+                            self.__action_queue.append(data_dict[n])
             except KeyError:  # This message is not a MAVC message
                 continue
 
         s.close()
+
+    def __perform_actions(self):
+        """perform actions from the queue. """
+
+        while not self.__task_done:
+            perform_action = {
+                MAVC_ARM_AND_TAKEOFF: arm_and_takeoff,
+                MAVC_GO_TO: go_to,
+                MAVC_GO_BY: go_by
+            }
+
+            if len(self.__action_queue) > 0:
+                # Choose the first action
+                action = self.__action_queue.pop(0)
+                # Perform the action
+                sync = action['Sync']
+                step = action['Step']
+                type = action['Type']
+                del action['Sync']
+                del action['Step']
+                del action['Type']
+                perform_action[type](action)
+                # Report the end of the action if needed
+                if sync:
+                    self.send_msg_to_monitor([
+                        {
+                            'Header': 'MAVCluster_Drone',
+                            'Type': MAVC_ARRIVED
+                        },
+                        {
+                            'CID': self.__CID,
+                            'Step': step
+                        }
+                    ])
+
+
+
     def close_connection(self):
         """Close the connection that maintained by the instance
 
