@@ -5,8 +5,8 @@ const path = require('path');
 const url = require('url')
 
 let win;
-var width = 800;
-var height = 600;
+var width = 1400;
+var height = 900;
 
 function createWindow() {
     // 创建浏览器窗口
