@@ -4,18 +4,18 @@
  */
 
 const dgram = require('dgram');
-const publicIp = require('public-ip');
 const Map = require('../monitor-app/monitor.js');
+const os = require('os');
 
-// Constant value definition of communication type
-const MAVC_REQ_CID = 0            // Request the Connection ID
-const MAVC_CID = 1                // Response to the ask of Connection ID
-const MAVC_REQ_STAT = 2           // Ask for the state of drone(s)
-const MAVC_STAT = 3               // Report the state of drone
-const MAVC_ARM_AND_TAKEOFF = 4    // Ask drone to arm and takeoff
-const MAVC_GO_TO = 5              // Ask drone to fly to target specified by latitude and longitude
-const MAVC_GO_BY = 6              // Ask drone to fly to target specified by the distance in both North and East directions
-const MAVC_ARRIVED = 7            // Tell the monitor that the drone has arrived at the target
+// Constant value definitions of communication type
+const MAVC_REQ_CID = 0;            // Request the Connection ID
+const MAVC_CID = 1;                // Response to the ask of Connection ID
+const MAVC_REQ_STAT = 2;           // Ask for the state of drone(s)
+const MAVC_STAT = 3;               // Report the state of drone
+const MAVC_ARM_AND_TAKEOFF = 4;    // Ask drone to arm and takeoff
+const MAVC_GO_TO = 5;              // Ask drone to fly to target specified by latitude and longitude
+const MAVC_GO_BY = 6;              // Ask drone to fly to target specified by the distance in both North and East directions
+const MAVC_ARRIVED = 7;            // Tell the monitor that the drone has arrived at the target
 
 // For the use of private attributes
 const _taskDone = Symbol('taskDone');
@@ -35,11 +35,13 @@ const _preloadMap = Symbol('preloadMap');
  * @class Drone
  */
 class Drone {
+
     /**
      * Initialize attributes and establish the connection.
-     * @param {number} CID - Identifier of one single connection
+     * @param {Number} CID - Identifier of one single connection
+     * @param {String} ipAddr - IPv4 address
      */
-    constructor(CID) {
+    constructor(CID, ipAddr) {
         this[_taskDone] = false;    // Whether the task has been done
         this[_host] = '';           // Host name of the Pi connected
         this[_state] = {            // Information of state the drone connected
@@ -55,7 +57,9 @@ class Drone {
             'Lon': 361
         };
         this[_marker] = null;       // Marker on map
-        this[_publicIp] = '172.20.10.5';
+
+        this[_publicIp] = ipAddr;
+
         this[_establishConnection]();
     }
 
@@ -123,7 +127,7 @@ class Drone {
 
     /**
      * Deep copy of drone state and update the marker on map.
-     * @param {object} state_obj - Dictionary of drone's state that monitor received from Raspberry Pi 3
+     * @param {Object} state_obj - Dictionary of drone's state that monitor received from Raspberry Pi 3
      * @memberof Drone
      */
     [_updateState](state_obj) {
@@ -145,10 +149,10 @@ class Drone {
     getPiHost() {
         return this[_host];
     }
-    
+
     /**
      * Get the CID of drone.
-     * @returns {number} The CID value.
+     * @returns {Number} The CID value.
      * @memberof Drone
      */
     getCID() {
@@ -165,20 +169,20 @@ class Drone {
         var host = this[_publicIp];
         var port = 4396 + this.getCID();
         s.bind(port, host);
-        
-        s.on('listening', ()=> {
+
+        s.on('listening', () => {
             console.log(`Start listening to the Pi on ${host}:${port}`);
         });
 
         s.on('message', (msg_buf, rinfo) => {
-            if(this[_taskDone]) {
+            if (this[_taskDone]) {
                 s.close();
                 return;
             }
             var addr, msg_obj;
             // Whether this message is sent from the Pi or not
             addr = rinfo.address;
-            if(!addr === this[_host]){ 
+            if (!addr === this[_host]) {
                 return;
             }
             // Whether the message is a json string or not
@@ -189,9 +193,9 @@ class Drone {
             }
             // Whether the message is a MAVC message from Pi
             try {
-                if (msg_obj[0]['Header'] === 'MAVCluster_Drone'){
+                if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
                     // Message contains the state of drone
-                    if(msg_obj[0]['Type'] === MAVC_STAT) {
+                    if (msg_obj[0]['Type'] === MAVC_STAT) {
                         // Update state
                         this[_updateState](msg_obj[1]);
                         return;
@@ -201,7 +205,7 @@ class Drone {
                 return; // TypeError
             }
         });
-}
+    }
 }
 
 module.exports.Drone = Drone;
