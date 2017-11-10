@@ -1,5 +1,5 @@
 /**
- * @file 初始化主界面
+ * @file Initialize the main page of application
  * @author whxru
  */
 
@@ -9,10 +9,9 @@ window.onload = () => {
     initMap();
 };
 
-/** 初始化地图 */
+/** Initialize the map */
 function initMap() {
-    // 初始化地图模块
-    // var centerPos = new Maps.LatLng(31.8872318,118.8193952);
+    // Initialize the map module
     var map = new AMap.Map('map-container', {
         zoom: 18,
         center: [116.397128, 39.916527],
@@ -20,15 +19,25 @@ function initMap() {
         features: ['bg', 'point', 'road', 'building']
     });
 
+    // Keep object and class of map module alive
     global.Map = AMap;
     global.map = map;
 
-    // 创建无人机集群
-    var droneCluster = new DroneCluster();
+    // Open a modal window to select a network interface
+    var interfaceNames = Object.keys(require('os').networkInterfaces());
+    var dialog = openCustomizedDialog('select-interface', interfaceNames.join())
 
-    // 初始化菜单
-    initMenu(droneCluster);
+    // Once the selection is confirmed
+    dialog.on('closed', (evt) => {
+        // Get interface's name which was selected
+        var interfaceName = localStorage.getItem('dialog-return');
+        // Create drone cluster
+        var droneCluster = new DroneCluster(interfaceName);
+        // Initialize the menu of application
+        initMenu(droneCluster);
+    });
 }
+    
 
 /**
  * Map manipulation module.
@@ -36,10 +45,10 @@ function initMap() {
  */
 module.exports = {
     /**
-     * 根据HOME的位置预加载地图，初始化无人机在地图上的标志
+     * Preload map and the icon of drone according to the location of home
      * @param {number} CID - Connection ID
-     * @param {object} home - home的经纬度
-     * @returns 该无人机对应的Marker对象
+     * @param {object} home - Latitude and longitude of home
+     * @returns {Marker} The object of marker on map which stands for a drone
      */
     'preloadMap': (CID, home) => {
         var map = global.map;
@@ -60,9 +69,9 @@ module.exports = {
     },
 
     /**
-     * 更新Marker的位置
-     * @param  {Marker} marker - Marker对象
-     * @param  {object} state_obj - 描述无人机当前的状态
+     * Update the position of marker
+     * @param  {Marker} marker - Object of marker
+     * @param  {object} state_obj - Object of state the drone currently on
      */
     'updateState': (marker, state_obj) => {
         var Map = global.Map;
@@ -72,7 +81,7 @@ module.exports = {
 }
 
 
-/** 初始化主界面菜单 */
+/** Initilize the menu of application */
 function initMenu(droneCluster){
     const Menu = require('electron').remote.Menu;
     const template = [
@@ -83,6 +92,32 @@ function initMenu(droneCluster){
                     label: '创建连接',
                     accelerator: 'CmdOrCtrl+N',
                     click: () => {droneCluster.addDrone()}
+                }
+            ]
+        },
+        {
+            label: '任务',
+            submenu: [
+                {
+                    label: '从文件执行',
+                    click: () => {
+                        const {dialog} = require('electron').remote;
+                        var filepaths = dialog.showOpenDialog({
+                            filters: [{
+                                name: 'MAVCluster task file',
+                                extensions:['json', 'txt']
+                            }]
+                        });
+                        if(filepaths !== undefined) {
+                            require('fs').readFile(filepaths[0], 'utf-8', (err, content) => {
+                                if(err) {
+                                    dialog.showErrorBox("Error", err.message);
+                                } else {
+                                    droneCluster.executeTask(content);
+                                }
+                            });
+                        }
+                    }
                 }
             ]
         },
@@ -107,6 +142,53 @@ function initMenu(droneCluster){
     ];
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
+}
+/**
+ * Open customized dialog
+ * @param {String} type - Type of dialog 
+ * @param {String} args - Arguments the dialog's initializaion needed
+ * @returns {BrowserWindow} Object of dialog window
+ */
+function openCustomizedDialog(type, args) {
+    // Customized title
+    const titles = {
+        'select-interface': '选择网络接口'
+    }
+
+    const sizes = {
+        'select-interface': {
+            height: 150,
+            width: 300 
+        }
+    }
+
+    // Load the html file of dialog
+    const { BrowserWindow } = require('electron').remote;
+    var currentWindow = require('electron').remote.getCurrentWindow();
+    localStorage.setItem('dialog-type', type);
+    localStorage.setItem('dialog-args', args);
+    var dialog = new BrowserWindow({
+        title: titles[type],
+        width: sizes[type].width,
+        height: sizes[type].height,
+        autoHideMenuBar: true,
+        closable: false,
+        minimizable: false,
+        maximizable: false,
+        parent: currentWindow,
+        modal: true,
+        show: false
+    });
+    dialog.loadURL(require('url').format({
+        pathname: require('path').join(__dirname, '/dialog.html'),
+        protocol: 'file:',
+        slashes: true
+    }))
+    dialog.once('ready-to-show', () => {
+        dialog.show();
+    });
+
+    return dialog;
 }
 
 
