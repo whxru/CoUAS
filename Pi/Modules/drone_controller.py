@@ -44,7 +44,7 @@ def arm_and_takeoff(vehicle, args):
 
     Args:
         vehicle: Object of drone.
-        args: Dictionary that contains task information
+        args: Dictionary that contains action information
             * Alt: The height which the drone should arrive at after the taking off.
             * Sync: Whether report to monitor after reaching the target.
     """
@@ -90,7 +90,7 @@ def go_by(vehicle, args):
 
     Args:
         vehicle: Object of drone.
-        args: Dictionary that contains task information
+        args: Dictionary that contains action information
             * N: Distance at North direction.
             * E: Distance at East direction.
             * Time: Expected time of the task (second).
@@ -128,7 +128,7 @@ def go_to(vehicle, args):
 
     Args:
         vehicle: Object of drone.
-        args: Dictionary that contains task information
+        args: Dictionary that contains action information
             * Lat: Latitude of target position.
             * Lon: Longitude of target position.
             * Time: Expected time of the task (second).
@@ -156,6 +156,16 @@ def go_to(vehicle, args):
             break
         time.sleep(2)
 
+def wait(vehichle, args):
+    """Do nothing but wait a specific time
+
+    Args:
+        vehichle: Object of drone.
+        args: Dictionary that contains action information
+            Time: How long the drone should wait.
+    """
+    t = args['Time']
+    time.sleep(t)
 
 def _get_location_metres(original_location, dNorth, dEast):
     """

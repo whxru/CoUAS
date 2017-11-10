@@ -22,7 +22,8 @@ MAVC_ARRIVED = 5            # Tell the monitor that the drone has arrived at the
 # Constant value definition of action type in MAVC_ACTION message
 ACTION_ARM_AND_TAKEOFF = 0  # Ask drone to arm and takeoff
 ACTION_GO_TO = 1            # Ask drone to fly to next target specified by latitude and longitude
-ACTION_GO_BY = 2            # Ask drone to fly to next target specified by the distance in both North and East directions
+ACTION_GO_BY = 2            # Ask drone to fly to next target specified by distance in both North and East directions
+ACTION_WAIT = 3             # Ask drone to do nothing but wait for a specific time
 
 
 class Drone:
@@ -180,7 +181,8 @@ class Drone:
             perform_action = {
                 ACTION_ARM_AND_TAKEOFF: arm_and_takeoff,
                 ACTION_GO_TO: go_to,
-                ACTION_GO_BY: go_by
+                ACTION_GO_BY: go_by,
+                ACTION_WAIT: wait
             }
 
             if len(self.__action_queue) > 0:
