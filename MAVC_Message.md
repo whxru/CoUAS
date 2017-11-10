@@ -22,7 +22,8 @@ There are some values predefined as follows to identify the type of action in MA
 | ---------------------- | ----- | ---------------------------------------- |
 | ACTION_ARM_AND_TAKEOFF | 0     | Ask drone to arm and takeoff             |
 | ACTION_GO_TO           | 1     | Ask drone to fly to next target specified by latitude and longitude |
-| ACTION_GO_BY           | 2     | Ask drone to fly to next target specified by the distance in both North and East directions |
+| ACTION_GO_BY           | 2     | Ask drone to fly to next target specified by the distance in both North and East directions |
+| ACTION_WAIT            | 3     | Ask drone to do nothing but wait a specific time | 
 
 
 
@@ -63,8 +64,8 @@ The format of MAVC message should follow the example below:
     	"Action_type": ACTION_ARM_AND_TAKEOFF,
     	"CID": 3,
     	"Alt": 5,   	  
-    	"Step": 0,	       # This value can only be 0
-    	"Sync": False,	   # Whether synchronize all of the drones after reaching the altitude
+    	"Step": 0,	    # This value can only be 0
+    	"Sync": False,	    # Whether synchronize all of the drones after reaching the altitude
     }
     
     # Type = MAVC_ACTION
@@ -77,7 +78,7 @@ The format of MAVC message should follow the example below:
         "Time": 3,          # Time limit(seconds)
         "Step": 1,          # Which step this target at in the drone"s mission
         "Sync": True,       # Whether synchronize all of the drones after reaching the target
-    },...
+    },...  # The ellipsis indicates that there can be more than one of this action in a single MAVC message
 
     # Type = MAVC_ACTION
     {
@@ -89,6 +90,13 @@ The format of MAVC message should follow the example below:
         "Time": 3,          
         "Step": 2,           
         "Sync": False,      
+    },...
+    
+    # Type = MAVC_ACTION
+    {
+    	"Action_type": ACTION_WAIT,
+	"CID": 3,
+	"Time": 5
     },...
     
     # Type = MAVC_ARRIVED
