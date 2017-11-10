@@ -16,10 +16,13 @@ MAVC_REQ_CID = 0            # Request the Connection ID
 MAVC_CID = 1                # Response to the ask of Connection ID
 MAVC_REQ_STAT = 2           # Ask for the state of drone(s)
 MAVC_STAT = 3               # Report the state of drone
-MAVC_ARM_AND_TAKEOFF = 4    # Ask drone to arm and takeoff
-MAVC_GO_TO = 5              # Ask drone to fly to target specified by latitude and longitude
-MAVC_GO_BY = 6              # Ask drone to fly to target specified by the distance in both North and East directions
-MAVC_ARRIVED = 7            # Tell the monitor that the drone has arrived at the target
+MAVC_ACTION = 4             # Action to be performed
+MAVC_ARRIVED = 5            # Tell the monitor that the drone has arrived at the target
+
+# Constant value definition of action type in MAVC_ACTION message
+ACTION_ARM_AND_TAKEOFF = 0  # Ask drone to arm and takeoff
+ACTION_GO_TO = 1            # Ask drone to fly to next target specified by latitude and longitude
+ACTION_GO_BY = 2            # Ask drone to fly to next target specified by the distance in both North and East directions
 
 
 class Drone:
@@ -146,10 +149,9 @@ class Drone:
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        s.bind(('0.0.0.0', 4396))
+        s.bind(('', 4396))
 
         # Listen to the monitor
-        print('Start listening to the report of CID request')
         while not self.__task_done:
             data_json, addr = s.recvfrom(1024)
             print(data_json)
@@ -158,14 +160,13 @@ class Drone:
 
             data_dict = json.loads(data_json)
             try:
-                if (data_dict[0]['Header'] == 'MAVCluster_Monitor' and
-                        MAVC_ARM_AND_TAKEOFF <= data_dict[0]['Type'] <= MAVC_GO_BY):
+                if data_dict[0]['Header'] == 'MAVCluster_Monitor' and data_dict[0]['Type'] == MAVC_ACTION:
+                    print(data_json)
                     for n in range(1, len(data_dict)):
                         # Pick actions about this drone out
                         CID = data_dict[n]['CID']
                         if CID == self.__CID:
                             del data_dict[n]['CID']
-                            data_dict[n]['Type'] = data_dict[0]['Type']
                             self.__action_queue.append(data_dict[n])
             except KeyError:  # This message is not a MAVC message
                 continue
@@ -177,9 +178,9 @@ class Drone:
 
         while not self.__task_done:
             perform_action = {
-                MAVC_ARM_AND_TAKEOFF: arm_and_takeoff,
-                MAVC_GO_TO: go_to,
-                MAVC_GO_BY: go_by
+                ACTION_ARM_AND_TAKEOFF: arm_and_takeoff,
+                ACTION_GO_TO: go_to,
+                ACTION_GO_BY: go_by
             }
 
             if len(self.__action_queue) > 0:
@@ -188,11 +189,11 @@ class Drone:
                 # Perform the action
                 sync = action['Sync']
                 step = action['Step']
-                type = action['Type']
+                action_type = action['Action_type']
                 del action['Sync']
                 del action['Step']
-                del action['Type']
-                perform_action[type](action)
+                del action['Action_type']
+                perform_action[action_type](self.__vehicle, action)
                 # Report the end of the action if needed
                 if sync:
                     self.send_msg_to_monitor([

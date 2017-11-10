@@ -46,11 +46,10 @@ def arm_and_takeoff(vehicle, args):
         vehicle: Object of drone.
         args: Dictionary that contains task information
             * Alt: The height which the drone should arrive at after the taking off.
-            * Report: Whether report to monitor after reaching the target.
+            * Sync: Whether report to monitor after reaching the target.
     """
 
     altitude = args['Alt']
-    report = args['Report']
 
     # Don't try to arm until autopilot is ready
     print "Basic pre-arm checks"
@@ -114,7 +113,7 @@ def go_by(vehicle, args):
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
         print "Distance to target: ", remaining_distance
-        if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
+        if remaining_distance <= 0.5:  # Just below target, in case of undershoot.
             print "Reached target"
             break
         time.sleep(2)
@@ -152,7 +151,7 @@ def go_to(vehicle, args):
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
         print "Distance to target: ", remaining_distance
-        if remaining_distance <= target_distance * 0.01:  # Just below target, in case of undershoot.
+        if remaining_distance <= 0.5:  # Just below target, in case of undershoot.
             print "Reached target"
             break
         time.sleep(2)
