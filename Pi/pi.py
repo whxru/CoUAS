@@ -8,11 +8,6 @@ This script runs on an raspberry Pi 3 which has connected to an Ardupilot(APM v2
 It's the relay of communications between monitor on the ground and one of those drones in the sky.
 """
 
-import dronekit
-import dronekit_sitl
-import socket
-import exceptions
-import threading
 import Modules.drone as drone
 from Modules.drone_controller import connect_vehicle
 
