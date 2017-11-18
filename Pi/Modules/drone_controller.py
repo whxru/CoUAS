@@ -12,7 +12,8 @@ import socket
 import exceptions
 import time
 import math
-from threading import Timer
+from pymavlink import mavutil
+from threading import Thread
 
 
 def connect_vehicle(connection_string):
@@ -155,6 +156,51 @@ def go_to(vehicle, args):
             print "Reached target"
             break
         time.sleep(2)
+
+
+def land_at(vehicle, args):
+    """Ask the drone to land at a specific location.
+
+    If the latitude and longitude both equal zero, then the drone will land at the current location.
+
+    Args:
+        vehicle: Object of the drone.
+        args: Dictionary of parameters.
+            Lat: Latitude.
+            Lon: Longitude.
+    """
+    # Get latitude and longitude
+    lat = args['Lat']
+    lon = args['Lon']
+
+    # Fly to target location if necessary
+    if not (lat == 0 and lon == 0):
+        go_to(vehicle, {
+            'Lat': lat,
+            'Lon': lon,
+            'Time': 0  # To avoid setting the speed
+        })
+
+    # Land
+    vehicle.message_factory.command_long_send(
+        0, 0,  # target_system, targe_component
+        mavutil.mavlink.MAV_CMD_NAV_LAND,  # command
+        0,  # confirmation
+        0, 0, 0, 0,  # param 1~4: not used
+        0, 0,  # param 5,6: Latitude and longitude
+        0  # param 7: not used
+    )
+
+    current_location = vehicle.location.global_relative_frame
+    target_location = dronekit.LocationGlobalRelative(lat, lon, current_location.alt)
+    # Monitor the altitude of the drone
+    while True:
+        print "Distance to target: ",  _get_distance_metres(vehicle.location.global_relative_frame, target_location)
+        if vehicle.location.global_relative_frame.alt <= 0.3:
+            print "Land safely"
+            break
+        time.sleep(1)
+
 
 def wait(vehichle, args):
     """Do nothing but wait a specific time
