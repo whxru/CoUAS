@@ -6,7 +6,7 @@ Modules.drone
 
 Implement the methods for the communication between monitor and drone mainly through UDP protocol.
 """
-import time
+import math
 import socket, json
 from drone_controller import *
 from threading import Thread,Timer
@@ -16,14 +16,16 @@ MAVC_REQ_CID = 0            # Request the Connection ID
 MAVC_CID = 1                # Response to the ask of Connection ID
 MAVC_REQ_STAT = 2           # Ask for the state of drone(s)
 MAVC_STAT = 3               # Report the state of drone
-MAVC_ACTION = 4             # Action to be performed
-MAVC_ARRIVED = 5            # Tell the monitor that the drone has arrived at the target
+MAVC_SET_GEOFENCE = 4       # Set geofence of the drone
+MAVC_ACTION = 5             # Action to be performed
+MAVC_ARRIVED = 6            # Tell the monitor that the drone has arrived at the target
 
 # Constant value definition of action type in MAVC_ACTION message
 ACTION_ARM_AND_TAKEOFF = 0  # Ask drone to arm and takeoff
 ACTION_GO_TO = 1            # Ask drone to fly to next target specified by latitude and longitude
 ACTION_GO_BY = 2            # Ask drone to fly to next target specified by distance in both North and East directions
 ACTION_WAIT = 3             # Ask drone to do nothing but wait for a specific time
+ACTION_LAND = 4          # Ask drone to land at current or a specific location
 
 
 class Drone:
@@ -161,14 +163,19 @@ class Drone:
 
             data_dict = json.loads(data_json)
             try:
-                if data_dict[0]['Header'] == 'MAVCluster_Monitor' and data_dict[0]['Type'] == MAVC_ACTION:
-                    print(data_json)
-                    for n in range(1, len(data_dict)):
-                        # Pick actions about this drone out
-                        CID = data_dict[n]['CID']
-                        if CID == self.__CID:
-                            del data_dict[n]['CID']
-                            self.__action_queue.append(data_dict[n])
+                if data_dict[0]['Header'] == 'MAVCluster_Monitor':
+                    mavc_type = data_dict[0]['Type']
+                    # Actions
+                    if mavc_type == MAVC_ACTION:
+                        for n in range(1, len(data_dict)):
+                            # Pick actions about this drone out
+                            CID = data_dict[n]['CID']
+                            if CID == self.__CID:
+                                del data_dict[n]['CID']
+                                self.__action_queue.append(data_dict[n])
+                    # Set geofence
+                    elif mavc_type == MAVC_SET_GEOFENCE:
+                        self.__set_geofence(data_dict[1])
             except KeyError:  # This message is not a MAVC message
                 continue
 
@@ -182,7 +189,8 @@ class Drone:
                 ACTION_ARM_AND_TAKEOFF: arm_and_takeoff,
                 ACTION_GO_TO: go_to,
                 ACTION_GO_BY: go_by,
-                ACTION_WAIT: wait
+                ACTION_WAIT: wait,
+                ACTION_LAND: land_at
             }
 
             if len(self.__action_queue) > 0:
@@ -209,7 +217,41 @@ class Drone:
                         }
                     ])
 
+    def __set_geofence(self, args):
+        """Set Geofence of the drone
 
+        Args:
+            args: Dictionary of parameters
+                radius: Radius of circle(meters).
+                lat: Latitude of center.
+                lon: Longitude of center.
+        """
+
+        # Get parameters
+        radius = args['radius']
+        lat = args['lat']
+        lon = args['lon']
+
+        # Monitor the location of drone in case of escaping
+        def monitor_escaping():
+            while not self.__task_done:
+                # Calculate the distance
+                current_location = self.__vehicle.location.global_relative_frame
+                d_lat = current_location.lat - lat
+                d_lon = current_location.lon - lon
+                distance = math.sqrt((d_lat * d_lat) + (d_lon * d_lon)) * 1.113195e5
+                # Almost exceed the border, return to launch
+                if distance + 0.1 > radius:
+                    self.__vehicle.message_factory.command_long_send(
+                        0, 0,  # target_system, targe_component
+                        20,  # MAV_CMD_NAV_RETURN_TO_LAUNCH
+                        0,  # confirmation
+                        0, 0, 0, 0, 0, 0, 0,  # param 1~7: not used
+                    )
+
+        # Monitor in a new thread
+        work = Thread(target=monitor_escaping, name='Monitor_escaping')
+        work.start()
 
     def close_connection(self):
         """Close the connection that maintained by the instance
