@@ -228,9 +228,9 @@ class Drone:
         """
 
         # Get parameters
-        radius = args['radius']
-        lat = args['lat']
-        lon = args['lon']
+        radius = args['Radius']
+        lat = args['Lat']
+        lon = args['Lon']
 
         # Monitor the location of drone in case of escaping
         def monitor_escaping():
