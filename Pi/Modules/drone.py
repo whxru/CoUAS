@@ -240,8 +240,11 @@ class Drone:
                 d_lat = current_location.lat - lat
                 d_lon = current_location.lon - lon
                 distance = math.sqrt((d_lat * d_lat) + (d_lon * d_lon)) * 1.113195e5
-                # Almost exceed the border, return to launch
+                # Almost exceed the borderand
                 if distance + 0.1 > radius:
+                    # empty the action queue
+                    self.__action_queue = []
+                    # return to launch
                     self.__vehicle.message_factory.command_long_send(
                         0, 0,  # target_system, targe_component
                         20,  # MAV_CMD_NAV_RETURN_TO_LAUNCH
