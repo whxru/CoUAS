@@ -14,7 +14,7 @@ function createWindow() {
 
     // 加载应用主页面
     win.loadURL(url.format({
-        pathname: path.join(__dirname, '/monitor-app/monitor.html'),
+        pathname: path.join(__dirname, '/monitor-app/main/monitor.html'),
         protocol: 'file:',
         slashes: true
     }));

@@ -4,7 +4,7 @@
  */
 
 const dgram = require('dgram');
-const Map = require('../monitor-app/monitor.js');
+const Map = require('../monitor-app/main/monitor.js');
 const os = require('os');
 
 // Constant value definitions of communication type
