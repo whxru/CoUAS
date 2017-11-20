@@ -11,9 +11,15 @@ const MAVC_REQ_CID = 0;            // Request the Connection ID
 const MAVC_CID = 1;                // Response to the ask of Connection ID
 const MAVC_REQ_STAT = 2;           // Ask for the state of drone(s)
 const MAVC_STAT = 3;               // Report the state of drone
-const MAVC_ACTION = 4;             // Action to be performed
-const MAVC_ARRIVED = 5;            // Tell the monitor that the drone has arrived at the target
-
+const MAVC_SET_GEOFENCE = 4;       // Set the geofence of drone
+const MAVC_ACTION = 5;             // Action to be performed
+const MAVC_ARRIVED = 6;            // Tell the monitor that the drone has arrived at the target
+// Constant value definitions of action type
+const ACTION_ARM_AND_TAKEOFF = 0;  // Ask drone to arm and takeoff
+const ACTION_GO_TO = 1;            // Ask drone to fly to target specified by latitude and longitude
+const ACTION_GO_BY = 2;            // Ask drone to fly to target specified by the distance in both North and East directions
+const ACTION_WAIT = 3;             // Ask drone to do nothing but wait a specific time
+const ACTION_LAND = 4;             // Ask drone to land at current or a specific position
 
 // For the use of private attributes
 const _port = Symbol('port');
@@ -22,7 +28,8 @@ const _publicIp = Symbol('publicIp');
 const _broadcastAddr = Symbol('broadcastAddr');
 // For the use of private methods
 const _sendMsgToPi = Symbol('sendMsgToPi');
-const _assignTask = Symbol('assignTask');
+const _broadcastMsg = Symbol('broadcastMsg');
+const _sendSubtasks = Symbol('sendSubtasks');
 
 /**
  * Management of mulitple drone connections.
@@ -60,6 +67,7 @@ class DroneCluster {
         var drone = new Drone(CID, this[_publicIp]);
         this[_drones].push(drone);
     }
+
     /**
      * Execute actions in a task
      * @param {String} task_json - JSON string contains all of the actions 
@@ -69,19 +77,70 @@ class DroneCluster {
         if(!DroneCluster.isTaskString(task_json)) {
             return;
         }
-        // The json string describes a MAVC task
+        // Get actions in the task
         var actions = JSON.parse(task_json);
-        var task_obj = [
+        
+        // Decompose current task into several subtasks
+        var subtasks = [];
+        var indexes = []; // Which subtask the drone currently in 
+        this[_drones].forEach(()=>{indexes.push(0)});
+        // There is at least one subtask
+        subtasks.push([
             {
                 "Header": "MAVCluster_Monitor",
                 "Type": MAVC_ACTION
             }
+        ]);
+        while(actions.length > 0) {
+            // Push action into current subtask
+            var action = actions[0];
+            var index = indexes[action.CID - 1];
+            subtasks[index].push(action);
+            // Shift action from the origin task away
+            actions.shift();
+            // Update index if needed
+            if(action['Sync'] === true) {
+                index = ++indexes[action.CID - 1];
+                // Create next subtask if needed
+                if(index >= subtasks.length) {
+                    subtasks.push([
+                        {
+                            "Header": "MAVCluster_Monitor",
+                            "Type": MAVC_ACTION
+                        }
+                    ]);
+                } 
+            }
+        }
+        // An empty subtask may be created
+        if(subtasks[subtasks.length - 1].length === 1) {
+            subtasks.pop();
+        }
+
+        // Send subtasks
+        this[_sendSubtasks](subtasks);
+    }
+
+    /**
+     * Set the geofence of cluster
+     * @param {Number} rad - Radius of the circle 
+     * @param {Number} lat - Latitude of the center
+     * @param {Number} lon - Longitude of the center
+     * @memberof DroneCluster
+     */
+    setGeofence(rad, lat, lon) {
+        var msg = [
+            {
+                "Header": "MAVCluster_Monitor",
+                "Type": MAVC_SET_GEOFENCE
+            },
+            {
+                "Radius": rad,
+                "Lat": lat,
+                "Lon": lon
+            }
         ];
-        console.log(actions);
-        actions.forEach((action) => {
-            task_obj.push(action);
-        });
-        this[_assignTask](task_obj);
+        this[_broadcastMsg](msg);
     }
 
     /**
@@ -97,22 +156,53 @@ class DroneCluster {
             s.close();
         });
     }
+    
     /**
-     * Send task messages to every one of the Pi
-     * @param {Object} task - MAVC message 
+     * Broadcast message among the LAN
+     * @param {Object} msg - MAVC message
      * @memberof DroneCluster
      */
-    [_assignTask](task) {
+    [_broadcastMsg](msg) {
         const s = dgram.createSocket('udp4');
         s.bind(() => {
             s.setBroadcast(true);
-            var msg = JSON.stringify(task);
-            s.send(msg, 0, msg.length, 4396, this[_broadcastAddr], (error) => {
-                s.close()
+        });
+
+        msg = JSON.stringify(msg);
+        s.send(msg, 0, msg.length, 4396, this[_broadcastAddr], (error) => {
+            s.close()
+        });
+    }
+    
+    /**
+     * Send subtasks one by one
+     * @param {Object} task - MAVC_ACTION message 
+     * @memberof DroneCluster
+     */
+    [_sendSubtasks](subtasks) {
+        // Send first subtask
+        this[_broadcastMsg](subtasks[0]);
+
+        // Wait for all actions having been performed
+        var index = 0;
+        var counter = 0;
+        var droneNum = this[_drones].length;
+        var cls_subtasks = subtasks;
+        this[_drones].forEach((drone) => {
+            var notifier = drone.getEventNotifier();
+            notifier.on('arrive', (notifier) => {
+                if(++counter === droneNum) {
+                    // Empty the counter
+                    counter = 0;
+                    // Execute next subtask
+                    if(++index < cls_subtasks.length) {
+                        this[_broadcastMsg](cls_subtasks[index]);
+                    }
+                }
             });
         });
     }
-
+    
     /**
      * Caculate the address of broadcast
      * @static
