@@ -6,21 +6,29 @@
 const dgram = require('dgram');
 const Map = require('../monitor-app/main/monitor.js');
 const os = require('os');
+const events = require('events');
 
 // Constant value definitions of communication type
 const MAVC_REQ_CID = 0;            // Request the Connection ID
 const MAVC_CID = 1;                // Response to the ask of Connection ID
 const MAVC_REQ_STAT = 2;           // Ask for the state of drone(s)
 const MAVC_STAT = 3;               // Report the state of drone
-const MAVC_ARM_AND_TAKEOFF = 4;    // Ask drone to arm and takeoff
-const MAVC_GO_TO = 5;              // Ask drone to fly to target specified by latitude and longitude
-const MAVC_GO_BY = 6;              // Ask drone to fly to target specified by the distance in both North and East directions
-const MAVC_ARRIVED = 7;            // Tell the monitor that the drone has arrived at the target
+const MAVC_SET_GEOFENCE = 4;       // Set the geofence of drone
+const MAVC_ACTION = 5;             // Action to be performed
+const MAVC_ARRIVED = 6;            // Tell the monitor that the drone has arrived at the target
+// Constant value definitions of action type
+const ACTION_ARM_AND_TAKEOFF = 0;  // Ask drone to arm and takeoff
+const ACTION_GO_TO = 1;            // Ask drone to fly to target specified by latitude and longitude
+const ACTION_GO_BY = 2;            // Ask drone to fly to target specified by the distance in both North and East directions
+const ACTION_WAIT = 3;             // Ask drone to do nothing but wait a specific time
+const ACTION_LAND = 4;             // Ask drone to land at current or a specific position
 
 // For the use of private attributes
+const _drone = Symbol('drone');
 const _taskDone = Symbol('taskDone');
 const _host = Symbol('host');
 const _state = Symbol('state');
+const _subtask = Symbol('subtask');
 const _home = Symbol('home');
 const _marker = Symbol('marker');
 const _publicIp = Symbol('publicIp');
@@ -42,6 +50,7 @@ class Drone {
      * @param {String} ipAddr - IPv4 address
      */
     constructor(CID, ipAddr) {
+        this[_drone] = new events.EventEmitter();  // Drone's event notifier
         this[_taskDone] = false;    // Whether the task has been done
         this[_host] = '';           // Host name of the Pi connected
         this[_state] = {            // Information of state the drone connected
@@ -52,6 +61,7 @@ class Drone {
             'Lon': 361,
             'Alt': 0
         };
+        this[_subtask] = 0     // Which subtask the drone currently in
         this[_home] = {             // Location of home
             'Lat': 361,
             'Lon': 361
@@ -160,6 +170,15 @@ class Drone {
     }
 
     /**
+     * Get event notifier of the drone
+     * @returns Event notifier of the drone
+     * @memberof Drone
+     */
+    getEventNotifier() {
+        return this[_drone];
+    }
+
+    /**
      * Keep listening the message sent from the Pi
      * By default we bind port 4396+CID on Monitor to handle the message from Pi.
      * @memberof Drone
@@ -194,11 +213,24 @@ class Drone {
             // Whether the message is a MAVC message from Pi
             try {
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
+                    var Type = msg_obj[0]['Type'];
                     // Message contains the state of drone
-                    if (msg_obj[0]['Type'] === MAVC_STAT) {
+                    if (Type === MAVC_STAT) {
                         // Update state
                         this[_updateState](msg_obj[1]);
                         return;
+                    }
+
+                    // Action done
+                    if (Type === MAVC_ARRIVED) {
+                        if(msg_obj[1]['CID'] === this.getCID() && msg_obj[1]['Step'] === this[_subtask]) {
+                            // Go to next subtask
+                            this[_subtask]++;
+                            // Notify that the drone has arrived
+                            this[_drone].emit('arrive', this[_drone]);
+                        } else {
+                            // to-do: handler for wrone receiver or wrong step
+                        }
                     }
                 }
             } catch (error) {
