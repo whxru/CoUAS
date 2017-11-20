@@ -61,7 +61,7 @@ The format of MAVC message should follow the example below:
         "Alt" : 4           # Altitude(meters)
     }
     
-    # Type = MAVC_LAND
+    # Type = MAVC_SET_GEOFENCE
     {
     	"Radius": 50,       # Radius of the border
 	"Lat": 38.131465,   # Latitude of the center
