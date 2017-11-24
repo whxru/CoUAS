@@ -14,7 +14,7 @@ There are some values predefined as follows to identify the type of MAVC message
 | MAVC_SET_GEOFENCE | 4     | Set the geofence of drone                |
 | MAVC_ACTION       | 5     | Actions to be performed                  |
 | MAVC_ACTION_SEC   | 6     | Part of actions in a MAVC_ACTION message |
-| MAVC_ARRIVED      | 6     | Tell the monitor that the drone has arrived at the target |
+| MAVC_ARRIVED      | 7     | Tell the monitor that the drone has arrived at the target |
 
 ### Action Type
 
