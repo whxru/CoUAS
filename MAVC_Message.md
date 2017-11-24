@@ -12,7 +12,8 @@ There are some values predefined as follows to identify the type of MAVC message
 | MAVC_REQ_STAT     | 2     | Ask for the state of drone(s)            |
 | MAVC_STAT         | 3     | Report the state of drone                |
 | MAVC_SET_GEOFENCE | 4     | Set the geofence of drone                |
-| MAVC_ACTION       | 5     | Action to be performed                   |
+| MAVC_ACTION       | 5     | Actions to be performed                  |
+| MAVC_ACTION_SEC   | 6     | Part of actions in a MAVC_ACTION message |
 | MAVC_ARRIVED      | 6     | Tell the monitor that the drone has arrived at the target |
 
 ### Action Type
@@ -37,8 +38,10 @@ The format of MAVC message should follow the example below:
 [
     {
     	"Header": "MAVCluster_Drone",   # Or "MAVCluster_Monitor"
-    	"Type": MAVC_REQ_CID            # Values pre-defined
-	},
+    	"Type": MAVC_REQ_CID,           # Values pre-defined
+	"Subtask": 5,                   # (Only MAVC_ACTION_SEC message has)How many part did the subtask be decomposed into
+	"Index": 1                      # (Only MAVC_ACTION_SEC message has)Identify the actions' order in the subtask
+    },
 	
     # Type = MAVC_REQ_CID
     {
@@ -68,7 +71,7 @@ The format of MAVC message should follow the example below:
 	"Lon": -114.23546   # Longitude of the center
     }
     
-    # Type = MAVC_ACTION
+    # Type = MAVC_ACTION / MAVC_ACTION_SEC
     {
     	"Action_type": ACTION_ARM_AND_TAKEOFF,
     	"CID": 3,
@@ -77,7 +80,7 @@ The format of MAVC message should follow the example below:
     	"Sync": False,	    # Whether synchronize all of the drones after reaching the altitude
     }
     
-    # Type = MAVC_ACTION
+    # Type = MAVC_ACTION / MAVC_ACTION_SEC
     {
         "Action_type": ACTION_GO_TO,
         "CID": 3,
@@ -89,7 +92,7 @@ The format of MAVC message should follow the example below:
         "Sync": True,       # Whether synchronize all of the drones after reaching the target
     },...  # The ellipsis indicates that there can be more than one of this action in a single MAVC message
 
-    # Type = MAVC_ACTION
+    # Type = MAVC_ACTION / MAVC_ACTION_SEC
     {
         "Action_type": ACTION_GO_BY,
         "CID": 3,
@@ -101,7 +104,7 @@ The format of MAVC message should follow the example below:
         "Sync": False,      
     },...
     
-    # Type = MAVC_ACTION
+    # Type = MAVC_ACTION / MAVC_ACTION_SEC
     {
     	"Action_type": ACTION_WAIT,
 	"CID": 3,
@@ -109,7 +112,7 @@ The format of MAVC message should follow the example below:
 	"Step": 5
     },...
     
-    # Type = MAVC_ACTION
+    # Type = MAVC_ACTION / MAVC_ACTION_SEC
     {
     	"Action_type": ACTION_LAND,
 	"CID": 3,
