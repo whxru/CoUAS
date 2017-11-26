@@ -9,7 +9,7 @@ Implement the methods for the communication between monitor and drone mainly thr
 import math
 import socket, json
 from drone_controller import *
-from threading import Thread,Timer
+from threading import Thread, Timer
 
 # Constant value definition of communication type
 MAVC_REQ_CID = 0            # Request the Connection ID
@@ -18,7 +18,8 @@ MAVC_REQ_STAT = 2           # Ask for the state of drone(s)
 MAVC_STAT = 3               # Report the state of drone
 MAVC_SET_GEOFENCE = 4       # Set geofence of the drone
 MAVC_ACTION = 5             # Action to be performed
-MAVC_ARRIVED = 6            # Tell the monitor that the drone has arrived at the target
+MAVC_ACTION_SEC = 6         # Part of actions in a MAVC_ACTION message
+MAVC_ARRIVED = 7            # Tell the monitor that the drone has arrived at the target
 
 # Constant value definition of action type in MAVC_ACTION message
 ACTION_ARM_AND_TAKEOFF = 0  # Ask drone to arm and takeoff
@@ -155,6 +156,7 @@ class Drone:
         s.bind(('', 4396))
 
         # Listen to the monitor
+        subtask_sections = []
         while not self.__task_done:
             data_json, addr = s.recvfrom(1024)
             print(data_json)
@@ -165,21 +167,67 @@ class Drone:
             try:
                 if data_dict[0]['Header'] == 'MAVCluster_Monitor':
                     mavc_type = data_dict[0]['Type']
-                    # Actions
-                    if mavc_type == MAVC_ACTION:
-                        for n in range(1, len(data_dict)):
-                            # Pick actions about this drone out
-                            CID = data_dict[n]['CID']
-                            if CID == self.__CID:
-                                del data_dict[n]['CID']
-                                self.__action_queue.append(data_dict[n])
-                    # Set geofence
-                    elif mavc_type == MAVC_SET_GEOFENCE:
-                        self.__set_geofence(data_dict[1])
+                    handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict, subtask_sections))
+                    handler.start()
+
             except KeyError:  # This message is not a MAVC message
                 continue
 
         s.close()
+
+    def __msg_handler(self, mavc_type, *opargs):
+        """Handle the message received from monitor
+
+        Args:
+            mavc_type: Type of MAVC message.
+            opargs: Optional arguments.
+                [1] data_dict: Dictionary of MAVC message received.
+                [2] subtask_actions: Temporary list for subtask reconstruction.
+        """
+
+        def mavc_action(args):
+            """Perform action."""
+            data_dict = args[0]
+            for n in range(1, len(data_dict)):
+                # Pick actions about this drone out
+                CID = data_dict[n]['CID']
+                if CID == self.__CID:
+                    del data_dict[n]['CID']
+                    self.__action_queue.append(data_dict[n])
+
+        def mavc_action_sec(args):
+            """Reconstruct the subtask which was decomposed due to the limit of length."""
+            data_dict = args[0]
+            subtask_sections = args[1]
+            total_sec = data_dict[0]['Subtask']  # Number of total sections
+            subtask_sections.append(data_dict)
+
+            # All sections of subtask have been received
+            if total_sec == len(subtask_sections):
+                # Sort sections by index
+                subtask_sections.sort(key=lambda sec: sec[0]['Index'])
+                # Push actions into the queue in order
+                for section in subtask_sections:                # [MAVC_ACTION_SEC, ..] : subtask_sections
+                    del section[0]                              # --[(x)HEADER,[ACTION],[ACTION],...] : MAVC_ACTION_SEC
+                    for action in section:
+                        if action['CID'] == self.__CID:
+                            del action['CID']
+                            self.__action_queue.append(action)      # [[ACTION],[ACTION],[ACTION],...] : subtask
+                # Empty the list
+                del subtask_sections[:]
+
+        def mavc_set_geofence(args):
+            """Set the geofence of drone."""
+            data_dict = args[0]
+            self.__set_geofence(data_dict[1])
+
+        # Handle MAVC message
+        handler = {
+            MAVC_ACTION: mavc_action,
+            MAVC_ACTION_SEC: mavc_action_sec,
+            MAVC_SET_GEOFENCE: mavc_set_geofence
+        }
+        handler[mavc_type](opargs)
 
     def __perform_actions(self):
         """perform actions from the queue. """
