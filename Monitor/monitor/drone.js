@@ -15,7 +15,8 @@ const MAVC_REQ_STAT = 2;           // Ask for the state of drone(s)
 const MAVC_STAT = 3;               // Report the state of drone
 const MAVC_SET_GEOFENCE = 4;       // Set the geofence of drone
 const MAVC_ACTION = 5;             // Action to be performed
-const MAVC_ARRIVED = 6;            // Tell the monitor that the drone has arrived at the target
+const MAVC_ACTION_SEC = 6;         // Part of actions in a MAVC_ACTION message
+const MAVC_ARRIVED = 7;            // Tell the monitor that the drone has arrived at the target
 // Constant value definitions of action type
 const ACTION_ARM_AND_TAKEOFF = 0;  // Ask drone to arm and takeoff
 const ACTION_GO_TO = 1;            // Ask drone to fly to target specified by latitude and longitude
@@ -28,7 +29,6 @@ const _drone = Symbol('drone');
 const _taskDone = Symbol('taskDone');
 const _host = Symbol('host');
 const _state = Symbol('state');
-const _subtask = Symbol('subtask');
 const _home = Symbol('home');
 const _marker = Symbol('marker');
 const _publicIp = Symbol('publicIp');
@@ -61,7 +61,6 @@ class Drone {
             'Lon': 361,
             'Alt': 0
         };
-        this[_subtask] = 0     // Which subtask the drone currently in
         this[_home] = {             // Location of home
             'Lat': 361,
             'Lon': 361
@@ -214,6 +213,7 @@ class Drone {
             try {
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
                     var Type = msg_obj[0]['Type'];
+
                     // Message contains the state of drone
                     if (Type === MAVC_STAT) {
                         // Update state
@@ -223,13 +223,12 @@ class Drone {
 
                     // Action done
                     if (Type === MAVC_ARRIVED) {
-                        if(msg_obj[1]['CID'] === this.getCID() && msg_obj[1]['Step'] === this[_subtask]) {
-                            // Go to next subtask
-                            this[_subtask]++;
+                        console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
+                        if(msg_obj[1]['CID'] === this.getCID()) {
                             // Notify that the drone has arrived
                             this[_drone].emit('arrive', this[_drone]);
                         } else {
-                            // to-do: handler for wrone receiver or wrong step
+                            // to-do: handler for wrone receiver
                         }
                     }
                 }
