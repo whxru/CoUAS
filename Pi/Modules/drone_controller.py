@@ -101,6 +101,7 @@ def go_by(vehicle, args):
     dEast = args['E']
     t = args['Time']
 
+    print 'Go by (N: %d, E:%d)' % (dNorth, dEast)
     current_location = vehicle.location.global_relative_frame
     target_location = _get_location_metres(current_location, dNorth, dEast)
     target_distance = _get_distance_metres(current_location, target_location)
@@ -113,7 +114,7 @@ def go_by(vehicle, args):
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
-        print "Distance to target: ", remaining_distance
+        # print "Distance to target: ", remaining_distance
         if remaining_distance <= 0.5:  # Just below target, in case of undershoot.
             print "Reached target"
             break
@@ -195,9 +196,8 @@ def land_at(vehicle, args):
     target_location = dronekit.LocationGlobalRelative(lat, lon, current_location.alt)
     # Monitor the altitude of the drone
     while True:
-        print "Distance to target: ",  _get_distance_metres(vehicle.location.global_relative_frame, target_location)
         if vehicle.location.global_relative_frame.alt <= 0.3:
-            print "Land safely"
+            print "Landed safely"
             break
         time.sleep(1)
 
