@@ -1,0 +1,37 @@
+[
+    {
+        "Action_type": 0,
+        "CID": 1,
+        "Alt": 10,
+        "Step": 0,
+        "Sync": false
+    },
+    {
+        "Action_type": 2,
+        "CID": 1,
+        "N": 50,
+        "E": 10,
+        "Alt": 10,
+        "Time": 5,
+        "Step": 1,
+        "Sync": false
+    },
+    {
+        "Action_type": 2,
+        "CID": 1,
+        "N": 0,
+        "E": 30,
+        "Alt": 10,
+        "Time": 3,
+        "Step": 2,
+        "Sync": false
+    },
+    {
+        "Action_type": 4,
+        "CID": 1,
+        "Lat": 0,
+        "Lon": 0,
+        "Step": 3,
+        "Sync": false
+    }
+]
