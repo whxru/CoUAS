@@ -60,18 +60,18 @@ function initMap() {
  */
 module.exports = {
     /**
-     * Preload map and the icon of drone according to the location of home
+     * Preload map and the icon of drone according to the location of home.
      * @param {number} CID - Connection ID
      * @param {object} home - Latitude and longitude of home
-     * @returns {Marker} The object of marker on map which stands for a drone
+     * @returns {Object} Object that contains marker and trace
      */
     'preloadMap': (CID, home) => {
         var map = global.map;
         var Map = global.Map;
-        // 移动地图
+        // Set the center position of map
         var centerPos = new Map.LngLat(home.Lon, home.Lat);
         map.panTo(centerPos);
-        // 设置Marker
+        // Initialize the marker
         var marker = new Map.Marker({
             map: map,
             position: centerPos,
@@ -80,18 +80,21 @@ module.exports = {
             title: `drone-${CID}`,
             autoRotation: true
         });
-        return marker;
-    },
+        // Initialize the trace
+        var trace = new Map.Polyline({
+            map: map,
+            path: [],
+            strokeColor: "#3366FF", 
+            strokeOpacity: 1,       
+            strokeWeight: 2,        
+            strokeStyle: "solid",   
+            strokeDasharray: [10, 5] 
+        });
 
-    /**
-     * Update the position of marker
-     * @param  {Marker} marker - Object of marker
-     * @param  {object} state_obj - Object of state the drone currently on
-     */
-    'updateState': (marker, state_obj) => {
-        var Map = global.Map;
-        var target =new Map.LngLat(state_obj.Lon, state_obj.Lat);
-        marker.setPosition(target);
+        return {
+            'marker': marker,
+            'trace': trace
+        };
     }
 }
 
@@ -116,6 +119,9 @@ function initMenu(droneCluster){
                 {
                     label: '从文件执行',
                     click: () => {
+                        // Clear the previous trace
+                        droneCluster.clearTrace();
+                        // Pick a task file
                         const {dialog} = require('electron').remote;
                         var filepaths = dialog.showOpenDialog({
                             filters: [{
