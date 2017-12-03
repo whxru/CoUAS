@@ -14,27 +14,40 @@ from Modules import drone
 from Modules.drone_controller import connect_vehicle
 import argparse
 
-# Parse arguments from the cmd line
-parser = argparse.ArgumentParser()
-parser.add_argument('-m', '--master', default='tcp:127.0.0.1:5760', help='String of connection')
-parser.add_argument('--host', default='172.20.10.4', help='IPv4 address where the monitor on')
-parser.add_argument('--port', default=4396, type=int, help='Port which the monitor are listening to')
-args = parser.parse_args()
-connection_string = args.master
-host = args.host
-port = args.port
+if __name__ == '__main__':
+    # Parse arguments from the cmd line
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--master', default='tcp:127.0.0.1:5760', help='String of connection')
+    parser.add_argument('--host', default='172.20.10.4', help='IPv4 address where the monitor on')
+    parser.add_argument('--port', default=4396, type=int, help='Port which the monitor are listening to')
+    parser.add_argument('--sitl', action='store_true', help='To start with a simulator of drone')
+    args = parser.parse_args()
+    connection_string = args.master
+    host = args.host
+    port = args.port
 
-# Connect to the Vehicle
-print("Connecting to vehicle on: %s" % (connection_string,))
-vehicle = connect_vehicle(connection_string)
+    sitl = None
+    # To create a simulator of copter
+    if args.sitl:
+        from dronekit_sitl import SITL
+        copter_args = ['--model', 'quad', '--home=31.8872318,118.8193952,584,353']
+        sitl = SITL()
+        sitl.download('copter', '3.3', verbose=True)
+        sitl.launch(copter_args, await_ready=True, restart=True)
+        connection_string = sitl.connection_string()
 
-# Connect to the Monitor
-mav = drone.Drone(vehicle, host, port)
+    # Connect to the Vehicle
+    print("Connecting to vehicle on: %s" % connection_string)
+    vehicle = connect_vehicle(connection_string)
 
-while True:
-    pass
-# Close vehicle object before exiting script
-vehicle.close()
+    # Connect to the Monitor
+    mav = drone.Drone(vehicle, host, port)
 
-# Shut down simulator
-print("Completed")
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        mav.close_connection()
+        print("Completed")
+        exit(0)
+
