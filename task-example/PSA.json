@@ -1,969 +1,412 @@
 [
-    {
-        "Action_type": 0,
-        "CID": 1,
-        "Alt": 10,
-        "Step": 0,
-        "Sync": false
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -2.8421709430404007e-14,
-        "Step": 1,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 1.88733213687442,
-        "N": 0.10902956078280113,
-        "Step": 2,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 0.0,
-        "Step": 3,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.1368683772161603e-13,
-        "N": -5.6843418860808015e-14,
-        "Step": 4,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": -5.6843418860808015e-14,
-        "Step": 5,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": 5.6843418860808015e-14,
-        "Step": 6,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.65232314723002105,
-        "N": 1.8011780336085508,
-        "Step": 7,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -3.3142329520495082,
-        "N": 9.151175482337635,
-        "Step": 8,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.4842915953371971,
-        "N": 4.0983880893134028,
-        "Step": 9,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.6646677743784863,
-        "N": 4.5964381935522738,
-        "Step": 10,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -3.3978109313576823,
-        "N": 9.3819488667598421,
-        "Step": 11,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": 5.6843418860808015e-14,
-        "Step": 12,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 13,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.5987211554602254e-14,
-        "N": 0.0,
-        "Step": 14,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.7763568394002505e-15,
-        "N": 0.0,
-        "Step": 15,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 1.7763568394002505e-15,
-        "N": 0.0,
-        "Step": 16,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -3.5527136788005009e-15,
-        "Step": 17,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.28866094469297465,
-        "N": -0.10966949587303532,
-        "Step": 18,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -1.7763568394002505e-15,
-        "Step": 19,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.91155403503104537,
-        "N": -7.3731732666633008,
-        "Step": 20,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": -1.7763568394002505e-15,
-        "Step": 21,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.045313178870515003,
-        "N": -6.8236316416765126,
-        "Step": 22,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 0.0,
-        "Step": 23,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -7.1054273576010019e-15,
-        "Step": 24,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 25,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 1.231256030997713,
-        "N": 0.66698498519787108,
-        "Step": 26,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 27,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.19036087045077466,
-        "N": 5.4012827850507961,
-        "Step": 28,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.1368683772161603e-13,
-        "N": -5.6843418860808015e-14,
-        "Step": 29,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -5.6843418860808015e-14,
-        "Step": 30,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -5.2959622069803629,
-        "N": 7.2043419794406418,
-        "Step": 31,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -2.8421709430404007e-14,
-        "N": 0.0,
-        "Step": 32,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 33,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -3.5527136788005009e-15,
-        "N": 2.8421709430404007e-14,
-        "Step": 34,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -7.1054273576010019e-15,
-        "N": 0.0,
-        "Step": 35,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -2.9426560270293436,
-        "N": -5.3935888537195709,
-        "Step": 36,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 1.4210854715202004e-14,
-        "N": -8.8817841970012523e-15,
-        "Step": 37,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.6521327050788841,
-        "N": -9.0509451574502719,
-        "Step": 38,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.37411926747950019,
-        "N": -5.1923986420729733,
-        "Step": 39,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 40,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 0.0,
-        "Step": 41,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 1.7313822854945329,
-        "N": 0.56139060137212482,
-        "Step": 42,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.1368683772161603e-13,
-        "N": -5.6843418860808015e-14,
-        "Step": 43,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -5.6843418860808015e-14,
-        "N": -5.6843418860808015e-14,
-        "Step": 44,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.077316380642628246,
-        "N": 6.4826044053625083,
-        "Step": 45,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 5.6843418860808015e-14,
-        "Step": 46,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.52347609722968969,
-        "N": 8.2478793692698673,
-        "Step": 47,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": -1.1368683772161603e-13,
-        "Step": 48,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": 5.6843418860808015e-14,
-        "Step": 49,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -5.6843418860808015e-14,
-        "Step": 50,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -2.8421709430404007e-14,
-        "Step": 51,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.20635414872857893,
-        "N": -0.098183024298265309,
-        "Step": 52,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 1.4210854715202004e-14,
-        "N": 7.1054273576010019e-15,
-        "Step": 53,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.10269709138819394,
-        "N": -4.9734457446410829,
-        "Step": 54,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.13803856199371012,
-        "N": -6.6849731522490714,
-        "Step": 55,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 7.1054273576010019e-15,
-        "Step": 56,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -2.8421709430404007e-14,
-        "Step": 57,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -2.8421709430404007e-14,
-        "Step": 58,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 0.0,
-        "Step": 59,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 3.366990836086984,
-        "N": 7.5685195507114713,
-        "Step": 60,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 5.6843418860808015e-14,
-        "Step": 61,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -2.8421709430404007e-14,
-        "N": -5.6843418860808015e-14,
-        "Step": 62,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -5.5936291263349318,
-        "N": 4.5884625102250993,
-        "Step": 63,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 4.2632564145606011e-14,
-        "N": 0.0,
-        "Step": 64,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.4210854715202004e-14,
-        "N": -2.8421709430404007e-14,
-        "Step": 65,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -6.8624854482941657,
-        "N": -5.4028381270574073,
-        "Step": 66,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": 1.4210854715202004e-14,
-        "Step": 67,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 68,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 2.8421709430404007e-14,
-        "Step": 69,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 3.4748843558594444,
-        "N": -1.2574190566598134,
-        "Step": 70,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8063562306121526,
-        "N": -1.0155059687662629,
-        "Step": 71,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 5.6843418860808015e-14,
-        "Step": 72,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -5.6843418860808015e-14,
-        "N": 0.0,
-        "Step": 73,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 5.6843418860808015e-14,
-        "Step": 74,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -3.5373881334098769,
-        "N": 8.7591804626811154,
-        "Step": 75,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -5.6843418860808015e-14,
-        "Step": 76,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -0.70148415320093704,
-        "N": 1.1639029999090553,
-        "Step": 77,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -5.6843418860808015e-14,
-        "Step": 78,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.3909402665815094,
-        "N": 0.50205682880704217,
-        "Step": 79,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 80,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -1.4210854715202004e-14,
-        "N": -2.8421709430404007e-14,
-        "Step": 81,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": 0.0,
-        "Step": 82,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 83,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -2.8421709430404007e-14,
-        "Step": 84,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": -2.8421709430404007e-14,
-        "Step": 85,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 0.0,
-        "Step": 86,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 0.0,
-        "Step": 87,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -2.8421709430404007e-14,
-        "N": -1.1368683772161603e-13,
-        "Step": 88,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": 5.6843418860808015e-14,
-        "Step": 89,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": -5.3535883297097655,
-        "N": 1.220324397371968,
-        "Step": 90,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -2.8421709430404007e-14,
-        "Step": 91,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 2.8421709430404007e-14,
-        "N": 2.8421709430404007e-14,
-        "Step": 92,
-        "Sync": true,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0080548832891622624,
-        "N": -4.4067534212949795,
-        "Step": 93,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -2.8421709430404007e-14,
-        "Step": 94,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 5.6843418860808015e-14,
-        "N": 0.0,
-        "Step": 95,
-        "Sync": false,
-        "Time": 5
-    },
-    {
-        "Action_type": 2,
-        "Alt": 10,
-        "CID": 1,
-        "E": 0.0,
-        "N": -5.6843418860808015e-14,
-        "Step": 96,
-        "Sync": true,
-        "Time": 5
-    }
+{
+	"Action_type" : 0,
+	"Alt" : 10,
+	"CID" : 1,
+	"Step" : 0,
+	"Sync" : true
+},
+{
+	"Action_type" : 0,
+	"Alt" : 10,
+	"CID" : 2,
+	"Step" : 0,
+	"Sync" : true
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 0.0,
+	"Step" : 1,
+	"Sync" : false,
+	"Time" : 3
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : -10.0,
+	"Step" : 1,
+	"Sync" : false,
+	"Time" : 1
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 18.727299241590345,
+	"N" : 0.0,
+	"Step" : 2,
+	"Sync" : false,
+	"Time" : 2
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 18.727299241590345,
+	"N" : 0.0,
+	"Step" : 2,
+	"Sync" : false,
+	"Time" : 2
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 4.7113659686090159,
+	"N" : 0.0,
+	"Step" : 3,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 4.7113659686090159,
+	"N" : 0.0,
+	"Step" : 3,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 12.022829063638738,
+	"N" : 9.5321635196042962,
+	"Step" : 4,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 12.022829063638738,
+	"N" : 9.5321635196042962,
+	"Step" : 4,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 7.1273001764609774,
+	"N" : 5.6507990237340096,
+	"Step" : 5,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 7.1273001764609774,
+	"N" : 5.6507990237340096,
+	"Step" : 5,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 11.811334724748463,
+	"Step" : 6,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 11.811334724748463,
+	"Step" : 6,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 16.49686829076694,
+	"Step" : 7,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 16.49686829076694,
+	"Step" : 7,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 1.5845344198383486,
+	"Step" : 8,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 1.5845344198383486,
+	"Step" : 8,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 6.6269158634227949,
+	"Step" : 9,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 6.6269158634227949,
+	"Step" : 9,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 10.577055591848762,
+	"Step" : 10,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 10.577055591848762,
+	"Step" : 10,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 1.8441040364375851,
+	"Step" : 11,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 1.8441040364375851,
+	"Step" : 11,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 0.70319460423240798,
+	"Step" : 12,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 0.70319460423240798,
+	"Step" : 12,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 7.1484641726846974,
+	"Step" : 13,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 7.1484641726846974,
+	"Step" : 13,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.0,
+	"N" : 0.049887495013052785,
+	"Step" : 14,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.0,
+	"N" : 0.049887495013052785,
+	"Step" : 14,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 10.150269319831352,
+	"N" : 0.0,
+	"Step" : 15,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 10.150269319831352,
+	"N" : 0.0,
+	"Step" : 15,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 8.9171566618992983,
+	"N" : 0.0,
+	"Step" : 16,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 8.9171566618992983,
+	"N" : 0.0,
+	"Step" : 16,
+	"Sync" : true,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 0.92131657284636503,
+	"N" : 0.0,
+	"Step" : 17,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 0.92131657284636503,
+	"N" : 0.0,
+	"Step" : 17,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 10.26882176256504,
+	"N" : 0.0,
+	"Step" : 18,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 10.26882176256504,
+	"N" : 0.0,
+	"Step" : 18,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 1,
+	"E" : 7.4299092159841678,
+	"N" : 6.3058474929832187,
+	"Step" : 19,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+	"Action_type" : 2,
+	"Alt" : 10,
+	"CID" : 2,
+	"E" : 7.4299092159841678,
+	"N" : 6.3058474929832187,
+	"Step" : 19,
+	"Sync" : false,
+	"Time" : 0
+},
+{
+     "Action_type": 4,
+     "CID": 1,
+     "Lat": 0,
+     "Lon": 0,
+     "Step": 20,
+     "Sync": false
+    },
+     {
+     "Action_type": 4,
+     "CID": 2,
+     "Lat": 0,
+     "Lon": 0,
+     "Step": 20,
+     "Sync": false
+      }		      
 ]
