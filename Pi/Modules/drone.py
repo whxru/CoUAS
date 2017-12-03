@@ -310,3 +310,12 @@ class Drone:
         Returns:
             A boolean variable that indicate whether the connection closed successfully.
         """
+        self.__task_done = True
+
+        if self.__vehicle.armed:
+            land_at(self.__vehicle, {
+                'Lat': 0,
+                'Lon': 0
+            })
+
+        self.__vehicle.close()
