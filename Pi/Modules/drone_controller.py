@@ -213,6 +213,7 @@ def wait(vehichle, args):
     t = args['Time']
     time.sleep(t)
 
+
 def _get_location_metres(original_location, dNorth, dEast):
     """
     Returns a LocationGlobal object containing the latitude/longitude `dNorth` and `dEast` metres from the
