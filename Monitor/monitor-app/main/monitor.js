@@ -75,16 +75,21 @@ module.exports = {
         var marker = new Map.Marker({
             map: map,
             position: centerPos,
+            offset: new Map.Pixel(-8, -8),
             zoom: 18,
-            icon: `img/drone-${CID}.png`,
+            icon: new Map.Icon({
+                size: new Map.Size(16, 16),
+                image: `img/drone-${CID}.png` 
+            }),
             title: `drone-${CID}`,
             autoRotation: true
         });
         // Initialize the trace
+        var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#6d6d6d"]
         var trace = new Map.Polyline({
             map: map,
             path: [],
-            strokeColor: "#3366FF", 
+            strokeColor: trace_color[CID - 1], 
             strokeOpacity: 1,       
             strokeWeight: 2,        
             strokeStyle: "solid",   
@@ -193,6 +198,18 @@ function initMenu(droneCluster){
                                 geofence_circle.setMap(global.map);
                             };
                         }
+                    }
+                },
+                {
+                    label: '连接帮助',
+                    click: () => {
+                        var { publicIp, broadcastAddr } = droneCluster.getConnectionInfo();
+                        const {app, dialog} = require('electron').remote;
+                        dialog.showMessageBox({
+                            title: 'IPv4 address',
+                            message: `public IP: ${publicIp}\n`+
+                            `Address of broadcast: ${broadcastAddr}`
+                        });
                     }
                 }
             ]
