@@ -155,6 +155,18 @@ class DroneCluster {
     }
 
     /**
+     * Get public ip and address for broadcast.
+     * @returns Object that contains public ip and address for broadcast
+     * @memberof DroneCluster
+     */
+    getConnectionInfo() {
+        return {
+            'publicIp': this[_publicIp],
+            'broadcastAddr': this[_broadcastAddr]
+        }
+    }
+
+    /**
      * Send message to the Pi specified by the host
      * @param {string} host - Address of Pi
      * @param {object} msg - MAVC message
