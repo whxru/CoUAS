@@ -39,4 +39,4 @@ Notice that **there are no module to verify the correctness of a task file** for
 
 ## Example
 
-You can find examples in folder [task_example](../task_example/) which is easy to understand.
+You can find examples in folder [task-example](../task-example/) which is easy to understand.
