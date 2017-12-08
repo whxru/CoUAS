@@ -1,4 +1,4 @@
-# Task execution
+# Task file
 
 After connecting to at least one drone, the user can execute a task by open a task file. It is of vital importance for both users and developers to know how to write a task file and how it works on every drone in the cluster.
 
