@@ -1,412 +1,1177 @@
 [
-{
-	"Action_type" : 0,
-	"Alt" : 10,
-	"CID" : 1,
-	"Step" : 0,
-	"Sync" : true
-},
-{
-	"Action_type" : 0,
-	"Alt" : 10,
-	"CID" : 2,
-	"Step" : 0,
-	"Sync" : true
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 0.0,
-	"Step" : 1,
-	"Sync" : false,
-	"Time" : 3
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : -10.0,
-	"Step" : 1,
-	"Sync" : false,
-	"Time" : 1
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 18.727299241590345,
-	"N" : 0.0,
-	"Step" : 2,
-	"Sync" : false,
-	"Time" : 2
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 18.727299241590345,
-	"N" : 0.0,
-	"Step" : 2,
-	"Sync" : false,
-	"Time" : 2
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 4.7113659686090159,
-	"N" : 0.0,
-	"Step" : 3,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 4.7113659686090159,
-	"N" : 0.0,
-	"Step" : 3,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 12.022829063638738,
-	"N" : 9.5321635196042962,
-	"Step" : 4,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 12.022829063638738,
-	"N" : 9.5321635196042962,
-	"Step" : 4,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 7.1273001764609774,
-	"N" : 5.6507990237340096,
-	"Step" : 5,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 7.1273001764609774,
-	"N" : 5.6507990237340096,
-	"Step" : 5,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 11.811334724748463,
-	"Step" : 6,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 11.811334724748463,
-	"Step" : 6,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 16.49686829076694,
-	"Step" : 7,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 16.49686829076694,
-	"Step" : 7,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 1.5845344198383486,
-	"Step" : 8,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 1.5845344198383486,
-	"Step" : 8,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 6.6269158634227949,
-	"Step" : 9,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 6.6269158634227949,
-	"Step" : 9,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 10.577055591848762,
-	"Step" : 10,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 10.577055591848762,
-	"Step" : 10,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 1.8441040364375851,
-	"Step" : 11,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 1.8441040364375851,
-	"Step" : 11,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 0.70319460423240798,
-	"Step" : 12,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 0.70319460423240798,
-	"Step" : 12,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 7.1484641726846974,
-	"Step" : 13,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 7.1484641726846974,
-	"Step" : 13,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.0,
-	"N" : 0.049887495013052785,
-	"Step" : 14,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.0,
-	"N" : 0.049887495013052785,
-	"Step" : 14,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 10.150269319831352,
-	"N" : 0.0,
-	"Step" : 15,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 10.150269319831352,
-	"N" : 0.0,
-	"Step" : 15,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 8.9171566618992983,
-	"N" : 0.0,
-	"Step" : 16,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 8.9171566618992983,
-	"N" : 0.0,
-	"Step" : 16,
-	"Sync" : true,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 0.92131657284636503,
-	"N" : 0.0,
-	"Step" : 17,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 0.92131657284636503,
-	"N" : 0.0,
-	"Step" : 17,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 10.26882176256504,
-	"N" : 0.0,
-	"Step" : 18,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 10.26882176256504,
-	"N" : 0.0,
-	"Step" : 18,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 1,
-	"E" : 7.4299092159841678,
-	"N" : 6.3058474929832187,
-	"Step" : 19,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-	"Action_type" : 2,
-	"Alt" : 10,
-	"CID" : 2,
-	"E" : 7.4299092159841678,
-	"N" : 6.3058474929832187,
-	"Step" : 19,
-	"Sync" : false,
-	"Time" : 0
-},
-{
-     "Action_type": 4,
-     "CID": 1,
-     "Lat": 0,
-     "Lon": 0,
-     "Step": 20,
-     "Sync": false
-    },
-     {
-     "Action_type": 4,
-     "CID": 2,
-     "Lat": 0,
-     "Lon": 0,
-     "Step": 20,
-     "Sync": false
-      }		      
+  {
+    "Action_type": 0,
+    "Alt": 10,
+    "CID": 1,
+    "Step": 0,
+    "Sync": true
+  },
+  {
+    "Action_type": 0,
+    "Alt": 10,
+    "CID": 2,
+    "Step": 0,
+    "Sync": true
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 0.0,
+    "Step": 1,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": -10.0,
+    "Step": 1,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 18.727299241590345,
+    "N": 0.0,
+    "Step": 2,
+    "Sync": false,
+    "Time": 1.9
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 18.727299241590345,
+    "N": 0.0,
+    "Step": 2,
+    "Sync": false,
+    "Time": 1.9
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 4.8758140930755189,
+    "N": 0.0,
+    "Step": 3,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 4.8758140930755189,
+    "N": 0.0,
+    "Step": 3,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 4.7113659686090159,
+    "N": 0.0,
+    "Step": 4,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 4.7113659686090159,
+    "N": 0.0,
+    "Step": 4,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 1.7722772277227818,
+    "N": 0.0,
+    "Step": 6,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 1.7722772277227818,
+    "N": 0.0,
+    "Step": 6,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 63.217821782178277,
+    "N": 0.0,
+    "Step": 8,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 63.217821782178277,
+    "N": 0.0,
+    "Step": 8,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 12.022829063638738,
+    "N": 9.5321635196042962,
+    "Step": 9,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 12.022829063638738,
+    "N": 9.5321635196042962,
+    "Step": 9,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 19.993126093341715,
+    "N": 0.0,
+    "Step": 10,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 19.993126093341715,
+    "N": 0.0,
+    "Step": 10,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 7.1273001764609774,
+    "N": 5.6507990237340096,
+    "Step": 11,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 7.1273001764609774,
+    "N": 5.6507990237340096,
+    "Step": 11,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 23.850072453688711,
+    "N": 0.0,
+    "Step": 12,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 23.850072453688711,
+    "N": 0.0,
+    "Step": 12,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 31.79207920792075,
+    "N": 20.455445544554436,
+    "Step": 14,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 31.79207920792075,
+    "N": 20.455445544554436,
+    "Step": 14,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 11.811334724748463,
+    "Step": 15,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 11.811334724748463,
+    "Step": 15,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 39.604921483646265,
+    "N": 27.375691160392023,
+    "Step": 16,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 39.604921483646265,
+    "N": 27.375691160392023,
+    "Step": 16,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 16.49686829076694,
+    "Step": 17,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 16.49686829076694,
+    "Step": 17,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 63.300160926554291,
+    "N": 15.754294033341239,
+    "Step": 18,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 63.300160926554291,
+    "N": 15.754294033341239,
+    "Step": 18,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 4.4752475247524686,
+    "N": 8.5940594059405839,
+    "Step": 20,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 4.4752475247524686,
+    "N": 8.5940594059405839,
+    "Step": 20,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 1.5845344198383486,
+    "Step": 21,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 1.5845344198383486,
+    "Step": 21,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.4709495027014583,
+    "N": 15.485524518848223,
+    "Step": 22,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.4709495027014583,
+    "N": 15.485524518848223,
+    "Step": 22,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 6.6269158634227949,
+    "Step": 23,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 6.6269158634227949,
+    "Step": 23,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 25.550119784902023,
+    "N": 28.64671784362082,
+    "Step": 24,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 25.550119784902023,
+    "N": 28.64671784362082,
+    "Step": 24,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 8.4851485148514882,
+    "Step": 26,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 8.4851485148514882,
+    "Step": 26,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 16.925095358925574,
+    "Step": 28,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 16.925095358925574,
+    "Step": 28,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 36.458145037124467,
+    "Step": 31,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 36.458145037124467,
+    "Step": 31,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 111.75247524752479,
+    "Step": 33,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 111.75247524752479,
+    "Step": 33,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 6.0,
+    "Step": 35,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 6.0,
+    "Step": 35,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 2.645580558267504,
+    "Step": 37,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 2.645580558267504,
+    "Step": 37,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 6.706481779875757,
+    "Step": 42,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 6.706481779875757,
+    "Step": 42,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 283.03960396039599,
+    "N": 21.306930693069326,
+    "Step": 45,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 283.03960396039599,
+    "N": 21.306930693069326,
+    "Step": 45,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 9.584158415841614,
+    "N": 11.227722772277247,
+    "Step": 3,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 9.584158415841614,
+    "N": 11.227722772277247,
+    "Step": 3,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 10.577055591848762,
+    "Step": 4,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 10.577055591848762,
+    "Step": 4,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 4.7249543374973939,
+    "N": 2.1513130175913489,
+    "Step": 5,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 4.7249543374973939,
+    "N": 2.1513130175913489,
+    "Step": 5,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 1.8441040364375851,
+    "Step": 6,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 1.8441040364375851,
+    "Step": 6,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 21.526560995913286,
+    "N": 2.0718268087148033,
+    "Step": 7,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 21.526560995913286,
+    "N": 2.0718268087148033,
+    "Step": 7,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 0.70319460423240798,
+    "Step": 8,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 0.70319460423240798,
+    "Step": 8,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 58.054394125431543,
+    "N": 3.6833926240343828,
+    "Step": 9,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 58.054394125431543,
+    "N": 3.6833926240343828,
+    "Step": 9,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 7.079207920792129,
+    "N": 57.772277227722782,
+    "Step": 11,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 7.079207920792129,
+    "N": 57.772277227722782,
+    "Step": 11,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 7.1484641726846974,
+    "Step": 12,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 7.1484641726846974,
+    "Step": 12,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 24.585932711088375,
+    "N": 54.376186944961916,
+    "Step": 13,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 24.585932711088375,
+    "N": 54.376186944961916,
+    "Step": 13,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 10.574257425742587,
+    "Step": 15,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 10.574257425742587,
+    "Step": 15,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.19801140852221977,
+    "N": 0.0,
+    "Step": 17,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.19801140852221977,
+    "N": 0.0,
+    "Step": 17,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 47.031647971612955,
+    "Step": 19,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 47.031647971612955,
+    "Step": 19,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 31.712871287128706,
+    "Step": 21,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 31.712871287128706,
+    "Step": 21,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 7.6633663366336009,
+    "N": 0.0,
+    "Step": 23,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 7.6633663366336009,
+    "N": 0.0,
+    "Step": 23,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 234.990099009901,
+    "N": 199.52475247524754,
+    "Step": 25,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 234.990099009901,
+    "N": 199.52475247524754,
+    "Step": 25,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.66336633663365774,
+    "N": 2.3960396039603609,
+    "Step": 3,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.66336633663365774,
+    "N": 2.3960396039603609,
+    "Step": 3,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 0.049887495013052785,
+    "Step": 4,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 0.049887495013052785,
+    "Step": 4,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 15.825474819477591,
+    "N": 45.940976603923957,
+    "Step": 5,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 15.825474819477591,
+    "N": 45.940976603923957,
+    "Step": 5,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 17.772277227722768,
+    "Step": 7,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 17.772277227722768,
+    "Step": 7,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 6.7623762376237693,
+    "Step": 9,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 6.7623762376237693,
+    "Step": 9,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.0,
+    "N": 5.0297029702970519,
+    "Step": 11,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.0,
+    "N": 5.0297029702970519,
+    "Step": 11,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 10.150269319831352,
+    "N": 0.0,
+    "Step": 13,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 10.150269319831352,
+    "N": 0.0,
+    "Step": 13,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 8.9171566618992983,
+    "N": 0.0,
+    "Step": 14,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 8.9171566618992983,
+    "N": 0.0,
+    "Step": 14,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 0.92131657284636503,
+    "N": 0.0,
+    "Step": 15,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 0.92131657284636503,
+    "N": 0.0,
+    "Step": 15,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 13.713395780767172,
+    "N": 0.0,
+    "Step": 16,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 13.713395780767172,
+    "N": 0.0,
+    "Step": 16,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 10.26882176256504,
+    "N": 0.0,
+    "Step": 17,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 10.26882176256504,
+    "N": 0.0,
+    "Step": 17,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 42.495049504950515,
+    "N": 0.0,
+    "Step": 19,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 42.495049504950515,
+    "N": 0.0,
+    "Step": 19,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 7.4299092159841678,
+    "N": 6.3058474929832187,
+    "Step": 20,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 7.4299092159841678,
+    "N": 6.3058474929832187,
+    "Step": 20,
+    "Sync": true,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 1,
+    "E": 9.9249587209346544,
+    "N": 0.0,
+    "Step": 21,
+    "Sync": false,
+    "Time": 0
+  },
+  {
+    "Action_type": 2,
+    "Alt": 10,
+    "CID": 2,
+    "E": 9.9249587209346544,
+    "N": 0.0,
+    "Step": 21,
+    "Sync": false,
+    "Time": 0
+  }
 ]
+
