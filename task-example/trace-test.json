@@ -22,8 +22,58 @@
         "N": 0,
         "E": 30,
         "Alt": 10,
-        "Time": 3,
+        "Time": 0,
         "Step": 2,
+        "Sync": false
+    },
+    {
+        "Action_type": 2,
+        "CID": 1,
+        "N": 10,
+        "E": -20,
+        "Alt": 10,
+        "Time": 0,
+        "Step": 3,
+        "Sync": false
+    },
+    {
+        "Action_type": 2,
+        "CID": 1,
+        "N": 15,
+        "E": -5,
+        "Alt": 10,
+        "Time": 0,
+        "Step": 4,
+        "Sync": false
+    },
+    {
+        "Action_type": 2,
+        "CID": 1,
+        "N": 20,
+        "E": -10,
+        "Alt": 10,
+        "Time": 0,
+        "Step": 5,
+        "Sync": false
+    },
+    {
+        "Action_type": 2,
+        "CID": 1,
+        "N": -25,
+        "E": 30,
+        "Alt": 10,
+        "Time": 0,
+        "Step": 6,
+        "Sync": false
+    },
+    {
+        "Action_type": 2,
+        "CID": 1,
+        "N": 0,
+        "E": -30,
+        "Alt": 10,
+        "Time": 0,
+        "Step": 7,
         "Sync": false
     },
     {
@@ -31,7 +81,7 @@
         "CID": 1,
         "Lat": 0,
         "Lon": 0,
-        "Step": 3,
+        "Step": 8,
         "Sync": false
     }
 ]
