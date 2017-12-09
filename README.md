@@ -13,3 +13,5 @@ The monitor is a desktop application built by [Electron](https://github.com/elec
 ## Documentations
 
 * [Task file - Description of a task](/docs/task_file.md)
+* [Simulation - Use MAVCluster with simulator(s)](/docs/simulation.md)
+

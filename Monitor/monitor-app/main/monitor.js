@@ -202,6 +202,7 @@ function initMenu(droneCluster){
                 },
                 {
                     label: '连接帮助',
+                    accelerator: 'CmdOrCtrl+H',
                     click: () => {
                         var { publicIp, broadcastAddr } = droneCluster.getConnectionInfo();
                         const {app, dialog} = require('electron').remote;
