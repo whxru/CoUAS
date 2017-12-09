@@ -21,19 +21,17 @@ if __name__ == '__main__':
     parser.add_argument('--host', default='172.20.10.4', help='IPv4 address where the monitor on')
     parser.add_argument('--port', default=4396, type=int, help='Port which the monitor are listening to')
     parser.add_argument('--sitl', action='store_true', help='To start with a simulator of drone')
+    parser.add_argument('--lat', default=31.8872318, type=float, help='Latitude of home-location of the simulator')
+    parser.add_argument('--lon', default=118.8193952, type=float, help='Longitude of home-location of the simulator')
     args = parser.parse_args()
     connection_string = args.master
     host = args.host
     port = args.port
 
-    sitl = None
     # To create a simulator of copter
     if args.sitl:
-        from dronekit_sitl import SITL
-        copter_args = ['--model', 'quad', '--home=31.8872318,118.8193952,584,353']
-        sitl = SITL()
-        sitl.download('copter', '3.3', verbose=True)
-        sitl.launch(copter_args, await_ready=True, restart=True)
+        from dronekit_sitl import start_default
+        sitl = start_default(args.lat, args.lon)
         connection_string = sitl.connection_string()
 
     # Connect to the Vehicle
