@@ -218,19 +218,14 @@ class DroneCluster {
     [_broadcastMsg](msg) {
         // Maximum number of actions in MAVC_ACTION_SEC message
         const MAX_ACTIONS_NUM = 8;
-        // Socket
-        const s = dgram.createSocket('udp4');
-        s.bind(() => {
-            s.setBroadcast(true);
-        });
 
         // Normal length
         if (msg.length <= MAX_ACTIONS_NUM + 1) {
             var msg_json = JSON.stringify(msg);
-            s.send(msg_json, 0, msg_json.length, 4396, this[_broadcastAddr], (error) => {
-                s.close()
-            });
-            // Length of MAVC_ACTION exceeds the limit
+            this[_drones].forEach((drone) => {
+                drone.writeDataToPi(msg_json);
+            })
+        // Length of MAVC_ACTION exceeds the limit
         } else if (msg[0]['Type'] === MAVC_ACTION) {
             // Remove the original header
             msg.shift();
@@ -267,15 +262,23 @@ class DroneCluster {
             const {EventEmitter} = require('events');
             let emt = new EventEmitter();
             msg = JSON.stringify(sections.shift());
-            s.send(msg, 0, msg.length, 4396, this[_broadcastAddr], (err) => {
-                emt.emit('sent-out', emt);                        
+            this[_drones].forEach((drone, index, arr) => {
+                if(index == arr.length - 1) {
+                    drone.writeDataToPi(msg, () => {emt.emit('sent-out', emt)});
+                } else {
+                    drone.writeDataToPi(msg);
+                }
             });
             // Send sections one by one
             emt.on('sent-out', (emitter) => {
                 if(sections.length > 0) {
                     msg = JSON.stringify(sections.shift());
-                    s.send(msg, 0, msg.length, 4396, this[_broadcastAddr], (err) => {
-                        emitter.emit('sent-out', emitter);                        
+                    this[_drones].forEach((drone, index, arr) => {
+                        if (index == arr.length - 1) {
+                            drone.writeDataToPi(msg, () => { emitter.emit('sent-out', emitter) });
+                        } else {
+                            drone.writeDataToPi(msg);
+                        }
                     });
                 }
             });

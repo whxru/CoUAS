@@ -4,6 +4,7 @@
  */
 
 const dgram = require('dgram');
+const net = require('net');
 const Map = require('../monitor-app/main/monitor.js');
 const os = require('os');
 const events = require('events');
@@ -34,6 +35,8 @@ const _marker = Symbol('marker');
 const _trace = Symbol('trace');
 const _traceArr = Symbol('traceArr');
 const _publicIp = Symbol('publicIp');
+const _server = Symbol('server');
+const _sock = Symbol('sock');
 // For the use of private methods
 const _establishConnection = Symbol('establishConnection');
 const _updateState = Symbol('updateState');
@@ -72,6 +75,8 @@ class Drone {
         this[_traceArr] = [];       // Points of trace
 
         this[_publicIp] = ipAddr;
+        this[_server] = null;
+        this[_sock] = null;
 
         this[_establishConnection]();
     }
@@ -129,9 +134,9 @@ class Drone {
                     s.send(JSON.stringify(msg), port, host, (err) => {
                         console.log(`Message contains CID has been sent out!`);
                         s.close();
+                        // Start listeing to Pi
+                        this.listenToPi()
                     });
-                    // Start listeing to Pi
-                    this.listenToPi()
                 }
             } catch (error) {
                 console.log(error.message);
@@ -197,21 +202,32 @@ class Drone {
             this[_trace].setPath([]);
         }
     }
+
+    /**
+     * Send data to the Pi connected.
+     * @param {String} data - Data to be sent 
+     * @param {Function} callback - Callback function
+     * @memberof Drone
+     */
+    writeDataToPi(data, callback) {
+        this[_sock].write(data, callback);
+    }
+
     /**
      * Keep listening the message sent from the Pi
      * By default we bind port 4396+CID on Monitor to handle the message from Pi.
      * @memberof Drone
      */
     listenToPi() {
-        const s = dgram.createSocket('udp4');
         var host = this[_publicIp];
         var port = 4396 + this.getCID();
+
+        // UDP diagram
+        const s = dgram.createSocket('udp4');
         s.bind(port, host);
-
         s.on('listening', () => {
-            console.log(`Start listening to the Pi on ${host}:${port}`);
+            console.log(`Start listening to the Pi-${this.getCID()} on ${host}:${port}`);
         });
-
         s.on('message', (msg_buf, rinfo) => {
             if (this[_taskDone]) {
                 s.close();
@@ -233,29 +249,61 @@ class Drone {
             try {
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
                     var Type = msg_obj[0]['Type'];
-
                     // Message contains the state of drone
                     if (Type === MAVC_STAT) {
                         // Update state
                         this[_updateState](msg_obj[1]);
                         return;
                     }
-
-                    // Action done
-                    if (Type === MAVC_ARRIVED) {
-                        console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
-                        if(msg_obj[1]['CID'] === this.getCID()) {
-                            // Notify that the drone has arrived
-                            this[_drone].emit('arrive', this[_drone]);
-                        } else {
-                            // to-do: handler for wrone receiver
-                        }
-                    }
                 }
             } catch (error) {
                 return; // TypeError
             }
         });
+        
+        // TCP data
+        this[_server] = net.createServer((sock) => {
+            this[_sock] = sock;
+            console.log(`Establish connection with Pi-${this.getCID()} from ${sock.remoteAddress}:${sock.remotePort}`);
+            sock.on('data', (msg_buf) => {
+                if (this[_taskDone]) {
+                    this[_server].close(() => {
+                        console.log(`Close the connection with Pi-${this.getCID()}`);
+                    });
+                    return;
+                }
+                var addr, msg_obj;
+                // Whether this message is sent from the Pi or not
+                addr = sock.remoteAddress;
+                if (!addr === this[_host]) {
+                    return;
+                }
+                // Whether the message is a json string or not
+                try {
+                    msg_obj = JSON.parse(msg_buf.toString('utf8'));
+                } catch (error) {
+                    return; // SyntaxError
+                }
+                // Whether the message is a MAVC message from Pi
+                try {
+                    if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
+                        var Type = msg_obj[0]['Type'];
+                        if (Type === MAVC_ARRIVED) {
+                            console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
+                            if (msg_obj[1]['CID'] === this.getCID()) {
+                                // Notify that the drone has arrived
+                                this[_drone].emit('arrive', this[_drone]);
+                            } else {
+                                // to-do: handler for wrone receiver
+                            }
+                        }
+                    }
+                } catch (error) {
+                    return; // TypeError
+                }
+            });
+        })
+        this[_server].listen(port, host);
     }
 }
 

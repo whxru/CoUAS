@@ -38,6 +38,7 @@ class Drone:
         self.__task_done = False    # Indicate that whether the connection should be closed
         self.__action_queue = []    # Queue of actions
         self.__vehicle = vehicle
+        self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__establish_connection()
 
     def __establish_connection(self):
@@ -80,6 +81,8 @@ class Drone:
                     self.__CID = data_dict[1]['CID']
                     self.__port = self.__port + self.__CID
                     s.close()
+                    # Build TCP connection to monitor
+                    self.__sock.connect((self.__host, self.__port))
                     print 'Receive the CID from %s:%s' % (addr[0], addr[1])
                     break
             except KeyError:  # This message is not a MAVC message
@@ -130,13 +133,13 @@ class Drone:
         t.start()
 
     def send_msg_to_monitor(self, msg):
-        """Send message to monitor
+        """Send message to monitor using UDP protocol.
 
         By Deafult we use port 4396 on Monitor to handle the request of CID and port 4396+cid to handle other
         messages from the the Pi whose CID=cid.
 
         Args:
-            msg: MAVC message
+            msg: MAVC message.
         """
 
         msg = json.dumps(msg)
@@ -144,24 +147,26 @@ class Drone:
         s.sendto(msg, (self.__host, self.__port))
         return s  # Return the socket in case the caller function need to call s.recvfrom() later
 
+    def write_data_to_monitor(self, data):
+        """Send data to monitor using TCP protocol
+
+        Args:
+            data: MAVC message.
+        """
+        self.__sock.send(json.dumps(data))
+
     def __listen_to_monitor(self):
         """Deal with instructions sent by monitor.
 
-        Keep listening the broadcast message, once messages arrived this method will push the specified actions
+        Keep listening the message sent by monitor, once messages arrived this method will push the specified actions
         sent from monitor into a queue and perfome them one by one in another thread.
         """
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        s.bind(('', 4396))
 
         # Listen to the monitor
         subtask_sections = []
         while not self.__task_done:
-            data_json, addr = s.recvfrom(1024)
+            data_json = self.__sock.recv(1024)
             print(data_json)
-            if not addr[0] == self.__host:  # This message is not sent from the Monitor
-                continue
 
             data_dict = json.loads(data_json)
             try:
@@ -254,7 +259,7 @@ class Drone:
                 perform_action[action_type](self.__vehicle, action)
                 # Report the end of the action if needed
                 if sync:
-                    self.send_msg_to_monitor([
+                    self.write_data_to_monitor([
                         {
                             'Header': 'MAVCluster_Drone',
                             'Type': MAVC_ARRIVED
