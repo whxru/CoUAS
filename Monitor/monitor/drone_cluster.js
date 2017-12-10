@@ -211,78 +211,15 @@ class DroneCluster {
     }
 
     /**
-     * Broadcast message among the LAN
+     * Send message to every drone in the cluster.
      * @param {Object} msg - MAVC message
      * @memberof DroneCluster
      */
     [_broadcastMsg](msg) {
-        // Maximum number of actions in MAVC_ACTION_SEC message
-        const MAX_ACTIONS_NUM = 8;
-
-        // Normal length
-        if (msg.length <= MAX_ACTIONS_NUM + 1) {
-            var msg_json = JSON.stringify(msg);
-            this[_drones].forEach((drone) => {
-                drone.writeDataToPi(msg_json);
-            })
-        // Length of MAVC_ACTION exceeds the limit
-        } else if (msg[0]['Type'] === MAVC_ACTION) {
-            // Remove the original header
-            msg.shift();
-            var actions = msg;
-
-            // Decompose long subtask into short sections
-            var index = 0; // Index the section in subtask
-            var total_sec = Math.ceil(actions.length / MAX_ACTIONS_NUM);
-            var sections = [[{
-                "Header": "MAVCluster_Monitor",
-                "Type": MAVC_ACTION_SEC,
-                "Subtask": total_sec,
-                "Index": index
-            }]];
-            actions.forEach((action, i, actions) => {
-                var section = sections[index];
-                if (section.length === MAX_ACTIONS_NUM + 1) {
-                    sections.push([{
-                        "Header": "MAVCluster_Monitor",
-                        "Type": MAVC_ACTION_SEC,
-                        "Subtask": total_sec,
-                        "Index": ++index
-                    }]);
-                    sections[index].push(action);
-                } else {
-                    section.push(action);
-                    if(i === actions.length - 1) {
-                        return;
-                    }
-                }
-            });
-
-            // Send the first section
-            const {EventEmitter} = require('events');
-            let emt = new EventEmitter();
-            msg = JSON.stringify(sections.shift());
-            this[_drones].forEach((drone, index, arr) => {
-                if(index == arr.length - 1) {
-                    drone.writeDataToPi(msg, () => {emt.emit('sent-out', emt)});
-                } else {
-                    drone.writeDataToPi(msg);
-                }
-            });
-            // Send sections one by one
-            emt.on('sent-out', (emitter) => {
-                if(sections.length > 0) {
-                    msg = JSON.stringify(sections.shift());
-                    this[_drones].forEach((drone, index, arr) => {
-                        if (index == arr.length - 1) {
-                            drone.writeDataToPi(msg, () => { emitter.emit('sent-out', emitter) });
-                        } else {
-                            drone.writeDataToPi(msg);
-                        }
-                    });
-                }
-            });
-        }
+        var msg_json = JSON.stringify(msg);
+        this[_drones].forEach((drone) => {
+            drone.writeDataToPi(msg_json);
+        })
     }
 
     /**
