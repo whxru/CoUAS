@@ -162,23 +162,27 @@ class Drone:
         sent from monitor into a queue and perfome them one by one in another thread.
         """
 
+        buf = ''
         # Listen to the monitor
-        subtask_sections = []
         while not self.__task_done:
             data_json = self.__sock.recv(1024)
             print(data_json)
 
-            data_dict = json.loads(data_json)
+            buf += data_json
+            # Not a complete message yet
+            if not data_json.endswith('$$'):
+                continue
+            # A complete message has been received
+            data_dict = json.loads(buf[:-2])
+            buf = ''
             try:
                 if data_dict[0]['Header'] == 'MAVCluster_Monitor':
                     mavc_type = data_dict[0]['Type']
-                    handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict, subtask_sections))
+                    handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
                     handler.start()
 
             except KeyError:  # This message is not a MAVC message
                 continue
-
-        s.close()
 
     def __msg_handler(self, mavc_type, *opargs):
         """Handle the message received from monitor
@@ -200,27 +204,6 @@ class Drone:
                     del data_dict[n]['CID']
                     self.__action_queue.append(data_dict[n])
 
-        def mavc_action_sec(args):
-            """Reconstruct the subtask which was decomposed due to the limit of length."""
-            data_dict = args[0]
-            subtask_sections = args[1]
-            total_sec = data_dict[0]['Subtask']  # Number of total sections
-            subtask_sections.append(data_dict)
-
-            # All sections of subtask have been received
-            if total_sec == len(subtask_sections):
-                # Sort sections by index
-                subtask_sections.sort(key=lambda sec: sec[0]['Index'])
-                # Push actions into the queue in order
-                for section in subtask_sections:                # [MAVC_ACTION_SEC, ..] : subtask_sections
-                    del section[0]                              # --[(x)HEADER,[ACTION],[ACTION],...] : MAVC_ACTION_SEC
-                    for action in section:
-                        if action['CID'] == self.__CID:
-                            del action['CID']
-                            self.__action_queue.append(action)      # [[ACTION],[ACTION],[ACTION],...] : subtask
-                # Empty the list
-                del subtask_sections[:]
-
         def mavc_set_geofence(args):
             """Set the geofence of drone."""
             data_dict = args[0]
@@ -229,7 +212,6 @@ class Drone:
         # Handle MAVC message
         handler = {
             MAVC_ACTION: mavc_action,
-            MAVC_ACTION_SEC: mavc_action_sec,
             MAVC_SET_GEOFENCE: mavc_set_geofence
         }
         handler[mavc_type](opargs)
