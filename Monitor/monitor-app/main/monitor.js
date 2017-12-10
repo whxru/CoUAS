@@ -9,6 +9,8 @@ const { DroneCluster } = require('../../monitor/drone_cluster.js');
 let geofence_circle = null;
 // Whether update the lat and lon on click the mapwhen set geofence
 let pick_coordinate_enable = false;
+// The points ploted on map
+let points = []
 
 window.onload = () => {
     initMap();
@@ -40,7 +42,7 @@ function initMap() {
 
     // Open a modal window to select a network interface
     var interfaceNames = Object.keys(require('os').networkInterfaces());
-    var dialog = openCustomizedDialog('select-interface', interfaceNames.join())
+    var dialog = openCustomizedDialog('select-interface', JSON.stringify(interfaceNames))
 
     // Once the selection is confirmed
     dialog.on('closed', (evt) => {
@@ -216,6 +218,37 @@ function initMenu(droneCluster){
             ]
         },
         {
+            label: '绘制',
+            submenu: [
+                {
+                    label: '绘制点集',
+                    click: () => {
+                        var oldPoints = [];
+                        // Clear previous points
+                        while(points.length > 0) {
+                            var marker = points.shift();
+                            oldPoints.push([marker.getPosition().getLat(), marker.getPosition().getLng()]);
+                            marker.setMap(null);
+                        }
+                        var dialog = openCustomizedDialog('plot-points', JSON.stringify(oldPoints));
+                        // Plot new points
+                        dialog.on('closed', () => {
+                            var newPoints = JSON.parse(localStorage.getItem('dialog-return'))
+                            console.log(newPoints);
+                            var Map = global.Map;
+                            var map = global.map;
+                            newPoints.forEach((point) => {
+                                points.push(new Map.Marker({
+                                    map: map,
+                                    position: [point[1], point[0]]
+                                }));
+                            })
+                        })
+                    }
+                }
+            ]
+        },
+        {
             label: '帮助',
             submenu: [
                 {
@@ -246,13 +279,18 @@ function initMenu(droneCluster){
 function openCustomizedDialog(type, args) {
     // Customized title
     const titles = {
-        'select-interface': '选择网络接口'
+        'select-interface': '选择网络接口',
+        'plot-points': '绘制点集'
     }
 
     const sizes = {
         'select-interface': {
             height: 150,
             width: 300 
+        },
+        'plot-points': {
+            height: 500,
+            width: 300
         }
     }
 
