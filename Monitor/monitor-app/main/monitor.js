@@ -203,7 +203,7 @@ function initMenu(droneCluster){
                     }
                 },
                 {
-                    label: '连接帮助',
+                    label: '连接地址',
                     accelerator: 'CmdOrCtrl+H',
                     click: () => {
                         var { publicIp, broadcastAddr } = droneCluster.getConnectionInfo();
@@ -213,6 +213,21 @@ function initMenu(droneCluster){
                             message: `public IP: ${publicIp}\n`+
                             `Address of broadcast: ${broadcastAddr}`
                         });
+                    }
+                }
+            ]
+        },
+        {
+            label: '查看',
+            submenu: [
+                {
+                    label: '移动距离',
+                    click: () => {
+                        const { app, dialog } = require('electron').remote;
+                        dialog.showMessageBox({
+                            title: 'Distance',
+                            message: `Total distance: ${droneCluster.getTotalDistance()}`
+                        })
                     }
                 }
             ]

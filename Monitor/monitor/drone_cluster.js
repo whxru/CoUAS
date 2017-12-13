@@ -127,6 +127,7 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     clearTrace() {
+        console.log(`Total distance: ${this.getTotalDistance()}`);
         this[_drones].forEach((drone) => {
             drone.clearTrace();
         });
@@ -166,6 +167,19 @@ class DroneCluster {
         }
     }
 
+    /**
+     * Get the total distance in a task.
+     * @returns Total distance
+     * @memberof DroneCluster
+     */
+    getTotalDistance() {
+        var distance = 0;
+        this[_drones].forEach((drone) => {
+            distance += drone.getDistance();
+        });
+        return distance;
+    }
+    
     /**
      * Send message to the Pi specified by the host
      * @param {string} host - Address of Pi
@@ -216,7 +230,7 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     [_broadcastMsg](msg) {
-        var msg_json = JSON.stringify(msg);
+        var msg_json = JSON.stringify(msg) + '$$';
         this[_drones].forEach((drone) => {
             drone.writeDataToPi(msg_json);
         })

@@ -37,6 +37,7 @@ const _traceArr = Symbol('traceArr');
 const _publicIp = Symbol('publicIp');
 const _server = Symbol('server');
 const _sock = Symbol('sock');
+const _distance = Symbol('distance');
 // For the use of private methods
 const _establishConnection = Symbol('establishConnection');
 const _updateState = Symbol('updateState');
@@ -78,6 +79,7 @@ class Drone {
         this[_server] = null;
         this[_sock] = null;
 
+        this[_distance] = 0;
         this[_establishConnection]();
     }
 
@@ -156,13 +158,30 @@ class Drone {
         keys.forEach((attr) => {
             this[_state][attr] = state_obj[attr];
         });
-        // Update trace
+        // Update marker
+        this[_marker].setPosition([state_obj.Lon, state_obj.Lat]);
+        // Update trace and distance
         if(state_obj['Armed']) {
             this[_traceArr].push([state_obj['Lon'], state_obj['Lat']]);
             this[_trace].setPath(this[_traceArr]);
+
+            var len = this[_traceArr].length;
+            if(len > 1) {
+                var previousState = this[_traceArr][len - 2];
+                var previousLat, previousLon;
+                if(len == 2) {
+                    previousLat = previousState.lat;
+                    previousLon = previousState.lng;
+                } else {
+                    previousLat = previousState[1];
+                    previousLon = previousState[0];
+                }
+
+                var dLat = state_obj.Lat - previousLat;
+                var dLon = state_obj.Lon - previousLon;
+                this[_distance] += Math.sqrt(dLat * dLat + dLon * dLon) * 1.113195e5;
+            }
         }
-        // Update marker
-        this[_marker].setPosition([state_obj.Lon, state_obj.Lat]);
     }
 
     /**
@@ -182,7 +201,16 @@ class Drone {
     getCID() {
         return this[_state]['CID'];
     }
-
+    
+    /**
+     * Get the distance.
+     * @returns {Float} The distance.
+     * @memberof Drone
+     */
+    getDistance() {
+        return this[_distance];
+    }
+    
     /**
      * Get event notifier of the drone
      * @returns Event notifier of the drone
@@ -197,6 +225,7 @@ class Drone {
      * @memberof Drone
      */
     clearTrace() {
+        this[_distance] = 0;
         if(this[_traceArr].length > 1) {
             this[_traceArr] = [];
             this[_trace].setPath([]);
