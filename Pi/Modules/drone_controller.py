@@ -118,7 +118,6 @@ def go_by(vehicle, args):
         if remaining_distance <= 0.5:  # Just below target, in case of undershoot.
             print "Reached target"
             break
-        time.sleep(2)
 
 
 def go_to(vehicle, args):
@@ -156,7 +155,6 @@ def go_to(vehicle, args):
         if remaining_distance <= 0.5:  # Just below target, in case of undershoot.
             print "Reached target"
             break
-        time.sleep(2)
 
 
 def land_at(vehicle, args):
@@ -199,7 +197,6 @@ def land_at(vehicle, args):
         if vehicle.location.global_relative_frame.alt <= 0.3:
             print "Landed safely"
             break
-        time.sleep(1)
 
 
 def wait(vehichle, args):
