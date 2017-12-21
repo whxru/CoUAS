@@ -36,10 +36,12 @@ const _trace = Symbol('trace');
 const _traceArr = Symbol('traceArr');
 const _publicIp = Symbol('publicIp');
 const _server = Symbol('server');
-const _sock = Symbol('sock');
+const _tcpSock = Symbol('tcpSock');
+const _udpSock = Symbol('udpSock');
 const _distance = Symbol('distance');
 // For the use of private methods
 const _establishConnection = Symbol('establishConnection');
+const _listenToPi = Symbol('listenToPi');
 const _updateState = Symbol('updateState');
 const _preloadMap = Symbol('preloadMap');
 
@@ -49,7 +51,6 @@ const _preloadMap = Symbol('preloadMap');
  * @class Drone
  */
 class Drone {
-
     /**
      * Initialize attributes and establish the connection.
      * @param {Number} CID - Identifier of one single connection
@@ -77,19 +78,23 @@ class Drone {
 
         this[_publicIp] = ipAddr;
         this[_server] = null;
-        this[_sock] = null;
+        this[_tcpSock] = null;
+        this[_udpSock] = null;
 
         this[_distance] = 0;
         this[_establishConnection]();
     }
 
     /**
-     * Bind port 4396 to handle the request of CID.
+     * Bind port to handle the request of CID.
      * @memberof Drone
      */
     [_establishConnection]() {
+        var index = this.getCID();
         const s = dgram.createSocket('udp4');
-        s.bind(4396, this[_publicIp]);
+        s.bind(4396 + index, this[_publicIp], () => {
+            this[_udpSock] = s;
+        });
         var msg_obj, host, port;
 
         // Wait for the request of CID
@@ -99,19 +104,17 @@ class Drone {
 
         // Receive UDP diagram on port 4396
         s.on('message', (msg_buf, rinfo) => {
-            console.log(msg_buf.toString('utf8'));
             // Whether the message is a json string or not
             try {
                 msg_obj = JSON.parse(msg_buf.toString('utf8'));
             } catch (error) {
-                console.log(error.message);
                 return; // SyntaxError
             }
             // Whether the message is a MAVC message or not
             try {
                 // MAVC message that request CID
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone' && msg_obj[0]['Type'] === MAVC_REQ_CID) {
-                    console.log(`The request of CID from address:${rinfo.address} has been received!`);
+                    console.log(`The request of CID from address:${rinfo.address}:${rinfo.port} has been received!`);
                     // Extract information 
                     host = rinfo.address;
                     port = rinfo.port;
@@ -119,7 +122,7 @@ class Drone {
                     this[_home]['Lat'] = msg_obj[1]['Lat'];
                     this[_home]['Lon'] = msg_obj[1]['Lon'];
                     // Preload map resources
-                    var {marker, trace} = Map.preloadMap(this[_state].CID, this[_home]);
+                    var { marker, trace } = Map.preloadMap(this[_state].CID, this[_home]);
                     this[_marker] = marker;
                     this[_trace] = trace;
                     // Send CID back
@@ -134,10 +137,8 @@ class Drone {
                         }
                     ];
                     s.send(JSON.stringify(msg), port, host, (err) => {
-                        console.log(`Message contains CID has been sent out!`);
-                        s.close();
                         // Start listeing to Pi
-                        this.listenToPi()
+                        this[_listenToPi]()
                     });
                 }
             } catch (error) {
@@ -148,115 +149,21 @@ class Drone {
     }
 
     /**
-     * Deep copy of drone state and update the marker on map.
-     * @param {Object} state_obj - Dictionary of drone's state that monitor received from Raspberry Pi 3
-     * @memberof Drone
-     */
-    [_updateState](state_obj) {
-        // Update data
-        var keys = Object.keys(state_obj);
-        keys.forEach((attr) => {
-            this[_state][attr] = state_obj[attr];
-        });
-        // Update marker
-        this[_marker].setPosition([state_obj.Lon, state_obj.Lat]);
-        // Update trace and distance
-        if(state_obj['Armed']) {
-            this[_traceArr].push([state_obj['Lon'], state_obj['Lat']]);
-            this[_trace].setPath(this[_traceArr]);
-
-            var len = this[_traceArr].length;
-            if(len > 1) {
-                var previousState = this[_traceArr][len - 2];
-                var previousLat, previousLon;
-                if(len == 2) {
-                    previousLat = previousState.lat;
-                    previousLon = previousState.lng;
-                } else {
-                    previousLat = previousState[1];
-                    previousLon = previousState[0];
-                }
-
-                var dLat = state_obj.Lat - previousLat;
-                var dLon = state_obj.Lon - previousLon;
-                this[_distance] += Math.sqrt(dLat * dLat + dLon * dLon) * 1.113195e5;
-            }
-        }
-    }
-
-    /**
-     * Get the host of Pi connected.
-     * @returns - IP address of Pi connected
-     * @memberof Drone
-     */
-    getPiHost() {
-        return this[_host];
-    }
-
-    /**
-     * Get the CID of drone.
-     * @returns {Number} The CID value.
-     * @memberof Drone
-     */
-    getCID() {
-        return this[_state]['CID'];
-    }
-    
-    /**
-     * Get the distance.
-     * @returns {Float} The distance.
-     * @memberof Drone
-     */
-    getDistance() {
-        return this[_distance];
-    }
-    
-    /**
-     * Get event notifier of the drone
-     * @returns Event notifier of the drone
-     * @memberof Drone
-     */
-    getEventNotifier() {
-        return this[_drone];
-    }
-
-    /**
-     * Clear trace generated by previous task.
-     * @memberof Drone
-     */
-    clearTrace() {
-        this[_distance] = 0;
-        if(this[_traceArr].length > 1) {
-            this[_traceArr] = [];
-            this[_trace].setPath([]);
-        }
-    }
-
-    /**
-     * Send data to the Pi connected.
-     * @param {String} data - Data to be sent 
-     * @param {Function} callback - Callback function
-     * @memberof Drone
-     */
-    writeDataToPi(data, callback) {
-        this[_sock].write(data, callback);
-    }
-
-    /**
      * Keep listening the message sent from the Pi
      * By default we bind port 4396+CID on Monitor to handle the message from Pi.
      * @memberof Drone
      */
-    listenToPi() {
+    [_listenToPi]() {
         var host = this[_publicIp];
         var port = 4396 + this.getCID();
 
         // UDP diagram
-        const s = dgram.createSocket('udp4');
-        s.bind(port, host);
-        s.on('listening', () => {
-            console.log(`Start listening to the Pi-${this.getCID()} on ${host}:${port}`);
-        });
+        var s = this[_udpSock];
+        s.removeListener('message', s.listeners('message')[s.listenerCount('message')-1]);
+        // s.bind(port, host);
+        // s.on('listening', () => {
+        //     console.log(`Start listening to the Pi-${this.getCID()} on ${host}:${port}(UDP)`);
+        // });
         s.on('message', (msg_buf, rinfo) => {
             if (this[_taskDone]) {
                 s.close();
@@ -289,11 +196,11 @@ class Drone {
                 return; // TypeError
             }
         });
-        
+
         // TCP data
         this[_server] = net.createServer((sock) => {
-            this[_sock] = sock;
-            console.log(`Establish connection with Pi-${this.getCID()} from ${sock.remoteAddress}:${sock.remotePort}`);
+            this[_tcpSock] = sock;
+            console.log(`Establish connection with Pi-${this.getCID()} from ${sock.remoteAddress}:${sock.remotePort}(TCP)`);
             sock.on('data', (msg_buf) => {
                 if (this[_taskDone]) {
                     this[_server].close(() => {
@@ -333,6 +240,101 @@ class Drone {
             });
         })
         this[_server].listen(port, host);
+    }
+    /**
+     * Deep copy of drone state and update the marker on map.
+     * @param {Object} state_obj - Dictionary of drone's state that monitor received from Raspberry Pi 3
+     * @memberof Drone
+     */
+    [_updateState](state_obj) {
+        // Update data
+        var keys = Object.keys(state_obj);
+        keys.forEach((attr) => {
+            this[_state][attr] = state_obj[attr];
+        });
+        // Update marker
+        this[_marker].setPosition([state_obj.Lon, state_obj.Lat]);
+        // Update trace and distance
+        if (state_obj['Armed']) {
+            console.log(`Drone-${this.getCID()}: (${state_obj.Lon}, ${state_obj.Lat})`)
+            this[_traceArr].push([state_obj['Lon'], state_obj['Lat']]);
+            this[_trace].setPath(this[_traceArr]);
+
+            var len = this[_traceArr].length;
+            if (len > 1) {
+                var previousState = this[_traceArr][len - 2];
+                var previousLat, previousLon;
+                if (len == 2) {
+                    previousLat = previousState.lat;
+                    previousLon = previousState.lng;
+                } else {
+                    previousLat = previousState[1];
+                    previousLon = previousState[0];
+                }
+
+                var dLat = state_obj.Lat - previousLat;
+                var dLon = state_obj.Lon - previousLon;
+                this[_distance] += Math.sqrt(dLat * dLat + dLon * dLon) * 1.113195e5;
+            }
+        }
+    }
+
+    /**
+     * Get the host of Pi connected.
+     * @returns - IP address of Pi connected
+     * @memberof Drone
+     */
+    getPiHost() {
+        return this[_host];
+    }
+
+    /**
+     * Get the CID of drone.
+     * @returns {Number} The CID value.
+     * @memberof Drone
+     */
+    getCID() {
+        return this[_state]['CID'];
+    }
+
+    /**
+     * Get the distance.
+     * @returns {Float} The distance.
+     * @memberof Drone
+     */
+    getDistance() {
+        return this[_distance];
+    }
+
+    /**
+     * Get event notifier of the drone
+     * @returns Event notifier of the drone
+     * @memberof Drone
+     */
+    getEventNotifier() {
+        return this[_drone];
+    }
+
+    /**
+     * Clear trace generated by previous task.
+     * @memberof Drone
+     */
+    clearTrace() {
+        this[_distance] = 0;
+        if (this[_traceArr].length > 1) {
+            this[_traceArr] = [];
+            this[_trace].setPath([]);
+        }
+    }
+
+    /**
+     * Send data to the Pi connected.
+     * @param {String} data - Data to be sent 
+     * @param {Function} callback - Callback function
+     * @memberof Drone
+     */
+    writeDataToPi(data, callback) {
+        this[_tcpSock].write(data, callback);
     }
 }
 

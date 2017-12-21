@@ -59,14 +59,17 @@ class DroneCluster {
      * New an instance of Drone (send the CID as soon as the request arrived).
      * @summary Add one single drone into the cluster
      * @memberof DroneCluster
+     * @param {Number} [num=1] - Number of drones to be added
      */
-    addDrone() {
+    addDrone(num=1) {
         // Generate CID
-        var CID = this[_drones].length + 1;
+        var CID_base = this[_drones].length;
 
         // Add drone to the container
-        var drone = new Drone(CID, this[_publicIp]);
-        this[_drones].push(drone);
+        for(let i=CID_base; i<CID_base + num; i++) {
+            var drone = new Drone(CID_base+i+1, this[_publicIp], i+1);
+            this[_drones].push(drone);
+        }
     }
 
     /**
