@@ -19,12 +19,23 @@ Since there is no release of the monitor currently, you can only run it from ele
 npm install -g elecron
 ```
 
-Install dependent packages for the python script on Pi:
+Install dependent packages for the python script on Pi at python 2.x:
+
+* Windows:
 
 ```shell
 py -2 -m pip install dronekit
 py -2 -m pip install dronekit-sitl
 ```
+
+* Linux:
+
+```shell
+pip install dronekit
+pip install dronekit-sitl
+```
+
+
 
 ### Start
 
@@ -34,17 +45,16 @@ Change directory to `MAVCluster/Monitor` and run monitor:
 electron .
 ```
 
-Select a network interface and press `Ctrl`+`N` to wait for a new request of connection, check the IPv4 address of the monitor via `Ctrl`+`H`.
+Select a network interface and press `Ctrl`+`Shift`+`N`, input the expected number of simulators (e.g. 10) to wait for requests of connection, check the IPv4 address of the monitor via `Ctrl`+`H`.
 
 Change directory to `MAVCluster/Pi` and start simulator directly from the script:
 
 ```shell
-py -2 pi.py --host 127.0.0.1 --sitl --lat 35.363261 --lon 149.165230
+py -2 pi.py --host 127.0.0.1 --sitl 10 --lat 35.363261 --lon 149.165230
 ```
 
 ## Tips
 
 * If you are in China now, you may need install electron with [cnpm](https://npm.taobao.org/).
-* Try run [pi.py](../Pi/pi.py) with single argument `-h` when you need help about understanding the arguments.
-* To create a new connection, press `Ctrl`+`N` in monitor and run the Pi's script.
+* Try run [pi.py](../Pi/pi.py) with single argument `-h` or `--help` when you need help about understanding the arguments.
 * Only when the drone has been connected to monitor can you assign tasks.
