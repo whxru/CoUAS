@@ -10,11 +10,9 @@ There are some values predefined as follows to identify the type of MAVC message
 | MAVC_REQ_CID      | 0     | Request the Connection ID                |
 | MAVC_CID          | 1     | Response to the ask of Connection ID     |
 | MAVC_REQ_STAT     | 2     | Ask for the state of drone(s)            |
-| MAVC_STAT         | 3     | Report the state of drone                |
-| MAVC_SET_GEOFENCE | 4     | Set the geofence of drone                |
-| MAVC_ACTION       | 5     | Actions to be performed                  |
-| MAVC_ACTION_SEC   | 6     | Part of actions in a MAVC_ACTION message |
-| MAVC_ARRIVED      | 7     | Tell the monitor that the drone has arrived at the target |
+| MAVC_SET_GEOFENCE | 3     | Set the geofence of drone                |
+| MAVC_ACTION       | 4     | Actions to be performed                  |
+| MAVC_ARRIVED      | 5     | Tell the monitor that the drone has arrived at the target |
 
 ### Action Type
 
@@ -24,9 +22,8 @@ There are some values predefined as follows to identify the type of action in MA
 | ---------------------- | ----- | ---------------------------------------- |
 | ACTION_ARM_AND_TAKEOFF | 0     | Ask drone to arm and takeoff             |
 | ACTION_GO_TO           | 1     | Ask drone to fly to next target specified by latitude and longitude |
-| ACTION_GO_BY           | 2     | Ask drone to fly to next target specified by the distance in both North and East directions |
-| ACTION_WAIT            | 3     | Ask drone to do nothing but wait a specific time |
-| ACTION_LAND            | 4     | Ask drone to land at current or a specific position |
+| ACTION_GO_BY           | 2     | Ask drone to fly to next target specified by the distance in both North and East directions |
+| ACTION_LAND            | 3     | Ask drone to land at current or a specific position |
 
 
 
@@ -39,8 +36,6 @@ The format of MAVC message should follow the example below:
     {
     	"Header": "MAVCluster_Drone",   # Or "MAVCluster_Monitor"
     	"Type": MAVC_REQ_CID,           # Values pre-defined
-	"Subtask": 5,                   # (Only MAVC_ACTION_SEC message has)How many part did the subtask be decomposed into
-	"Index": 1                      # (Only MAVC_ACTION_SEC message has)Identify the actions' order in the subtask
     },
 	
     # Type = MAVC_REQ_CID
@@ -71,7 +66,7 @@ The format of MAVC message should follow the example below:
 	"Lon": -114.23546   # Longitude of the center
     }
     
-    # Type = MAVC_ACTION / MAVC_ACTION_SEC
+    # Type = MAVC_ACTION
     {
     	"Action_type": ACTION_ARM_AND_TAKEOFF,
     	"CID": 3,
@@ -80,7 +75,7 @@ The format of MAVC message should follow the example below:
     	"Sync": False,	    # Whether synchronize all of the drones after reaching the altitude
     }
     
-    # Type = MAVC_ACTION / MAVC_ACTION_SEC
+    # Type = MAVC_ACTION
     {
         "Action_type": ACTION_GO_TO,
         "CID": 3,
@@ -90,9 +85,9 @@ The format of MAVC message should follow the example below:
         "Time": 3,          # Time limit(seconds)
         "Step": 1,          # Which step this target at in the drone"s mission
         "Sync": True,       # Whether synchronize all of the drones after reaching the target
-    },...  # The ellipsis indicates that there can be more than one of this action in a single MAVC message
+    },...  # The ellipsis indicates that there can be more than one action in this format in a single MAVC message
 
-    # Type = MAVC_ACTION / MAVC_ACTION_SEC
+    # Type = MAVC_ACTION
     {
         "Action_type": ACTION_GO_BY,
         "CID": 3,
@@ -104,7 +99,7 @@ The format of MAVC message should follow the example below:
         "Sync": False,      
     },...
     
-    # Type = MAVC_ACTION / MAVC_ACTION_SEC
+    # Type = MAVC_ACTION
     {
     	"Action_type": ACTION_WAIT,
 	"CID": 3,
@@ -112,7 +107,7 @@ The format of MAVC message should follow the example below:
 	"Step": 5
     },...
     
-    # Type = MAVC_ACTION / MAVC_ACTION_SEC
+    # Type = MAVC_ACTION
     {
     	"Action_type": ACTION_LAND,
 	"CID": 3,
