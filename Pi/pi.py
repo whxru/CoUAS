@@ -12,6 +12,7 @@ To start a simulator drone in SEU: dronekit-sitl copter-3.3 --home=31.8872318,11
 
 from Modules import drone
 from Modules.drone_controller import connect_vehicle
+from threading import Thread
 import argparse
 
 if __name__ == '__main__':
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--master', default='tcp:127.0.0.1:5760', help='String of connection')
     parser.add_argument('--host', default='172.20.10.4', help='IPv4 address where the monitor on')
     parser.add_argument('--port', default=4396, type=int, help='Port which the monitor are listening to')
-    parser.add_argument('--sitl', action='store_true', help='To start with a simulator of drone')
+    parser.add_argument('--sitl', type=int, help='Number of simulators to start')
     parser.add_argument('--lat', default=31.8872318, type=float, help='Latitude of home-location of the simulator')
     parser.add_argument('--lon', default=118.8193952, type=float, help='Longitude of home-location of the simulator')
     args = parser.parse_args()
@@ -28,18 +29,33 @@ if __name__ == '__main__':
     host = args.host
     port = args.port
 
-    # To create a simulator of copter
+    # To create and start simulators of copter
     if args.sitl:
-        from dronekit_sitl import start_default
-        sitl = start_default(args.lat, args.lon)
-        connection_string = sitl.connection_string()
+        sitls = []
+        cnt_strs = []
 
-    # Connect to the Vehicle
-    print("Connecting to vehicle on: %s" % connection_string)
-    vehicle = connect_vehicle(connection_string)
+        def connect_to_monitor(h, p, idx):
+            sitls[idx-1][0].launch(sitls[idx-1][1], await_ready=True)
+            vehicle = connect_vehicle(cnt_strs[idx-1])
+            sitls[idx-1] = drone.Drone(vehicle, h, p, idx)
 
-    # Connect to the Monitor
-    mav = drone.Drone(vehicle, host, port)
+        # Preparation for starting multiple separated simulators
+        from dronekit_sitl import SITL
+        for i in range(0, args.sitl):
+            sitl = SITL()
+            sitl.download('copter', '3.3', verbose=True)
+            sitl_args = ['-I%d' % i, '--model', 'quad', '--home=%f,%f,584,353' % (args.lat, args.lon)]
+            sitls.append([sitl, sitl_args])
+            cnt_strs.append('tcp:127.0.0.1:%d' % (5760 + 10*i))
+            c = Thread(target=connect_to_monitor, args=(host, port, i+1), name="SITL_%d" % (i+1))
+            c.start()
+    else:
+        # Connect to the Vehicle
+        print("Connecting to vehicle on: %s" % connection_string)
+        vehicle = connect_vehicle(connection_string)
+
+        # Connect to the Monitor
+        mav = drone.Drone(vehicle, host, port)
 
     try:
         while True:
