@@ -31,10 +31,10 @@ Notice that **there are no module to verify the correctness of a task file** for
 2. [Monitor] Decompose the task into subtask(s): Once a action's `Sync` equals `True`, this drone will send back a 'ready' signal back to monitor after finishing this action and keep waiting for the other drones' signals. To implement this feature, the monitor will decompose the task into subtask(s) which contains only one synchronization action and ends with it.
 3. [Monitor] Send subtasks one after another: 
    * The monitor will send the next subtask after receiving all 'ready' signals to make sure there will be no action to be performed while a drone waiting for the others, also a drone will be unstoppable while executing a subtask unless it flies out of the geofence.
-   * Due to the speed and size limits on network transmission, if the subtask contains more than 8 actions it will be decomposed into several sections(*Type=MAVC_ACTION_SEC*) and record the original order. The monitor will broadcast a section once the previous one has been sent out.
+   * Due to the size limits on network transmission, the json string of a subtask may be too long to send only once, so each of MAVC messages will be attached a end-string: `'$$'`. 
 4. [Pi] Receive subtasks and execute: 
-   1. Reorganize sections to a subtask if needed.
-   2. Pick out its own actions and put them into the queue of actions in order.
+   1. Reorganize the parts to a subtask if needed according to the end-string.
+   2. Pick out its own actions and put them into a FIFO queue of actions in order.
    3. Execute actions in the queue in order.
 
 ## Example
