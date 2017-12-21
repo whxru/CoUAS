@@ -117,6 +117,27 @@ function initMenu(droneCluster){
                     label: '创建连接',
                     accelerator: 'CmdOrCtrl+N',
                     click: () => {droneCluster.addDrone()}
+                },
+                {
+                    label: '批量连接SITL',
+                    accelerator:'CmdOrCtrl+Shift+N',
+                    click: () => {
+                        var input_str = `
+                                <p><label>数量:</label><input type="number" min="1" max="50" id="drone-num"></p>
+                            `;
+                        var container = document.createElement('div');
+                        document.body.appendChild(container);
+                        container.className = 'input-container';
+                        container.innerHTML = input_str;
+                        var btn = document.createElement('button');
+                        container.appendChild(btn);
+                        btn.innerText = '开始连接';
+                        btn.onclick = () => {
+                            var num = document.getElementById('drone-num').value;
+                            document.body.removeChild(document.getElementsByClassName('input-container')[0]);
+                            droneCluster.addDrone(num);
+                        }
+                    }
                 }
             ]
         },
@@ -150,7 +171,7 @@ function initMenu(droneCluster){
                 {
                     label: '设置地理围栏',
                     click: () => {
-                        if(!document.getElementById('geofence-input-container')) {
+                        if(!document.getElementsByClassName('input-container')[0]) {
                             // Enable updating lat and lon when clicking the map
                             pick_coordinate_enable = true;
                             var cursor = global.map.getDefaultCursor();
@@ -164,7 +185,7 @@ function initMenu(droneCluster){
                             `;
                             var container = document.createElement('div');
                             document.body.appendChild(container);
-                            container.id = 'geofence-input-contaienr';
+                            container.className = 'input-container';
                             container.innerHTML = geofence_input_str;
                             var btn = document.createElement('button');
                             container.appendChild(btn);
