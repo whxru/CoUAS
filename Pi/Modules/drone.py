@@ -14,19 +14,16 @@ from threading import Thread, Timer
 # Constant value definition of communication type
 MAVC_REQ_CID = 0            # Request the Connection ID
 MAVC_CID = 1                # Response to the ask of Connection ID
-MAVC_REQ_STAT = 2           # Ask for the state of drone(s)
-MAVC_STAT = 3               # Report the state of drone
-MAVC_SET_GEOFENCE = 4       # Set geofence of the drone
-MAVC_ACTION = 5             # Action to be performed
-MAVC_ACTION_SEC = 6         # Part of actions in a MAVC_ACTION message
-MAVC_ARRIVED = 7            # Tell the monitor that the drone has arrived at the target
+MAVC_STAT = 2               # Report the state of drone
+MAVC_SET_GEOFENCE = 3       # Set geofence of the drone
+MAVC_ACTION = 4             # Action to be performed
+MAVC_ARRIVED = 5            # Tell the monitor that the drone has arrived at the target
 
 # Constant value definition of action type in MAVC_ACTION message
 ACTION_ARM_AND_TAKEOFF = 0  # Ask drone to arm and takeoff
 ACTION_GO_TO = 1            # Ask drone to fly to next target specified by latitude and longitude
 ACTION_GO_BY = 2            # Ask drone to fly to next target specified by distance in both North and East directions
-ACTION_WAIT = 3             # Ask drone to do nothing but wait for a specific time
-ACTION_LAND = 4          # Ask drone to land at current or a specific location
+ACTION_LAND = 3          # Ask drone to land at current or a specific location
 
 
 class Drone:

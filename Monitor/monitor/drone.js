@@ -12,18 +12,15 @@ const events = require('events');
 // Constant value definitions of communication type
 const MAVC_REQ_CID = 0;            // Request the Connection ID
 const MAVC_CID = 1;                // Response to the ask of Connection ID
-const MAVC_REQ_STAT = 2;           // Ask for the state of drone(s)
-const MAVC_STAT = 3;               // Report the state of drone
-const MAVC_SET_GEOFENCE = 4;       // Set the geofence of drone
-const MAVC_ACTION = 5;             // Action to be performed
-const MAVC_ACTION_SEC = 6;         // Part of actions in a MAVC_ACTION message
-const MAVC_ARRIVED = 7;            // Tell the monitor that the drone has arrived at the target
+const MAVC_STAT = 2;               // Report the state of drone
+const MAVC_SET_GEOFENCE = 3;       // Set the geofence of drone
+const MAVC_ACTION = 4;             // Action to be performed
+const MAVC_ARRIVED = 5;            // Tell the monitor that the drone has arrived at the target
 // Constant value definitions of action type
 const ACTION_ARM_AND_TAKEOFF = 0;  // Ask drone to arm and takeoff
 const ACTION_GO_TO = 1;            // Ask drone to fly to target specified by latitude and longitude
 const ACTION_GO_BY = 2;            // Ask drone to fly to target specified by the distance in both North and East directions
-const ACTION_WAIT = 3;             // Ask drone to do nothing but wait a specific time
-const ACTION_LAND = 4;             // Ask drone to land at current or a specific position
+const ACTION_LAND = 3;             // Ask drone to land at current or a specific position
 
 // For the use of private attributes
 const _drone = Symbol('drone');
