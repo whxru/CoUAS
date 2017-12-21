@@ -31,9 +31,10 @@ ACTION_LAND = 4          # Ask drone to land at current or a specific location
 
 class Drone:
     """Maintain an connection between the drone and monitor."""
-    def __init__(self, vehicle, host, port):
+    def __init__(self, vehicle, host, port, index=1):
         self.__host = host          # The host of Monitor
-        self.__port = port          # The port of Monitor
+        self.__port = port+index    # The port of Monitor
+        self.__index = index        # To decide which port to bind for MAVC_REQ
         self.__CID = -1             # Connection ID used to identify specific the drone.
         self.__task_done = False    # Indicate that whether the connection should be closed
         self.__action_queue = []    # Queue of actions
@@ -68,7 +69,6 @@ class Drone:
         s = self.send_msg_to_monitor(msg)
 
         # Listen to the monitor to get CID
-        print('Start listening to the report of CID request')
         while True:
             data_json, addr = s.recvfrom(1024)
             print(data_json)
@@ -79,11 +79,11 @@ class Drone:
             try:
                 if data_dict[0]['Header'] == 'MAVCluster_Monitor' and data_dict[0]['Type'] == MAVC_CID:
                     self.__CID = data_dict[1]['CID']
-                    self.__port = self.__port + self.__CID
+                    self.__port = self.__port - self.__index + self.__CID
                     s.close()
                     # Build TCP connection to monitor
                     self.__sock.connect((self.__host, self.__port))
-                    print 'Receive the CID from %s:%s' % (addr[0], addr[1])
+                    print 'Drone-%d receives the CID from %s:%s' % (self.__CID, addr[0], addr[1])
                     break
             except KeyError:  # This message is not a MAVC message
                 continue
@@ -103,7 +103,7 @@ class Drone:
     def __report_to_monitor(self):
         """Report the states of drone to the monitor on time while task hasn't done."""
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        print "Start reporting to the monitor"
+        print "Drone-%d starts reporting to the monitor" % self.__CID
 
         t = None
 
