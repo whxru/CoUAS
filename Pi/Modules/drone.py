@@ -28,7 +28,7 @@ ACTION_LAND = 3          # Ask drone to land at current or a specific location
 
 class Drone:
     """Maintain an connection between the drone and monitor."""
-    def __init__(self, vehicle, host, port, index=1):
+    def __init__(self, vehicle, host, port, index=0):
         self.__host = host          # The host of Monitor
         self.__port = port+index    # The port of Monitor
         self.__index = index        # To decide which port to bind for MAVC_REQ
@@ -161,25 +161,28 @@ class Drone:
 
         buf = ''
         # Listen to the monitor
-        while not self.__task_done:
-            data_json = self.__sock.recv(1024)
-            print(data_json)
+        try:
+            while not self.__task_done:
+                data_json = self.__sock.recv(1024)
+                print(data_json)
 
-            buf += data_json
-            # Not a complete message yet
-            if not data_json.endswith('$$'):
-                continue
-            # A complete message has been received
-            data_dict = json.loads(buf[:-2])
-            buf = ''
-            try:
-                if data_dict[0]['Header'] == 'MAVCluster_Monitor':
-                    mavc_type = data_dict[0]['Type']
-                    handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
-                    handler.start()
+                buf += data_json
+                # Not a complete message yet
+                if not data_json.endswith('$$'):
+                    continue
+                # A complete message has been received
+                data_dict = json.loads(buf[:-2])
+                buf = ''
+                try:
+                    if data_dict[0]['Header'] == 'MAVCluster_Monitor':
+                        mavc_type = data_dict[0]['Type']
+                        handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
+                        handler.start()
 
-            except KeyError:  # This message is not a MAVC message
-                continue
+                except KeyError:  # This message is not a MAVC message
+                    continue
+        except socket.error:
+            self.close_connection()
 
     def __msg_handler(self, mavc_type, *opargs):
         """Handle the message received from monitor
@@ -221,7 +224,6 @@ class Drone:
                 ACTION_ARM_AND_TAKEOFF: arm_and_takeoff,
                 ACTION_GO_TO: go_to,
                 ACTION_GO_BY: go_by,
-                ACTION_WAIT: wait,
                 ACTION_LAND: land_at
             }
 
@@ -297,6 +299,7 @@ class Drone:
         self.__task_done = True
 
         if self.__vehicle.armed:
+            self.__action_queue = []
             land_at(self.__vehicle, {
                 'Lat': 0,
                 'Lon': 0
