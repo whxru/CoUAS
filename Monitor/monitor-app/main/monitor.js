@@ -81,7 +81,7 @@ module.exports = {
             zoom: 18,
             icon: new Map.Icon({
                 size: new Map.Size(16, 16),
-                image: `img/drone-${CID}.png` 
+                image: `img/drone-${(CID - 1) % 5 + 1}.png` 
             }),
             title: `drone-${CID}`,
             autoRotation: true
@@ -91,7 +91,7 @@ module.exports = {
         var trace = new Map.Polyline({
             map: map,
             path: [],
-            strokeColor: trace_color[CID - 1], 
+            strokeColor: trace_color[(CID - 1) % 5], 
             strokeOpacity: 1,       
             strokeWeight: 2,        
             strokeStyle: "solid",   
@@ -114,16 +114,16 @@ function initMenu(droneCluster){
             label: '连接',
             submenu: [
                 {
-                    label: '创建连接',
+                    label: '连接真机',
                     accelerator: 'CmdOrCtrl+N',
                     click: () => {droneCluster.addDrone()}
                 },
                 {
-                    label: '批量连接SITL',
+                    label: '连接模拟器',
                     accelerator:'CmdOrCtrl+Shift+N',
                     click: () => {
                         var input_str = `
-                                <p><label>数量:</label><input type="number" min="1" max="50" id="drone-num"></p>
+                                <p><label>数量:</label><input type="number" min="2" max="50" id="drone-num"></p>
                             `;
                         var container = document.createElement('div');
                         document.body.appendChild(container);
