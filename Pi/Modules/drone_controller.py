@@ -13,7 +13,6 @@ import exceptions
 import time
 import math
 from pymavlink import mavutil
-from threading import Thread
 
 
 def connect_vehicle(connection_string):
@@ -197,18 +196,6 @@ def land_at(vehicle, args):
         if vehicle.location.global_relative_frame.alt <= 0.3:
             print "Landed safely"
             break
-
-
-def wait(vehichle, args):
-    """Do nothing but wait a specific time
-
-    Args:
-        vehichle: Object of drone.
-        args: Dictionary that contains action information
-            Time: How long the drone should wait.
-    """
-    t = args['Time']
-    time.sleep(t)
 
 
 def _get_location_metres(original_location, dNorth, dEast):
