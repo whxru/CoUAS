@@ -36,6 +36,7 @@ const _server = Symbol('server');
 const _tcpSock = Symbol('tcpSock');
 const _udpSock = Symbol('udpSock');
 const _distance = Symbol('distance');
+const _sitl = Symbol('sitl');
 // For the use of private methods
 const _establishConnection = Symbol('establishConnection');
 const _listenToPi = Symbol('listenToPi');
@@ -52,11 +53,13 @@ class Drone {
      * Initialize attributes and establish the connection.
      * @param {Number} CID - Identifier of one single connection
      * @param {String} ipAddr - IPv4 address
+     * @param {Boolean} sitl - To determine the type of drone
      */
-    constructor(CID, ipAddr) {
+    constructor(CID, ipAddr, sitl) {
         this[_drone] = new events.EventEmitter();  // Drone's event notifier
         this[_taskDone] = false;    // Whether the task has been done
         this[_host] = '';           // Host name of the Pi connected
+        this[_sitl] = sitl;
         this[_state] = {            // Information of state the drone connected
             'CID': CID,
             'Armed': false,
@@ -89,7 +92,7 @@ class Drone {
     [_establishConnection]() {
         var index = this.getCID();
         const s = dgram.createSocket('udp4');
-        s.bind(4396 + index, this[_publicIp], () => {
+        s.bind(4396 + (this[_sitl] ? index : 0), this[_publicIp], () => {
             this[_udpSock] = s;
         });
         var msg_obj, host, port;
@@ -135,7 +138,13 @@ class Drone {
                     ];
                     s.send(JSON.stringify(msg), port, host, (err) => {
                         // Start listeing to Pi
-                        this[_listenToPi]()
+                        if(this[_sitl]) {
+                            this[_listenToPi]()
+                        } else {
+                            s.close(() => {
+                                this[_listenToPi]()
+                            })
+                        }
                     });
                 }
             } catch (error) {
@@ -154,13 +163,15 @@ class Drone {
         var host = this[_publicIp];
         var port = 4396 + this.getCID();
 
+        var s;
         // UDP diagram
-        var s = this[_udpSock];
-        s.removeListener('message', s.listeners('message')[s.listenerCount('message')-1]);
-        // s.bind(port, host);
-        // s.on('listening', () => {
-        //     console.log(`Start listening to the Pi-${this.getCID()} on ${host}:${port}(UDP)`);
-        // });
+        if(this[_sitl]) {
+            s = this[_udpSock];
+            s.removeListener('message', s.listeners('message')[s.listenerCount('message')-1]);
+        } else {
+            s = dgram.createSocket('udp4')
+            s.bind(port, host);
+        }
         s.on('message', (msg_buf, rinfo) => {
             if (this[_taskDone]) {
                 s.close();
@@ -253,7 +264,6 @@ class Drone {
         this[_marker].setPosition([state_obj.Lon, state_obj.Lat]);
         // Update trace and distance
         if (state_obj['Armed']) {
-            console.log(`Drone-${this.getCID()}: (${state_obj.Lon}, ${state_obj.Lat})`)
             this[_traceArr].push([state_obj['Lon'], state_obj['Lat']]);
             this[_trace].setPath(this[_traceArr]);
 

@@ -62,10 +62,15 @@ class DroneCluster {
         // Generate CID
         var CID_base = this[_drones].length;
 
-        // Add drone to the container
-        for(let i=CID_base; i<CID_base + num; i++) {
-            var drone = new Drone(CID_base+i+1, this[_publicIp], i+1);
-            this[_drones].push(drone);
+        if(num > 1) {
+            // Add sitls to the container
+            for(let i=CID_base; i<CID_base + num; i++) {
+                var drone = new Drone(CID_base+i+1, this[_publicIp], true);
+                this[_drones].push(drone);
+            }
+        } else {
+            var drone = new Drone(CID_base + 1, this[_publicIp], false);
+            this[_drones].push(drone)
         }
     }
 
