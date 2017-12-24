@@ -3,6 +3,5 @@
 	"version": "1.0.0",
 	"main": "main.js",
 	"dependencies": {
-		"public-ip": "^2.3.5"
 	}
 }
