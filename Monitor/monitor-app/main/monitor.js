@@ -21,7 +21,7 @@ function initMap() {
     // Initialize the map module
     var map = new AMap.Map('map-container', {
         zoom: 18,
-        center: [116.397128, 39.916527],
+        center: [118.8193952, 31.8872318],
         layers: [new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()],
         features: ['bg', 'point', 'road', 'building']
     });
@@ -87,7 +87,7 @@ module.exports = {
             autoRotation: true
         });
         // Initialize the trace
-        var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#6d6d6d"]
+        var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#f4ea2a"]
         var trace = new Map.Polyline({
             map: map,
             path: [],
@@ -269,14 +269,38 @@ function initMenu(droneCluster){
                         var dialog = openCustomizedDialog('plot-points', JSON.stringify(oldPoints));
                         // Plot new points
                         dialog.on('closed', () => {
-                            var newPoints = JSON.parse(localStorage.getItem('dialog-return'))
-                            console.log(newPoints);
+                            var newPoints = JSON.parse(localStorage.getItem('dialog-return'));
                             var Map = global.Map;
                             var map = global.map;
-                            newPoints.forEach((point) => {
+                            var originPos = []
+                            newPoints.forEach((point, index) => {
+                                // The point O
+                                var curPos = []
+                                if(index === 0) {
+                                    originPos = [point[1], point[0]]
+                                    return;
+                                } else {
+                                    // Points relative to the point O
+                                    const rEarth = 6378137.0;
+                                    var dEast = point[0];
+                                    var dNorth = point[1];
+                                    var oriLat = originPos[1]
+                                    var oriLon = originPos[0]
+                                    var dLat = dNorth / rEarth; 
+                                    var dLon = dEast / (rEarth * Math.cos(Math.PI * oriLat / 180));
+                                    var newLat = oriLat + (dLat * 180 / Math.PI);
+                                    var newLon = oriLon + (dLon * 180 / Math.PI);
+                                    curPos = [newLon, newLat];
+                                }
+                                // Plot point
                                 points.push(new Map.Marker({
                                     map: map,
-                                    position: [point[1], point[0]]
+                                    offset: new Map.Pixel(-8, -8),
+                                    icon: new Map.Icon({
+                                        size: new Map.Size(16, 16),
+                                        image: `img/target.png`
+                                    }),
+                                    position: curPos
                                 }));
                             })
                         })
