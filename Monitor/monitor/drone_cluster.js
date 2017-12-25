@@ -132,7 +132,6 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     clearTrace() {
-        console.log(`Total distance: ${this.getTotalDistance()}`);
         this[_drones].forEach((drone) => {
             drone.clearTrace();
         });
@@ -177,12 +176,12 @@ class DroneCluster {
      * @returns Total distance
      * @memberof DroneCluster
      */
-    getTotalDistance() {
-        var distance = 0;
+    getDistances() {
+        var distances = [];
         this[_drones].forEach((drone) => {
-            distance += drone.getDistance();
+            distances.push(drone.getDistance());
         });
-        return distance;
+        return distances;
     }
     
     /**
