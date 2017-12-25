@@ -9,7 +9,7 @@ There are some values predefined as follows to identify the type of MAVC message
 | ----------------- | ----- | ---------------------------------------- |
 | MAVC_REQ_CID      | 0     | Request the Connection ID                |
 | MAVC_CID          | 1     | Response to the ask of Connection ID     |
-| MAVC_REQ_STAT     | 2     | Ask for the state of drone(s)            |
+| MAVC_STAT         | 2     | Status information of the drone          |
 | MAVC_SET_GEOFENCE | 3     | Set the geofence of drone                |
 | MAVC_ACTION       | 4     | Actions to be performed                  |
 | MAVC_ARRIVED      | 5     | Tell the monitor that the drone has arrived at the target |
