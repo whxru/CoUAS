@@ -245,9 +245,14 @@ function initMenu(droneCluster){
                     label: '移动距离',
                     click: () => {
                         const { app, dialog } = require('electron').remote;
+                        var distances = droneCluster.getDistances()
+                        msg = '';
+                        distances.forEach((distance, idx) => {
+                            msg += `Drone-${idx+1}: ${distance}m\n`
+                        })
                         dialog.showMessageBox({
                             title: 'Distance',
-                            message: `Total distance: ${droneCluster.getTotalDistance()}`
+                            message: msg
                         })
                     }
                 }
