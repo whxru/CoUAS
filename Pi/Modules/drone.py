@@ -44,6 +44,7 @@ class Drone:
         while not self.__vehicle.parameters['FS_BATT_ENABLE'] == 2:
             pass
 
+        print("Battery failsafe has been set!")
         self.__establish_connection()
 
     def __establish_connection(self):
@@ -72,6 +73,8 @@ class Drone:
         ]
         s = self.send_msg_to_monitor(msg)
 
+        print("MAVC_REQ_CID sent out")
+        
         # Listen to the monitor to get CID
         while True:
             data_json, addr = s.recvfrom(1024)
@@ -306,10 +309,14 @@ class Drone:
         self.__task_done = True
 
         if self.__vehicle.armed:
+            # empty the action queue
             self.__action_queue = []
-            land_at(self.__vehicle, {
-                'Lat': 0,
-                'Lon': 0
-            })
+            # return to launch
+            self.__vehicle.message_factory.command_long_send(
+                0, 0,  # target_system, targe_component
+                20,  # MAV_CMD_NAV_RETURN_TO_LAUNCH
+                0,  # confirmation
+                0, 0, 0, 0, 0, 0, 0,  # param 1~7: not used
+            )
 
         self.__vehicle.close()
