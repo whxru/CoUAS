@@ -37,6 +37,13 @@ class Drone:
         self.__action_queue = []    # Queue of actions
         self.__vehicle = vehicle
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # Set battery failsafe
+        print('FS_BATT_ENABLE: {}'.format(self.__vehicle.parameters['FS_BATT_ENABLE']))
+        self.__vehicle.parameters['FS_BATT_ENABLE'] = 2
+        while not self.__vehicle.parameters['FS_BATT_ENABLE'] == 2:
+            pass
+
         self.__establish_connection()
 
     def __establish_connection(self):
