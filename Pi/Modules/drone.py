@@ -35,11 +35,11 @@ class Drone:
         self.__CID = -1             # Connection ID used to identify specific the drone.
         self.__task_done = False    # Indicate that whether the connection should be closed
         self.__action_queue = []    # Queue of actions
+        self.__geofence = None      # Information of geofence
         self.__vehicle = vehicle
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # Set battery failsafe
-        print('FS_BATT_ENABLE: {}'.format(self.__vehicle.parameters['FS_BATT_ENABLE']))
         self.__vehicle.parameters['FS_BATT_ENABLE'] = 2
         while not self.__vehicle.parameters['FS_BATT_ENABLE'] == 2:
             pass
@@ -74,7 +74,7 @@ class Drone:
         s = self.send_msg_to_monitor(msg)
 
         print("MAVC_REQ_CID sent out")
-        
+
         # Listen to the monitor to get CID
         while True:
             data_json, addr = s.recvfrom(1024)
@@ -266,39 +266,37 @@ class Drone:
 
         Args:
             args: Dictionary of parameters
-                radius: Radius of circle(meters).
-                lat: Latitude of center.
-                lon: Longitude of center.
+                Radius: Radius of circle(meters).
+                Lat: Latitude of center.
+                Lon: Longitude of center.
         """
 
-        # Get parameters
-        radius = args['Radius']
-        lat = args['Lat']
-        lon = args['Lon']
+        self.__geofence = args
+        if self.__geofence is None:
 
-        # Monitor the location of drone in case of escaping
-        def monitor_escaping():
-            while not self.__task_done:
-                # Calculate the distance
-                current_location = self.__vehicle.location.global_relative_frame
-                d_lat = current_location.lat - lat
-                d_lon = current_location.lon - lon
-                distance = math.sqrt((d_lat * d_lat) + (d_lon * d_lon)) * 1.113195e5
-                # Almost exceed the borderand
-                if distance + 0.1 > radius:
-                    # empty the action queue
-                    self.__action_queue = []
-                    # return to launch
-                    self.__vehicle.message_factory.command_long_send(
-                        0, 0,  # target_system, targe_component
-                        20,  # MAV_CMD_NAV_RETURN_TO_LAUNCH
-                        0,  # confirmation
-                        0, 0, 0, 0, 0, 0, 0,  # param 1~7: not used
-                    )
+            # Monitor the location of drone in case of escaping
+            def monitor_escaping():
+                while not self.__task_done:
+                    # Calculate the distance
+                    current_location = self.__vehicle.location.global_relative_frame
+                    d_lat = current_location.lat - self.__geofence['Lat']
+                    d_lon = current_location.lon - self.__geofence['Lon']
+                    distance = math.sqrt((d_lat * d_lat) + (d_lon * d_lon)) * 1.113195e5
+                    # Almost exceed the borderand
+                    if distance + 0.1 > self.__geofence['Radius']:
+                        # empty the action queue
+                        self.__action_queue = []
+                        # return to launch
+                        self.__vehicle.message_factory.command_long_send(
+                            0, 0,  # target_system, targe_component
+                            20,  # MAV_CMD_NAV_RETURN_TO_LAUNCH
+                            0,  # confirmation
+                            0, 0, 0, 0, 0, 0, 0,  # param 1~7: not used
+                        )
 
-        # Monitor in a new thread
-        work = Thread(target=monitor_escaping, name='Monitor_escaping')
-        work.start()
+            # Monitor in a new thread
+            work = Thread(target=monitor_escaping, name='Monitor_escaping')
+            work.start()
 
     def close_connection(self):
         """Close the connection that maintained by the instance
@@ -318,5 +316,3 @@ class Drone:
                 0,  # confirmation
                 0, 0, 0, 0, 0, 0, 0,  # param 1~7: not used
             )
-
-        self.__vehicle.close()
