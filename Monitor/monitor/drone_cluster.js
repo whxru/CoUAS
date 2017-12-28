@@ -45,8 +45,14 @@ class DroneCluster {
 
         // Calculate broadcast address
         var iface = require('os').networkInterfaces()[interfaceName];
-        var ipv4Addr = iface[1]['address'];
-        var netmask = iface[1]['netmask'];
+        var ipv4Addr = null;
+        var netmask = null;
+        iface.forEach((addr) => {
+            if(addr['family'] === 'IPv4') {
+                ipv4Addr = addr['address'];
+                netmask = addr['netmask']
+            }
+        })
         this[_publicIp] = ipv4Addr;
         this[_broadcastAddr] = DroneCluster.getBroadcastAddr(ipv4Addr, netmask);
     }
