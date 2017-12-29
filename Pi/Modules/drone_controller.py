@@ -26,7 +26,7 @@ def connect_vehicle(connection_string):
     """
 
     try:
-        vehicle = dronekit.connect(connection_string, heartbeat_timeout=15, wait_ready=True)
+        vehicle = dronekit.connect(connection_string, wait_ready=True)
     except socket.error:
         print 'No server exists!'
     except exceptions.OSError as e:
