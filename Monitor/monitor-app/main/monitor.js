@@ -4,6 +4,7 @@
  */
 
 const { DroneCluster } = require('../../monitor/drone_cluster.js');
+const wgs2mars = require('wgs2mars')
 
 // The AMap Circle of geofence
 let geofence_circle = null;
@@ -20,8 +21,10 @@ window.onload = () => {
 function initMap() {
     // Initialize the map module
     var map = new AMap.Map('map-container', {
-        zoom: 18,
-        center: [118.8193952, 31.8872318],
+        expandZoomRange: true,
+        zoom: 20,
+        zooms: [3, 20],
+        // center: [118.8193952, 31.8872318],
         layers: [new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()],
         features: ['bg', 'point', 'road', 'building']
     });
@@ -71,14 +74,16 @@ module.exports = {
         var map = global.map;
         var Map = global.Map;
         // Set the center position of map
-        var centerPos = new Map.LngLat(home.Lon, home.Lat);
+
+        var centerPos_mars = wgs2mars(home.Lon, home.Lat);
+        var centerPos = new Map.LngLat(centerPos_mars.lng, centerPos_mars.lat)
         map.panTo(centerPos);
         // Initialize the marker
         var marker = new Map.Marker({
             map: map,
             position: centerPos,
             offset: new Map.Pixel(-8, -8),
-            zoom: 18,
+            zoom: 19,
             icon: new Map.Icon({
                 size: new Map.Size(16, 16),
                 image: `img/drone-${(CID - 1) % 5 + 1}.png` 

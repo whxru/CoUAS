@@ -8,7 +8,7 @@ const net = require('net');
 const Map = require('../monitor-app/main/monitor.js');
 const os = require('os');
 const events = require('events');
-
+const wgs2mars = require('wgs2mars');
 // Constant value definitions of communication type
 const MAVC_REQ_CID = 0;            // Request the Connection ID
 const MAVC_CID = 1;                // Response to the ask of Connection ID
@@ -261,10 +261,11 @@ class Drone {
             this[_state][attr] = state_obj[attr];
         });
         // Update marker
-        this[_marker].setPosition([state_obj.Lon, state_obj.Lat]);
+        var pos_mars = wgs2mars(state_obj.Lon, state_obj.Lat);
+        this[_marker].setPosition([pos_mars.lng, pos_mars.lat]);
         // Update trace and distance
         if (state_obj['Armed']) {
-            this[_traceArr].push([state_obj['Lon'], state_obj['Lat']]);
+            this[_traceArr].push([pos_mars.lng, pos_mars.lat]);
             this[_trace].setPath(this[_traceArr]);
 
             var len = this[_traceArr].length;
@@ -279,9 +280,9 @@ class Drone {
                     previousLon = previousState[0];
                 }
 
-                var dLat = state_obj.Lat - previousLat;
-                var dLon = state_obj.Lon - previousLon;
-                this[_distance] += Math.sqrt(dLat * dLat + dLon * dLon) * 1.113195e5;
+                var curPos = new global.Map.LngLat(pos_mars.lng, pos_mars.lat);
+                var prePos = new global.Map.LngLat(previousLon, previousLat);
+                this[_distance] += curPos.distance(prePos);
             }
         }
     }
