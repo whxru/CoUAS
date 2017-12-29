@@ -22,8 +22,8 @@ if __name__ == '__main__':
     parser.add_argument('--host', default='172.20.10.4', help='IPv4 address where the monitor on')
     parser.add_argument('--port', default=4396, type=int, help='Port which the monitor are listening to')
     parser.add_argument('--sitl', type=int, help='Number of simulators to start')
-    parser.add_argument('--lat', default=31.8872318, type=float, help='Latitude of home-location of the simulator')
-    parser.add_argument('--lon', default=118.8193952, type=float, help='Longitude of home-location of the simulator')
+    parser.add_argument('--lat', default=31.8871046, type=float, help='Latitude of home-location of the simulator')
+    parser.add_argument('--lon', default=118.8134928, type=float, help='Longitude of home-location of the simulator')
     args = parser.parse_args()
     connection_string = args.master
     host = args.host
