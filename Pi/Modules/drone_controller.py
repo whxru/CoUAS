@@ -105,16 +105,16 @@ def go_by(vehicle, args):
     target_location = _get_location_metres(current_location, dNorth, dEast)
     target_distance = _get_distance_metres(current_location, target_location)
 
-    # Set the airspeed
+    # Set the groundspeed
     if not t == 0:
-        vehicle.airspeed = target_distance/(t*1.0)
+        vehicle.groundspeed = target_distance/(t*1.0)
 
     vehicle.simple_goto(target_location)
 
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
         remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
         # print "Distance to target: ", remaining_distance
-        if remaining_distance <= 1.5:  # Just below target, in case of undershoot.
+        if remaining_distance <= 2:  # Just below target, in case of undershoot.
             print "Reached target"
             break
 
@@ -142,9 +142,9 @@ def go_to(vehicle, args):
     target_location = dronekit.LocationGlobalRelative(lat, lon, current_location.alt)
     target_distance = _get_distance_metres(current_location, target_location)
 
-    # Set the airspeed
+    # Set the groundspeed
     if not t == 0:
-        vehicle.airspeed = target_distance/(t*1.0)
+        vehicle.groundspeed = target_distance/(t*1.0)
 
     vehicle.simple_goto(target_location)
 
