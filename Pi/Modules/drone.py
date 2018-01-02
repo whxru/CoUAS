@@ -181,7 +181,7 @@ class Drone:
 
                 buf += data_json
                 # Not a complete message yet
-                if not data_json.endswith('$$'):
+                if not buf.endswith('$$'):
                     continue
                 # A complete message has been received
                 data_dict = json.loads(buf[:-2])
