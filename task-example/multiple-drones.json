@@ -288,7 +288,7 @@
     },
 
     {
-        "Action_type": 4,
+        "Action_type": 3,
         "CID": 1,
         "Lat": 0,
         "Lon": 0,
@@ -296,7 +296,7 @@
         "Sync": false
     },
     {
-        "Action_type": 4,
+        "Action_type": 3,
         "CID": 2,
         "Lat": 0,
         "Lon": 0,
