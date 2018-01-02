@@ -15,18 +15,19 @@ import math
 from pymavlink import mavutil
 
 
-def connect_vehicle(connection_string):
+def connect_vehicle(connection_string, baud=115200):
     """Connect to the vehicle through the connection string
 
     Args:
         connection_string: It contains address to be connected and some connection options
+        baud: Baudrate
 
     Returns:
         An object from which you can get/set parameters and attributes, and control vehicle movement.
     """
 
     try:
-        vehicle = dronekit.connect(connection_string, wait_ready=True)
+        vehicle = dronekit.connect(connection_string, wait_ready=True, baud=baud)
     except socket.error:
         print 'No server exists!'
     except exceptions.OSError as e:
