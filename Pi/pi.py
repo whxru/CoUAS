@@ -67,7 +67,7 @@ if __name__ == '__main__':
         if not args.sitl:
             mav.close_connection()
         else:
-            sitl.close()
+            sitl.stop()
         print("Completed")
         exit(0)
 
