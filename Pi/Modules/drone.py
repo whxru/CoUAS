@@ -6,8 +6,7 @@ Modules.drone
 
 Implement the methods for the communication between monitor and drone mainly through UDP protocol.
 """
-import math
-import socket, json
+import json
 from drone_controller import *
 from threading import Thread, Timer
 
@@ -44,7 +43,11 @@ class Drone:
         while not self.__vehicle.parameters['FS_BATT_ENABLE'] == 2:
             pass
 
-        print("Battery failsafe has been set!")
+        # Restart mission when switch to AUTO again
+        self.__vehicle.parameters['MIS_RESTART'] = 1
+        while not self.__vehicle.parameters['MIS_RESTART'] == 1:
+            pass
+
         self.__establish_connection()
 
     def __establish_connection(self):
@@ -99,10 +102,10 @@ class Drone:
         try:
             report = Thread(target=self.__report_to_monitor, name='Report-To-Monitor')
             hear = Thread(target=self.__listen_to_monitor, name='Hear-From-Monitor')
-            execute = Thread(target=self.__perform_actions, name='Execute-Tasks-In-Queue')
+            # execute = Thread(target=self.__perform_actions, name='Execute-Tasks-In-Queue')
             report.start()
             hear.start()
-            execute.start()
+            # execute.start()
         except:
             print "Error: unable to start new thread!"
             exit(0)
@@ -133,10 +136,10 @@ class Drone:
             ]
             s = self.send_msg_to_monitor(state)
             if not self.__task_done:
-                t = Timer(1, send_state_to_monitor)
+                t = Timer(0.5, send_state_to_monitor)
                 t.start()
 
-        t = Timer(1, send_state_to_monitor)
+        t = Timer(0.5, send_state_to_monitor)
         t.start()
 
     def send_msg_to_monitor(self, msg):
@@ -188,7 +191,6 @@ class Drone:
                         mavc_type = data_dict[0]['Type']
                         handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
                         handler.start()
-
                 except KeyError:  # This message is not a MAVC message
                     continue
         except socket.error:
@@ -206,13 +208,54 @@ class Drone:
 
         def mavc_action(args):
             """Perform action."""
+
+            # Prepare to start next mission
+            clear_mission(self.__vehicle)
+
+            # Add commands to the mission
+            perform_action = {
+                ACTION_ARM_AND_TAKEOFF: arm_and_takeoff,
+                ACTION_GO_TO: go_to,
+                ACTION_GO_BY: go_by,
+                ACTION_LAND: land
+            }
             data_dict = args[0]
+            cmd_num = 0
+            pos = self.__vehicle.location.global_relative_frame
             for n in range(1, len(data_dict)):
                 # Pick actions about this drone out
-                CID = data_dict[n]['CID']
-                if CID == self.__CID:
-                    del data_dict[n]['CID']
-                    self.__action_queue.append(data_dict[n])
+                if data_dict[n]['CID'] == self.__CID:
+                    action = data_dict[n]
+                    # Perform the action
+                    action_type = action['Action_type']
+                    action['O'] = pos
+                    pos = perform_action[action_type](self.__vehicle, action)
+                    cmd_num += 1
+
+            # Add dummy command if needed
+            if not data_dict[-1]['Action_type'] == ACTION_LAND:
+                wait_next_mission(self.__vehicle)
+                cmd_num += 1
+
+            # Upload the mission to APM board
+            start_mission(self.__vehicle)
+
+            # Block until the end of mission
+            while not current_cmd_index(self.__vehicle) == cmd_num - 1:
+                pass
+
+            # Send report back if needed
+            if data_dict[-1]['Sync']:
+                self.write_data_to_monitor([
+                    {
+                        'Header': 'MAVCluster_Drone',
+                        'Type': MAVC_ARRIVED
+                    },
+                    {
+                        'CID': self.__CID,
+                        'Step': data_dict[-1]['Step']
+                    }
+                ])
 
         def mavc_set_geofence(args):
             """Set the geofence of drone."""
@@ -234,10 +277,11 @@ class Drone:
                 ACTION_ARM_AND_TAKEOFF: arm_and_takeoff,
                 ACTION_GO_TO: go_to,
                 ACTION_GO_BY: go_by,
-                ACTION_LAND: land_at
+                ACTION_LAND: land
             }
 
-            if len(self.__action_queue) > 0:
+            while len(self.__action_queue) > 0:
+                # Initialize the
                 # Choose the first action
                 action = self.__action_queue.pop(0)
                 # Perform the action
@@ -287,12 +331,7 @@ class Drone:
                         # empty the action queue
                         self.__action_queue = []
                         # return to launch
-                        self.__vehicle.message_factory.command_long_send(
-                            0, 0,  # target_system, targe_component
-                            20,  # MAV_CMD_NAV_RETURN_TO_LAUNCH
-                            0,  # confirmation
-                            0, 0, 0, 0, 0, 0, 0,  # param 1~7: not used
-                        )
+                        return_to_launch(self.__vehicle)
 
             # Monitor in a new thread
             work = Thread(target=monitor_escaping, name='Monitor_escaping')
@@ -310,9 +349,4 @@ class Drone:
             # empty the action queue
             self.__action_queue = []
             # return to launch
-            self.__vehicle.message_factory.command_long_send(
-                0, 0,  # target_system, targe_component
-                20,  # MAV_CMD_NAV_RETURN_TO_LAUNCH
-                0,  # confirmation
-                0, 0, 0, 0, 0, 0, 0,  # param 1~7: not used
-            )
+            return_to_launch(self.__vehicle)

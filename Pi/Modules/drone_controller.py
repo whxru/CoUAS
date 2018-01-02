@@ -7,13 +7,9 @@ Modules.drone_controller
 Package some drone commands as the safety of drone and correctness of tasks considered.
 """
 
-import dronekit
-import socket
 import exceptions
-import time
-import math
+from dronekit import *
 from pymavlink import mavutil
-
 
 def connect_vehicle(connection_string, baud=115200):
     """Connect to the vehicle through the connection string
@@ -27,12 +23,12 @@ def connect_vehicle(connection_string, baud=115200):
     """
 
     try:
-        vehicle = dronekit.connect(connection_string, wait_ready=True, baud=baud)
+        vehicle = connect(connection_string, wait_ready=True, baud=baud)
     except socket.error:
         print 'No server exists!'
     except exceptions.OSError as e:
         print 'No serial exists!'
-    except dronekit.APIException:
+    except APIException:
         print 'Timeout!'
     except:
         print 'Some other error while connecting to the drone!'
@@ -49,21 +45,19 @@ def arm_and_takeoff(vehicle, args):
             * Alt: The height which the drone should arrive at after the taking off.
             * Sync: Whether report to monitor after reaching the target.
     """
-
     altitude = args['Alt']
 
-    # Don't try to arm until autopilot is ready
     print "Basic pre-arm checks"
-    # while not vehicle.is_armable:
-    #     print " Waiting for vehicle to initialise..."
-    #     time.sleep(1)
+    # Don't let the user try to arm until autopilot is ready
+    while not vehicle.is_armable:
+        print " Waiting for vehicle to initialise..."
+        time.sleep(1)
 
-    # Copter should arm in GUIDED mode
     print "Arming motors"
-    vehicle.mode = dronekit.VehicleMode("GUIDED")
+    # Copter should arm in GUIDED mode
+    vehicle.mode = VehicleMode("GUIDED")
     vehicle.armed = True
 
-    # Confirm vehicle armed before attempting to take off
     while not vehicle.armed:
         print " Waiting for arming..."
         time.sleep(1)
@@ -74,12 +68,15 @@ def arm_and_takeoff(vehicle, args):
     # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command
     #  after Vehicle.simple_takeoff will execute immediately).
     while True:
-        # print " Altitude: ", vehicle.location.global_relative_frame.alt
-        # Break and return from function just below target altitude.
-        if vehicle.location.global_relative_frame.alt >= altitude * 0.95:
+        print " Altitude: ", vehicle.location.global_relative_frame.alt
+        if vehicle.location.global_relative_frame.alt >= altitude * 0.95:  # Trigger just below target alt.
             print "Reached target altitude"
             break
         time.sleep(1)
+
+    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0,
+                  0, 0, 0, 0, 0, 0, altitude)
+    vehicle.commands.add(cmd)
 
 
 def go_by(vehicle, args):
@@ -94,30 +91,21 @@ def go_by(vehicle, args):
         args: Dictionary that contains action information
             * N: Distance at North direction.
             * E: Distance at East direction.
-            * Time: Expected time of the task (second).
+            * O: The position that the target is relative to.
+    Returns:
+        The target position.
     """
 
     dNorth = args['N']
     dEast = args['E']
-    t = args['Time']
-
+    current_location = args['O']
     print 'Go by (N: %d, E:%d)' % (dNorth, dEast)
-    current_location = vehicle.location.global_relative_frame
     target_location = _get_location_metres(current_location, dNorth, dEast)
-    target_distance = _get_distance_metres(current_location, target_location)
 
-    # Set the groundspeed
-    if not t == 0:
-        vehicle.groundspeed = target_distance/(t*1.0)
-
-    vehicle.simple_goto(target_location)
-
-    while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
-        remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
-        # print "Distance to target: ", remaining_distance
-        if remaining_distance <= 2:  # Just below target, in case of undershoot.
-            print "Reached target"
-            break
+    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
+                  0, 0, 0, 0, target_location.lat, target_location.lon, target_location.alt)
+    vehicle.commands.add(cmd)
+    return target_location
 
 
 def go_to(vehicle, args):
@@ -133,31 +121,21 @@ def go_to(vehicle, args):
             * Lat: Latitude of target position.
             * Lon: Longitude of target position.
             * Time: Expected time of the task (second).
+    Returns:
+        The target position.
     """
 
     lat = args['Lat']
     lon = args['Lon']
-    t = args['Time']
+    alt = args['alt']
 
-    current_location = vehicle.location.global_relative_frame
-    target_location = dronekit.LocationGlobalRelative(lat, lon, current_location.alt)
-    target_distance = _get_distance_metres(current_location, target_location)
-
-    # Set the groundspeed
-    if not t == 0:
-        vehicle.groundspeed = target_distance/(t*1.0)
-
-    vehicle.simple_goto(target_location)
-
-    while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
-        remaining_distance = _get_distance_metres(vehicle.location.global_frame, target_location)
-        print "Distance to target: ", remaining_distance
-        if remaining_distance <= 0.5:  # Just below target, in case of undershoot.
-            print "Reached target"
-            break
+    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
+                  0, 0, 0, 0, lat, lon, 0)
+    vehicle.commands.add(cmd)
+    return LocationGlobalRelative(lat, lon, alt)
 
 
-def land_at(vehicle, args):
+def land(vehicle, args):
     """Ask the drone to land at a specific location.
 
     If the latitude and longitude both equal zero, then the drone will land at the current location.
@@ -172,31 +150,44 @@ def land_at(vehicle, args):
     lat = args['Lat']
     lon = args['Lon']
 
-    # Fly to target location if necessary
-    if not (lat == 0 and lon == 0):
-        go_to(vehicle, {
-            'Lat': lat,
-            'Lon': lon,
-            'Time': 0  # To avoid setting the speed
-        })
+    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0,
+                  0, 0, 0, 0, lat, lon, 0)
+    vehicle.commands.add(cmd)
 
-    # Land
-    vehicle.message_factory.command_long_send(
-        0, 0,  # target_system, targe_component
-        mavutil.mavlink.MAV_CMD_NAV_LAND,  # command
-        0,  # confirmation
-        0, 0, 0, 0,  # param 1~4: not used
-        0, 0,  # param 5,6: Latitude and longitude
-        0  # param 7: not used
+
+def wait_next_mission(vehicle):
+    """Wait for sync"""
+    vehicle.commands.add(
+        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0,
+                0, 0, 0, 0, 0, 0, 0, 0)
     )
 
-    current_location = vehicle.location.global_relative_frame
-    target_location = dronekit.LocationGlobalRelative(lat, lon, current_location.alt)
-    # Monitor the altitude of the drone
-    while True:
-        if vehicle.location.global_relative_frame.alt <= 0.3:
-            print "Landed safely"
-            break
+
+def clear_mission(vehicle):
+    """Clear commands in current mission"""
+    cmds = vehicle.commands
+    cmds.clear()
+
+
+def start_mission(vehicle):
+    """Restart a new mission"""
+    cmds = vehicle.commands
+    cmds.upload()
+    print "Commands uploaded!"
+    vehicle.mode = VehicleMode('GUIDED')
+    while not vehicle.mode == 'GUIDED':
+        pass
+    vehicle.mode = VehicleMode('AUTO')
+    print "Start mission!"
+
+
+def current_cmd_index(vehicle):
+    return vehicle.commands.next
+
+
+def return_to_launch(vehicle):
+    """Ask the drone to return to launch"""
+    vehicle.mode = VehicleMode('RTL')
 
 
 def _get_location_metres(original_location, dNorth, dEast):
@@ -223,10 +214,10 @@ def _get_location_metres(original_location, dNorth, dEast):
     # New position in decimal degrees
     new_lat = original_location.lat + (dLat * 180 / math.pi)
     new_lon = original_location.lon + (dLon * 180 / math.pi)
-    if type(original_location) is dronekit.LocationGlobal:
-        target_location = dronekit.LocationGlobal(new_lat, new_lon, original_location.alt)
-    elif type(original_location) is dronekit.LocationGlobalRelative:
-        target_location = dronekit.LocationGlobalRelative(new_lat, new_lon, original_location.alt)
+    if type(original_location) is LocationGlobal:
+        target_location = LocationGlobal(new_lat, new_lon, original_location.alt)
+    elif type(original_location) is LocationGlobalRelative:
+        target_location = LocationGlobalRelative(new_lat, new_lon, original_location.alt)
     else:
         raise Exception("Invalid Location object passed")
 
