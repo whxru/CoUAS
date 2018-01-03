@@ -4,7 +4,7 @@
  */
 
 const { DroneCluster } = require('../../monitor/drone_cluster.js');
-const wgs2mars = require('wgs2mars')
+const transform = require('../../monitor/transform.js')
 
 // The AMap Circle of geofence
 let geofence_circle = null;
@@ -22,9 +22,9 @@ function initMap() {
     // Initialize the map module
     var map = new AMap.Map('map-container', {
         expandZoomRange: true,
-        zoom: 20,
+        zoom: 18,
         zooms: [3, 20],
-        // center: [118.8193952, 31.8872318],
+        center: [118.8193952, 31.8872318],
         layers: [new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()],
         features: ['bg', 'point', 'road', 'building']
     });
@@ -75,7 +75,7 @@ module.exports = {
         var Map = global.Map;
         // Set the center position of map
 
-        var centerPos_mars = wgs2mars(home.Lon, home.Lat);
+        var centerPos_mars = transform.wgs2gcj(home.Lat, home.Lon);
         var centerPos = new Map.LngLat(centerPos_mars.lng, centerPos_mars.lat)
         map.panTo(centerPos);
         // Initialize the marker
@@ -128,7 +128,7 @@ function initMenu(droneCluster){
                     accelerator:'CmdOrCtrl+Shift+N',
                     click: () => {
                         var input_str = `
-                                <p><label>数量:</label><input type="number" min="2" max="50" id="drone-num"></p>
+                                <p><label>数量:</label><input type="number" min="1" max="50" id="drone-num"></p>
                             `;
                         var container = document.createElement('div');
                         document.body.appendChild(container);
@@ -140,7 +140,9 @@ function initMenu(droneCluster){
                         btn.onclick = () => {
                             var num = document.getElementById('drone-num').value;
                             document.body.removeChild(document.getElementsByClassName('input-container')[0]);
-                            droneCluster.addDrone(num);
+                            if(num) {
+                                droneCluster.addDrone(num);
+                            }
                         }
                     }
                 }
@@ -204,14 +206,14 @@ function initMenu(droneCluster){
                                 var lat = parseFloat(document.getElementById('geofence-lat').value);
                                 var lon = parseFloat(document.getElementById('geofence-lon').value);
                                 var rad = parseFloat(document.getElementById('geofence-rad').value);
+                                // Remove the container
+                                var container = e.target.parentNode;
+                                container.parentNode.removeChild(container);
                                 if(!(lat && lon && rad)) {
                                     return;
                                 }
                                 // Send message to drones
                                 droneCluster.setGeofence(rad, lat, lon);
-                                // Remove the container
-                                var container = e.target.parentNode;
-                                container.parentNode.removeChild(container);
                                 // Clear previous circle
                                 if(geofence_circle) {
                                     geofence_circle.setMap(null);
