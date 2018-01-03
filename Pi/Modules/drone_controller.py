@@ -127,7 +127,7 @@ def go_to(vehicle, args):
 
     lat = args['Lat']
     lon = args['Lon']
-    alt = args['alt']
+    alt = args['Alt']
 
     cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
                   0, 0, 0, 0, lat, lon, 0)
