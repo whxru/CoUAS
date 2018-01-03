@@ -5,6 +5,7 @@
 
 const { Drone } = require('./drone.js');
 const dgram = require('dgram');
+const transform = require('./transform.js')
 
 // Constant value definitions of communication type
 const MAVC_REQ_CID = 0;            // Request the Connection ID
@@ -91,6 +92,15 @@ class DroneCluster {
         }
         // Get actions in the task
         var actions = JSON.parse(task_json);
+
+        // Transform from GCJ-02 to WGS-84 in GO_TO action
+        actions.forEach((action) => {
+            if(action['Action_type'] === ACTION_GO_TO) {
+                var pos_wgs = transform.gcj2wgs(action.Lat, action.Lon);
+                action['Lat'] = pos_wgs.lat;
+                action['Lon'] = pos_wgs.lng;
+            }
+        })
 
         // Decompose current task into several subtasks
         var subtasks = [];
