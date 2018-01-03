@@ -8,7 +8,7 @@ const net = require('net');
 const Map = require('../monitor-app/main/monitor.js');
 const os = require('os');
 const events = require('events');
-const wgs2mars = require('wgs2mars');
+const transform = require('./transform.js')
 // Constant value definitions of communication type
 const MAVC_REQ_CID = 0;            // Request the Connection ID
 const MAVC_CID = 1;                // Response to the ask of Connection ID
@@ -261,7 +261,7 @@ class Drone {
             this[_state][attr] = state_obj[attr];
         });
         // Update marker
-        var pos_mars = wgs2mars(state_obj.Lon, state_obj.Lat);
+        var pos_mars = transform.wgs2gcj(state_obj.Lat, state_obj.Lon);
         this[_marker].setPosition([pos_mars.lng, pos_mars.lat]);
         // Update trace and distance
         if (state_obj['Armed']) {
