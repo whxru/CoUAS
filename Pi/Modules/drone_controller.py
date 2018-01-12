@@ -79,6 +79,8 @@ def arm_and_takeoff(vehicle, args):
                   0, 0, 0, 0, 0, 0, altitude)
     vehicle.commands.add(cmd)
 
+    return vehicle.location.global_relative_frame
+
 
 def go_by(vehicle, args):
     """Make an movement of drone according to the distance at North and East inputted
