@@ -55,7 +55,7 @@ if __name__ == '__main__':
     else:
         # Connect to the Vehicle
         print("Connecting to vehicle on: %s" % connection_string)
-        vehicle = connect_vehicle(connection_string)
+        vehicle = connect_vehicle(connection_string, baud=baud)
 
         # Connect to the Monitor
         mav = drone.Drone(vehicle, host, port, baud)

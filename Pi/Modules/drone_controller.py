@@ -11,6 +11,7 @@ import exceptions
 from dronekit import *
 from pymavlink import mavutil
 
+
 def connect_vehicle(connection_string, baud=115200):
     """Connect to the vehicle through the connection string
 
