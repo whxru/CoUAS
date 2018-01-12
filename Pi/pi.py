@@ -43,22 +43,28 @@ if __name__ == '__main__':
             sitls[idx-1] = drone.Drone(vehicle, h, p, idx)
 
         # Preparation for starting multiple separated simulators
-        from dronekit_sitl import SITL
-        for i in range(0, args.sitl):
-            sitl = SITL()
-            sitl.download('copter', '3.3', verbose=True)
-            sitl_args = ['-I%d' % i, '--model', 'quad', '--home=%f,%f,584,353' % (args.lat, args.lon)]
-            sitls.append([sitl, sitl_args])
-            cnt_strs.append('tcp:127.0.0.1:%d' % (5760 + 10*i))
-            c = Thread(target=connect_to_monitor, args=(host, port, i+1), name="SITL_%d" % (i+1))
-            c.start()
+        from dronekit_sitl import SITL, start_default
+        if args.sitl == 1:
+            sitl = start_default(args.lat, args.lon)
+            connection_string = sitl.connection_string()
+            vehicle = connect_vehicle(connection_string)
+            drone.Drone(vehicle, host, port)
+        else:
+            for i in range(0, args.sitl):
+                sitl = SITL()
+                sitl.download('copter', '3.3', verbose=True)
+                sitl_args = ['-I%d' % i, '--model', 'quad', '--home=%f,%f,584,353' % (args.lat, args.lon)]
+                sitls.append([sitl, sitl_args])
+                cnt_strs.append('tcp:127.0.0.1:%d' % (5760 + 10*i))
+                c = Thread(target=connect_to_monitor, args=(host, port, i+1), name="SITL_%d" % (i+1))
+                c.start()
     else:
         # Connect to the Vehicle
         print("Connecting to vehicle on: %s" % connection_string)
         vehicle = connect_vehicle(connection_string, baud=baud)
 
         # Connect to the Monitor
-        mav = drone.Drone(vehicle, host, port, baud)
+        mav = drone.Drone(vehicle, host, port)
 
     try:
         while True:
