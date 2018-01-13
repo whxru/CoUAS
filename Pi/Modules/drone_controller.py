@@ -31,8 +31,6 @@ def connect_vehicle(connection_string, baud=115200):
         print 'No serial exists!'
     except APIException:
         print 'Timeout!'
-    except:
-        print 'Some other error while connecting to the drone!'
     else:
         return vehicle
 
@@ -48,12 +46,6 @@ def arm_and_takeoff(vehicle, args):
     """
     altitude = args['Alt']
 
-    print "Basic pre-arm checks"
-    # Don't let the user try to arm until autopilot is ready
-    while not vehicle.is_armable:
-        print " Waiting for vehicle to initialise..."
-        time.sleep(1)
-
     print "Arming motors"
     # Copter should arm in GUIDED mode
     vehicle.mode = VehicleMode("GUIDED")
@@ -66,10 +58,20 @@ def arm_and_takeoff(vehicle, args):
     print "Taking off!"
     vehicle.simple_takeoff(altitude)  # Take off to target altitude
 
+    start_time = time.time()
     # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command
     #  after Vehicle.simple_takeoff will execute immediately).
     while True:
         print " Altitude: ", vehicle.location.global_relative_frame.alt
+        if time.time() - start_time > 2 and vehicle.location.global_relative_frame.alt < altitude * 0.8:
+            # Re-ask the drone to fly to a specific altitude
+            print("Re-takeoff!")
+            current_lat = vehicle.location.global_relative_frame.lat
+            current_lon = vehicle.location.global_relative_frame.lon
+            target = LocationGlobalRelative(current_lat, current_lon, altitude)
+            vehicle.simple_goto(target)
+            start_time = time.time()
+
         if vehicle.location.global_relative_frame.alt >= altitude * 0.95:  # Trigger just below target alt.
             print "Reached target altitude"
             break
