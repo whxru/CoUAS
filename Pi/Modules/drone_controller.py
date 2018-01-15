@@ -51,27 +51,16 @@ def arm_and_takeoff(vehicle, args):
     vehicle.mode = VehicleMode("GUIDED")
     vehicle.armed = True
 
+    print " Waiting for arming..."
     while not vehicle.armed:
-        print " Waiting for arming..."
-        time.sleep(1)
-
-    print "Taking off!"
+        pass
+    print "Armed, Taking off!"
     vehicle.simple_takeoff(altitude)  # Take off to target altitude
 
-    start_time = time.time()
     # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command
     #  after Vehicle.simple_takeoff will execute immediately).
     while True:
         print " Altitude: ", vehicle.location.global_relative_frame.alt
-        if time.time() - start_time > 2 and vehicle.location.global_relative_frame.alt < altitude * 0.8:
-            # Re-ask the drone to fly to a specific altitude
-            print("Re-takeoff!")
-            current_lat = vehicle.location.global_relative_frame.lat
-            current_lon = vehicle.location.global_relative_frame.lon
-            target = LocationGlobalRelative(current_lat, current_lon, altitude)
-            vehicle.simple_goto(target)
-            start_time = time.time()
-
         if vehicle.location.global_relative_frame.alt >= altitude * 0.95:  # Trigger just below target alt.
             print "Reached target altitude"
             break
