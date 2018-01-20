@@ -132,7 +132,7 @@ def go_to(vehicle, args):
 def land(vehicle, args):
     """Ask the drone to land at a specific location.
 
-    If the latitude and longitude both equal zero, then the drone will land at the current location.
+    If the latitude equals zero, then the drone will land at the current location.
 
     Args:
         vehicle: Object of the drone.
