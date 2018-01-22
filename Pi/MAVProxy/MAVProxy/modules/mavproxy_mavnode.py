@@ -106,6 +106,12 @@ class MAVNode(mp_module.MPModule):
 
     def msg_action(self, *args):
         """Handle the msg of action"""
+        self.mode('GUIDED')
+        while not self.master.flightmode == 'GUIDED':
+            pass
+        self.master.waypoint_clear_all_send()
+        self.module('wp').wploader.clear()
+
         data_dict = args[0]
         print(json.dumps(data_dict))
         cmd_num = 0
@@ -134,14 +140,12 @@ class MAVNode(mp_module.MPModule):
             cmd_num += 1
 
         # Upload the mission to APM board
+        self.module('wp').save_waypoints('wp.txt')
         self.module('wp').send_all_waypoints()
         while self.module('wp').loading_waypoints:
             pass
 
         # Start mission
-        self.mode('GUIDED')
-        while not self.master.flightmode == 'GUIDED':
-            pass
         self.mode('AUTO')
 
         # Block until the end of mission
@@ -173,9 +177,7 @@ class MAVNode(mp_module.MPModule):
 
         # Arm throttle
         self.master.arducopter_arm()
-        while not self.master.motors_armed():
-            pass
-        print("Motors have been armed")
+        time.sleep(1.0)
 
         # Takeoff
         self.master.mav.command_long_send(
@@ -199,7 +201,7 @@ class MAVNode(mp_module.MPModule):
 
         # Add waypoint
         fn = mavutil.mavlink.MAVLink_mission_item_message
-        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
+        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0,
                 0, 0, 0, 0, 0, 0, alt)
         self.module('wp').wploader.add(wp)
 
@@ -249,12 +251,16 @@ class MAVNode(mp_module.MPModule):
         """Add land waypoint to file of mission"""
         lat = args['Lat']
         lon = args['Lon']
+        pos = args['O']
 
         # Add waypoint
         fn = mavutil.mavlink.MAVLink_mission_item_message
+        (lat, lon) = (pos['lat'], pos['lon']) if lat == 0 else (lat, lon)
         wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0,
-                0, 0, 0, 0, lat, lon, 0)
+                0, 0, 0, 0, lat, lon, 1.0)
         self.module('wp').wploader.add(wp)
+
+        return {}
 
     def mode(self, md):
         """set arbitrary mode"""
