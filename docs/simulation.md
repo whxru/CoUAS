@@ -1,6 +1,6 @@
 # Simulation
 
-Use MAVCluster with simulator(s). 
+Run CoUAV with simulator(s). 
 
 ## Run monitor and Pi's script
 
@@ -11,7 +11,7 @@ Notice that one PC can start only one simulator of drone, otherwise there will b
 Clone this repository to local disk:
 
 ```shell
-git clone https://github.com/whxru/MAVCluster.git
+git clone https://github.com/whxru/CoUAV.git
 ```
 
 Since there is no release of the monitor currently, you can only run it from electron: Firstly install [Node.js](nodejs.org) and ensure that [npm](www.npmjs.com) has been installed correctly and then Install electron globally:
@@ -35,19 +35,17 @@ pip install dronekit
 pip install dronekit-sitl
 ```
 
-
-
 ### Start
 
-Change directory to `MAVCluster/Monitor` and run monitor:
+Change directory to `CoUAV/Monitor` and run monitor:
 
 ```shell
 electron .
 ```
 
-Select a network interface and press `Ctrl`+`Shift`+`N`, input the expected number of simulators (e.g. 10) to wait for requests of connection, check the IPv4 address of the monitor via `Ctrl`+`H`.
+Select a network interface and  check public IPv4 address of the monitor via `Ctrl`+`H`. Press `Ctrl`+`Shift`+`N`, input the expected number of simulators (e.g. 10) to wait for requests of connection,.
 
-Change directory to `MAVCluster/Pi` and start simulator directly from the script:
+Change directory to `CoUAV/Pi` and start simulator directly from the script:
 
 ```shell
 py -2 pi.py --host 127.0.0.1 --sitl 10 --lat 35.363261 --lon 149.165230
@@ -58,3 +56,4 @@ py -2 pi.py --host 127.0.0.1 --sitl 10 --lat 35.363261 --lon 149.165230
 * If you are in China now, you may need install electron with [cnpm](https://npm.taobao.org/).
 * Try run [pi.py](../Pi/pi.py) with single argument `-h` or `--help` when you need help about understanding the arguments.
 * Only when the drone has been connected to monitor can you assign tasks.
+* Due to the limit of map provided by [AutoNavi](https://lbs.amap.com/api/javascript-api/summary/), images out of China can not be loaded.
