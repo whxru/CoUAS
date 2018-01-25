@@ -1,5 +1,5 @@
 # MAVC Message
-MAVC Message is a JSON string essentially, it is an simple protocol designed to implement the communication between Raspberry Pi 3 and the Monitor. The message is sent between programs mainly through UDP protocol.
+MAVC message is a JSON string essentially, it is designed to implement the communication between Raspberry Pi 3 and the monitor. The message is sent between programs mainly through UDP protocol.
 
 ##  Type
 
@@ -13,6 +13,7 @@ There are some values predefined as follows to identify the type of MAVC message
 | MAVC_SET_GEOFENCE | 3     | Set the geofence of drone                |
 | MAVC_ACTION       | 4     | Actions to be performed                  |
 | MAVC_ARRIVED      | 5     | Tell the monitor that the drone has arrived at the target |
+| MAVC_DONE         | 6     | Close the connection between RPi and monitor |
 
 ### Action Type
 
@@ -121,6 +122,11 @@ The format of MAVC message should follow the example below:
     {
         "CID": 3,
         "Step": 1 
+    }
+    
+    # Type = MAVC_DONE
+    {
+        "CID": 4
     }
 ]
 ```

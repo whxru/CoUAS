@@ -5,7 +5,7 @@ Run CoUAV on real drone(s).
 ## Devices
 
 * Laptop.
-* ( RPi 3b + Mobile Power Pack + Drone + USB cable/SiK Telemetry Radio  ) * N ($N \geq 1$).
+* ( RPi 3b + Mobile Power Pack + Drone + USB cable/SiK Telemetry Radio  ) * N.
 * Large power AP ( No need if the RPi connects to the drone via radio since the WLAN  created  by a smart phone can satisfy the requirement ).
 
 ## Configuration
