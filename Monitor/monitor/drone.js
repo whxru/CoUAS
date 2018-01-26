@@ -234,6 +234,7 @@ class Drone {
                 try {
                     if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
                         var Type = msg_obj[0]['Type'];
+                        this[_drone].emit('msg-in', this.getCID(), msg_obj);
                         if (Type === MAVC.MAVC_ARRIVED) {
                             console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
                             if (msg_obj[1]['CID'] === this.getCID()) {
@@ -349,6 +350,7 @@ class Drone {
      */
     writeDataToPi(data, callback) {
         this[_tcpSock].write(data, callback);
+        this[_drone].emit('message-out', this.getCID(), JSON.dumps(data));
     }
 }
 

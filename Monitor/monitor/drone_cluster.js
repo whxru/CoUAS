@@ -5,16 +5,18 @@
 
 const { Drone } = require('./drone');
 const dgram = require('dgram');
+const events = require('events');
 const transform = require('./lib/transform')
 const { MAVC } = require('./lib/mavc')
 // For the use of private attributes
 const _port = Symbol('port');
 const _drones = Symbol('drones');
+const _drone = Symbol('drone');
 const _publicIp = Symbol('publicIp');
 const _broadcastAddr = Symbol('broadcastAddr');
 // For the use of private methods
 const _sendMsgToPi = Symbol('sendMsgToPi');
-const _broadcastMsg = Symbol('broadcastMsg');
+const _addNotification = Symbol('addNotification');
 const _sendSubtasks = Symbol('sendSubtasks');
 
 /**
@@ -30,6 +32,7 @@ class DroneCluster {
     constructor(interfaceName) {
         this[_port] = 4396; // Port on Pi where the message will be sent to
         this[_drones] = []; // Container of drones
+        this[_drone] = new events.EventEmitter();
 
         // Calculate broadcast address
         var iface = require('os').networkInterfaces()[interfaceName];
@@ -61,12 +64,15 @@ class DroneCluster {
             for(let i=CID_base; i<CID_base + num; i++) {
                 var drone = new Drone(CID_base+i+1, this[_publicIp], true);
                 this[_drones].push(drone);
+                this[_addNotification](drone.getEventNotifier());
             }
         } else {
             var drone = new Drone(CID_base + 1, this[_publicIp], false);
             this[_drones].push(drone)
+            this[_addNotification](drone.getEventNotifier());
         }
     }
+
 
     /**
      * Decompose current task into serveral subtasks and send them.
@@ -159,7 +165,7 @@ class DroneCluster {
                 "Lon": lon
             }
         ];
-        this[_broadcastMsg](msg);
+        this.broadcastMsg(msg);
     }
 
     /**
@@ -175,7 +181,7 @@ class DroneCluster {
     }
 
     /**
-     * Get the total distance in a task.
+     * Get distance of every drone in a task.
      * @returns Total distance
      * @memberof DroneCluster
      */
@@ -186,7 +192,54 @@ class DroneCluster {
         });
         return distances;
     }
+
+    /**
+     * Get the event emitter.
+     * @returns Event emitter.
+     * @memberof DroneCluster
+     */
+    getNotifier() {
+        return this[_drone];
+    }
     
+    /**
+     * Get the object of drone according to the CID.
+     * @param {any} CID - Connection ID
+     * @returns The object of drone.
+     * @memberof DroneCluster
+     */
+    getDrone(CID) {
+        return this[_drones][CID];
+    }
+    
+
+    /**
+     * Send message to every drone in the cluster.
+     * @param {Object} msg - MAVC message
+     * @memberof DroneCluster
+     */
+    broadcastMsg(msg) {
+        var msg_json = JSON.stringify(msg) + '$$';
+        this[_drones].forEach((drone) => {
+            drone.writeDataToPi(msg_json);
+        })
+    }
+
+    /**
+     * Collect the nofication of drones in the cluster.
+     * @param {EventEmitter} drone - The event emitter of one single drone.
+     * @memberof DroneCluster
+     */
+    [_addNotification](drone) {
+        drone.on('message-in', (CID, msg_obj) => {
+            this[_drone].emit('message-in', CID, msg_obj);
+        });
+
+        drone.on('message-out', (CID, msg_obj) => {
+            this[_drone].emit('message-out', CID, msg_obj);
+        })
+    }
+
     /**
      * Send message to the Pi specified by the host
      * @param {string} host - Address of Pi
@@ -208,7 +261,7 @@ class DroneCluster {
      */
     [_sendSubtasks](subtasks) {
         // Send first subtask
-        this[_broadcastMsg](subtasks[0]);
+        this.broadcastMsg(subtasks[0]);
         // Wait for all actions having been performed
         var index = 0;                          // Which subtask the cluster currently in.
         var counter = 0;                        // Number of drones which has been ready for next subtask.
@@ -224,23 +277,11 @@ class DroneCluster {
                     counter = 0;
                     // Execute next subtask
                     if (++index < cls_subtasks.length) {
-                        this[_broadcastMsg](cls_subtasks[index]);
+                        this.broadcastMsg(cls_subtasks[index]);
                     }
                 }
             });
         });
-    }
-
-    /**
-     * Send message to every drone in the cluster.
-     * @param {Object} msg - MAVC message
-     * @memberof DroneCluster
-     */
-    [_broadcastMsg](msg) {
-        var msg_json = JSON.stringify(msg) + '$$';
-        this[_drones].forEach((drone) => {
-            drone.writeDataToPi(msg_json);
-        })
     }
 
     /**
