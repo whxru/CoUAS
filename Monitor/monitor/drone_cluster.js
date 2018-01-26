@@ -3,23 +3,10 @@
  * @author whxru
  */
 
-const { Drone } = require('./drone.js');
+const { Drone } = require('./drone');
 const dgram = require('dgram');
-const transform = require('./transform.js')
-
-// Constant value definitions of communication type
-const MAVC_REQ_CID = 0;            // Request the Connection ID
-const MAVC_CID = 1;                // Response to the ask of Connection ID
-const MAVC_STAT = 2;               // Report the state of drone
-const MAVC_SET_GEOFENCE = 3;       // Set the geofence of drone
-const MAVC_ACTION = 4;             // Action to be performed
-const MAVC_ARRIVED = 5;            // Tell the monitor that the drone has arrived at the target
-// Constant value definitions of action type
-const ACTION_ARM_AND_TAKEOFF = 0;  // Ask drone to arm and takeoff
-const ACTION_GO_TO = 1;            // Ask drone to fly to target specified by latitude and longitude
-const ACTION_GO_BY = 2;            // Ask drone to fly to target specified by the distance in both North and East directions
-const ACTION_LAND = 3;             // Ask drone to land at current or a specific position
-
+const transform = require('./lib/transform')
+const { MAVC } = require('./lib/mavc')
 // For the use of private attributes
 const _port = Symbol('port');
 const _drones = Symbol('drones');
@@ -95,7 +82,7 @@ class DroneCluster {
 
         // Transform from GCJ-02 to WGS-84 in GO_TO action
         actions.forEach((action) => {
-            if(action['Action_type'] === ACTION_GO_TO) {
+            if(action['Action_type'] === MAVC.ACTION_GO_TO) {
                 var pos_wgs = transform.gcj2wgs(action.Lat, action.Lon);
                 action['Lat'] = pos_wgs.lat;
                 action['Lon'] = pos_wgs.lng;
@@ -110,7 +97,7 @@ class DroneCluster {
         subtasks.push([
             {
                 "Header": "MAVCluster_Monitor",
-                "Type": MAVC_ACTION
+                "Type": MAVC.MAVC_ACTION
             }
         ]);
         while (actions.length > 0) {
@@ -128,7 +115,7 @@ class DroneCluster {
                     subtasks.push([
                         {
                             "Header": "MAVCluster_Monitor",
-                            "Type": MAVC_ACTION
+                            "Type": MAVC.MAVC_ACTION
                         }
                     ]);
                 }
@@ -164,7 +151,7 @@ class DroneCluster {
         var msg = [
             {
                 "Header": "MAVCluster_Monitor",
-                "Type": MAVC_SET_GEOFENCE
+                "Type": MAVC.MAVC_SET_GEOFENCE
             },
             {
                 "Radius": rad,
@@ -216,7 +203,7 @@ class DroneCluster {
 
     /**
      * Send subtasks one by one.
-     * @param {Object} subtasks - MAVC_ACTION message of subtasks
+     * @param {Object} subtasks - MAVC.MAVC_ACTION message of subtasks
      * @memberof DroneCluster
      */
     [_sendSubtasks](subtasks) {
