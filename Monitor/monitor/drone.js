@@ -5,22 +5,10 @@
 
 const dgram = require('dgram');
 const net = require('net');
-const Map = require('../monitor-app/main/monitor.js');
 const os = require('os');
 const events = require('events');
-const transform = require('./transform.js')
-// Constant value definitions of communication type
-const MAVC_REQ_CID = 0;            // Request the Connection ID
-const MAVC_CID = 1;                // Response to the ask of Connection ID
-const MAVC_STAT = 2;               // Report the state of drone
-const MAVC_SET_GEOFENCE = 3;       // Set the geofence of drone
-const MAVC_ACTION = 4;             // Action to be performed
-const MAVC_ARRIVED = 5;            // Tell the monitor that the drone has arrived at the target
-// Constant value definitions of action type
-const ACTION_ARM_AND_TAKEOFF = 0;  // Ask drone to arm and takeoff
-const ACTION_GO_TO = 1;            // Ask drone to fly to target specified by latitude and longitude
-const ACTION_GO_BY = 2;            // Ask drone to fly to target specified by the distance in both North and East directions
-const ACTION_LAND = 3;             // Ask drone to land at current or a specific position
+const transform = require('./lib/transform');
+const { MAVC } = require('./lib/mavc');
 
 // For the use of private attributes
 const _drone = Symbol('drone');
@@ -41,7 +29,6 @@ const _sitl = Symbol('sitl');
 const _establishConnection = Symbol('establishConnection');
 const _listenToPi = Symbol('listenToPi');
 const _updateState = Symbol('updateState');
-const _preloadMap = Symbol('preloadMap');
 
 /**
  * Manage state of one single drone.
@@ -107,13 +94,16 @@ class Drone {
             // Whether the message is a json string or not
             try {
                 msg_obj = JSON.parse(msg_buf.toString('utf8'));
-            } catch (error) {
-                return; // SyntaxError
+            } catch (err) {
+                if (err instanceof SyntaxError) {
+                    return;
+                }
+                console.error(err.message)
             }
             // Whether the message is a MAVC message or not
             try {
                 // MAVC message that request CID
-                if (msg_obj[0]['Header'] === 'MAVCluster_Drone' && msg_obj[0]['Type'] === MAVC_REQ_CID) {
+                if (msg_obj[0]['Header'] === 'MAVCluster_Drone' && msg_obj[0]['Type'] === MAVC.MAVC_REQ_CID) {
                     console.log(`The request of CID from address:${rinfo.address}:${rinfo.port} has been received!`);
                     // Extract information 
                     host = rinfo.address;
@@ -122,7 +112,7 @@ class Drone {
                     this[_home]['Lat'] = msg_obj[1]['Lat'];
                     this[_home]['Lon'] = msg_obj[1]['Lon'];
                     // Preload map resources
-                    var { marker, trace } = Map.preloadMap(this[_state].CID, this[_home]);
+                    var { marker, trace } = global.mapModule.preloadMap(this[_state].CID, this[_home]);
                     this[_marker] = marker;
                     this[_trace] = trace;
                     // Send CID back
@@ -130,7 +120,7 @@ class Drone {
                     var msg = [
                         {
                             'Header': 'MAVCluster_Monitor',
-                            'Type': MAVC_CID
+                            'Type': MAVC.MAVC_CID
                         },
                         {
                             'CID': this[_state]['CID']
@@ -147,9 +137,12 @@ class Drone {
                         }
                     });
                 }
-            } catch (error) {
-                console.log(error.message);
-                return; // TypeError
+            } catch (err) {
+                if( err instanceof TypeError) {
+                    return;
+                }
+                console.error(err.message)
+                return;
             }
         });
     }
@@ -186,22 +179,28 @@ class Drone {
             // Whether the message is a json string or not
             try {
                 msg_obj = JSON.parse(msg_buf.toString('utf8'));
-            } catch (error) {
-                return; // SyntaxError
+            } catch (err) {
+                if(err instanceof SyntaxError) {
+                    return;
+                }
+                console.error(err.message)
             }
             // Whether the message is a MAVC message from Pi
             try {
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
                     var Type = msg_obj[0]['Type'];
                     // Message contains the state of drone
-                    if (Type === MAVC_STAT) {
+                    if (Type === MAVC.MAVC_STAT) {
                         // Update state
                         this[_updateState](msg_obj[1]);
                         return;
                     }
                 }
-            } catch (error) {
-                return; // TypeError
+            } catch (err) {
+                if (err instanceof TypeError) {
+                    return;
+                }
+                console.error(err.message)
             }
         });
 
@@ -225,14 +224,17 @@ class Drone {
                 // Whether the message is a json string or not
                 try {
                     msg_obj = JSON.parse(msg_buf.toString('utf8'));
-                } catch (error) {
-                    return; // SyntaxError
+                } catch (err) {
+                    if (err instanceof SyntaxError) {
+                        return;
+                    }
+                    console.error(err.message)
                 }
                 // Whether the message is a MAVC message from Pi
                 try {
                     if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
                         var Type = msg_obj[0]['Type'];
-                        if (Type === MAVC_ARRIVED) {
+                        if (Type === MAVC.MAVC_ARRIVED) {
                             console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
                             if (msg_obj[1]['CID'] === this.getCID()) {
                                 // Notify that the drone has arrived
@@ -242,15 +244,18 @@ class Drone {
                             }
                         }
                     }
-                } catch (error) {
-                    return; // TypeError
+                } catch (err) {
+                    if (err instanceof TypeError) {
+                        return;
+                    }
+                    console.error(err.message)
                 }
             });
         })
         this[_server].listen(port, host);
     }
     /**
-     * Deep copy of drone state and update the marker on map.
+     * Deep copy of drone state and update the marker on global.mapModule.
      * @param {Object} state_obj - Dictionary of drone's state that monitor received from Raspberry Pi 3
      * @memberof Drone
      */
@@ -261,13 +266,13 @@ class Drone {
             this[_state][attr] = state_obj[attr];
         });
         // Update marker
-        var pos_mars = transform.wgs2gcj(state_obj.Lat, state_obj.Lon);
-        this[_marker].setPosition([pos_mars.lng, pos_mars.lat]);
+        var pos_mars = global.mapModule.setPosition(this[_marker], state_obj);
         // Update trace and distance
         if (state_obj['Armed']) {
+            // Update the trace
             this[_traceArr].push([pos_mars.lng, pos_mars.lat]);
-            this[_trace].setPath(this[_traceArr]);
-
+            global.mapModule.setPath(this[_trace], this[_traceArr]);
+            // Calculate the distance
             var len = this[_traceArr].length;
             if (len > 1) {
                 var previousState = this[_traceArr][len - 2];
@@ -280,9 +285,10 @@ class Drone {
                     previousLon = previousState[0];
                 }
 
-                var curPos = new global.Map.LngLat(pos_mars.lng, pos_mars.lat);
-                var prePos = new global.Map.LngLat(previousLon, previousLat);
-                this[_distance] += curPos.distance(prePos);
+                this[_distance] += global.mapModule.calDistance(
+                    { 'lat': previousLat, 'lng': previousLon },
+                    pos_mars
+                )
             }
         }
     }
