@@ -22,9 +22,10 @@ class MapModule {
             layers: [new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()],
             features: ['bg', 'point', 'road', 'building']
         });
+        this.geofence_circle = null;
+        this.points = []
 
         // Update lat and lon when clicking the map
-        this.pick_coordinate_enable = false;
         this.map.on('click', (evt) => {
             if (this.pick_coordinate_enable) {
                 var lat = evt.lnglat.getLat()
@@ -117,6 +118,92 @@ class MapModule {
      */
     setPath(polyline, traceArr) {
         polyline.setPath(traceArr);
+    }
+
+    /**
+     * Set the style of cursor.
+     * @param {String} cursor - Style of cursor. 
+     * @memberof MapModule
+     */
+    setCursor(cursor) {
+        this.map.setDefaultCursor(cursor);
+    }
+
+    /**
+     * Plot a circle on map.
+     * @param {Float} rad - Radius. 
+     * @param {Float} lat - Latitude.
+     * @param {Float} lon - Longitude.
+     * @memberof MapModule
+     */
+    setGeofence(rad, lat, lon) {
+        if(!this.geofence_circle) {
+            this.geofence_circle.setMap(null);
+        }
+
+        geofence_circle = new this.Map.Circle({
+            center: [lon, lat],
+            radius: rad,
+            fillOpacity: 0.1,
+            strokeWeight: 1
+        })
+        geofence_circle.setMap(global.map);
+    }
+
+    /**
+     * Clear current points.
+     * @returns {Array} Old points.
+     * @memberof MapModule
+     */
+    clearPoints() {
+        var oldPoints = [];
+        while (this.points.length > 0) {
+            var marker = this.points.shift();
+            oldPoints.push([marker.getPosition().getLat(), marker.getPosition().getLng()]);
+            marker.setMap(null);
+        }
+        return oldPoints;
+    }
+
+    /**
+     * Plot new points on map.
+     * @param {Array} newPoints - Points to be ploted
+     * @memberof MapModule
+     */
+    plotPoints(newPoints) {
+        var originPos = []
+        newPoints.forEach((point, index) => {
+            var Map = this.Map;
+            var map = this.map;
+            // The point O
+            var curPos = []
+            if (index === 0) {
+                originPos = [point[1], point[0]]
+                return;
+            } else {
+                // Points relative to the point O
+                const rEarth = 6378137.0;
+                var dEast = point[0];
+                var dNorth = point[1];
+                var oriLat = originPos[1]
+                var oriLon = originPos[0]
+                var dLat = dNorth / rEarth;
+                var dLon = dEast / (rEarth * Math.cos(Math.PI * oriLat / 180));
+                var newLat = oriLat + (dLat * 180 / Math.PI);
+                var newLon = oriLon + (dLon * 180 / Math.PI);
+                curPos = [newLon, newLat];
+            }
+            // Plot point
+            points.push(new Map.Marker({
+                map: map,
+                offset: new Map.Pixel(-8, -8),
+                icon: new Map.Icon({
+                    size: new Map.Size(16, 16),
+                    image: `img/target.png`
+                }),
+                position: curPos
+            }));
+        })
     }
 }
 

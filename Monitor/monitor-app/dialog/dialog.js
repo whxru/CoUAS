@@ -8,7 +8,6 @@ window.onload = () => {
         'plot-points': initPointsInput
     }
     initializations[type](args);
-
 };
 
 /**
