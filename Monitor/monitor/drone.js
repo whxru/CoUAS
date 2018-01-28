@@ -7,8 +7,8 @@ const dgram = require('dgram');
 const net = require('net');
 const os = require('os');
 const events = require('events');
-const transform = require('./lib/transform');
 const { MAVC } = require('./lib/mavc');
+const console = require('../monitor-app/module/console')
 
 // For the use of private attributes
 const _drone = Symbol('drone');

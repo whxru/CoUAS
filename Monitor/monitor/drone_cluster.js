@@ -7,6 +7,7 @@ const { Drone } = require('./drone');
 const dgram = require('dgram');
 const events = require('events');
 const transform = require('./lib/transform')
+const console = require('../monitor-app/module/console')
 const { MAVC } = require('./lib/mavc')
 // For the use of private attributes
 const _port = Symbol('port');

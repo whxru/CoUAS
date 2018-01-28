@@ -129,7 +129,6 @@ class InputSet {
      * @memberof InputSet
      */
     showOnTop() {
-        document.body.appendChild(this.container);
         if (this.modal) {
             // Remove application menu
             const { Menu } = require('electron').remote;
@@ -138,8 +137,9 @@ class InputSet {
             // Add modal mask
             this.modalMask = document.createElement('div');
             this.modalMask.className = 'modal-mask';
-            this.container.parentNode.insertBefore(this.modalMask, this.container);
+            document.body.appendChild(this.modalMask);
         }
+        document.body.appendChild(this.container);
         return this;
     }
 

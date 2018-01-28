@@ -4,15 +4,14 @@
  */
 
 const { DroneCluster } = require('../../monitor/drone_cluster');
+const console = require('../module/console')
 const menu = require('../module/menu')
 const map = require('../module/map')
 const wd = require('../module/window')
 
 window.onload = () => {
     // Initialize the map
-    mapModule = new map.MapModule(AMap, 'map-container');
-    global.mapModule = mapModule;
-
+    global.mapModule = new map.MapModule(AMap, 'map-container');
     selectInterface();
 };
 
@@ -31,7 +30,9 @@ function selectInterface() {
         var interfaceName = select.options[select.selectedIndex].value;
         inputSet.remove();
         var droneCluster = new DroneCluster(interfaceName);
+        // Initialize menu and console
         menu.initMenu(droneCluster);
+        console.show();
     });
 }
 

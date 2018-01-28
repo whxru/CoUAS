@@ -1,5 +1,5 @@
 const wd = require('./window')
-
+const console = require('./console')
 /** Initilize the menu of application */
 function initMenu(droneCluster) {
     const Menu = require('electron').remote.Menu;
@@ -87,19 +87,6 @@ function initMenu(droneCluster) {
                             inputSet.remove();
                         })
                     }
-                },
-                {
-                    label: 'Address',
-                    accelerator: 'CmdOrCtrl+H',
-                    click: () => {
-                        var { publicIp, broadcastAddr } = droneCluster.getConnectionInfo();
-                        const { app, dialog } = require('electron').remote;
-                        dialog.showMessageBox({
-                            title: 'IPv4 address',
-                            message: `public IP: ${publicIp}\n` +
-                                `Address of broadcast: ${broadcastAddr}`
-                        });
-                    }
                 }
             ]
         },
@@ -119,6 +106,19 @@ function initMenu(droneCluster) {
                             title: 'Distance',
                             message: msg
                         })
+                    }
+                },
+                {
+                    label: 'Address',
+                    accelerator: 'CmdOrCtrl+H',
+                    click: () => {
+                        var { publicIp, broadcastAddr } = droneCluster.getConnectionInfo();
+                        const { app, dialog } = require('electron').remote;
+                        dialog.showMessageBox({
+                            title: 'IPv4 address',
+                            message: `public IP: ${publicIp}\n` +
+                                `Address of broadcast: ${broadcastAddr}`
+                        });
                     }
                 }
             ]
@@ -144,6 +144,19 @@ function initMenu(droneCluster) {
                             inputSet.remove();
                         });
                     }
+                }
+            ]
+        },
+        {
+            label: 'Console',
+            submenu: [
+                {
+                    label: 'Show',
+                    click: () => { console.show(); }
+                },
+                {
+                    label: 'Hidde',
+                    click: () => { console.hidde(); }
                 }
             ]
         },

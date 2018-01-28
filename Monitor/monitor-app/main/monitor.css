@@ -9,6 +9,36 @@
     height: 100vh;
 }
 
+#console {
+    width: 350px;
+    height: 180px;
+    position: fixed;
+    left: 30px;
+    bottom: 30px;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgba(37, 37, 37, 0.85);
+    box-shadow: 0 3px 10px 3px black;
+    overflow: auto;
+    opacity: 0.0;
+    transition: all 0.3s;
+}
+#console::-webkit-scrollbar {
+    width: 2px;
+}
+#console::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+}
+#console > p {
+    margin-top: 4px;
+    font-size: smaller;
+    color: white;
+}
+.error {
+    color: red;
+}
+
 /* Input */
 .input-set {
     position: fixed;
