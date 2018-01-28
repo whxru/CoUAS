@@ -1,18 +1,20 @@
-// 主进程
-
 const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url')
 
 let win;
-var width = 1400;
-var height = 900;
+let width = 1400;
+let height = 900;
 
 function createWindow() {
-    // 创建浏览器窗口
-    win = new BrowserWindow({width: width, height: height});
+    // Create the main window
+    win = new BrowserWindow({
+        width: width,
+        height: height,
+    });
 
-    // 加载应用主页面
+    win.setMenu(null)
+
     win.loadURL(url.format({
         pathname: path.join(__dirname, '/monitor-app/main/monitor.html'),
         protocol: 'file:',
