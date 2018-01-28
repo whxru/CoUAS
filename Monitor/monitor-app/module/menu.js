@@ -61,7 +61,7 @@ function initMenu(droneCluster) {
                 {
                     label: 'Set geo-fence',
                     click: () => {
-                        var inputSet = new wd.InputSet().showOnTop();
+                        var inputSet = new wd.InputSet({ title: 'Geo-fence' }).showOnTop();
                         var lat = inputSet.addInput('Latitude', {
                             type: 'number', min: '-90', max: '90'
                         });
@@ -71,17 +71,21 @@ function initMenu(droneCluster) {
                         var rad = inputSet.addInput('Radius', {
                             type: 'number', min: '0'
                         })
-                        var btn = inputSet.addButtion('Confirm', (evt) => {
+                        var btn = inputSet.addButton('Confirm', (evt) => {
                             var [lat_v, lon_v, rad_v] = [parseFloat(lat.value), parseFloat(lon.value), parseFloat(rad.value)]
                             if(!(lat_v && lon_v && rad_v)) {
                                 return;
                             }
                             
-                            inputSet.remove()
+                            inputSet.remove();
                             droneCluster.setGeofence(rad_v, lat_v, lon_v);
                             global.mapModule.setGeofence(rad_v, lat_v, lon_v)
                             global.mapModule.setCursor('default');
                         });
+
+                        var btn = inputSet.addButton('Cancel', (evt) => {
+                            inputSet.remove();
+                        })
                     }
                 },
                 {
@@ -127,12 +131,18 @@ function initMenu(droneCluster) {
                     click: () => {
                         // Clear previous points
                         var oldPoints = global.mapModule.clearPoints();
-                        var dialog = wd.openCustomizedDialog('plot-points', oldPoints);
-                        // Plot new points
-                        dialog.on('closed', () => {
-                            var newPoints = JSON.parse(localStorage.getItem('dialog-return'));
+                        var inputSet = new wd.InputSet({
+                            title: 'Plot Points',
+                            middle: true,
+                            modal: true
+                        }).showOnTop();
+                        var textarea = inputSet.addTextarea({ rows: 20 });
+                        textarea.value = JSON.stringify(oldPoints, null, '\t');
+                        inputSet.addButton('Confirm', (evt) => {
+                            var newPoints = JSON.parse(textarea.value);
                             global.mapModule.plotPoints(newPoints);
-                        })
+                            inputSet.remove();
+                        });
                     }
                 }
             ]

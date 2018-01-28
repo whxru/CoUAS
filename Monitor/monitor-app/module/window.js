@@ -5,22 +5,41 @@
 class InputSet {
     /**
      * Creates an instance of InputSetOnTop.
-     * @param {String} [id=null] - The id of container. 
+     * @param {Object} [options=null] - Options of the set. 
      * @memberof InputSetOnTop
      */
-    constructor(id = null) {
+    constructor(options=null) {
         // The container element
         this.container = document.createElement('div');
         this.container.className = 'input-set';
-        if(!id) { this.container.id = id; }
-
         // The input container
         this.inputContainer = document.createElement('div');
         this.inputContainer.className = 'set-inputs';
-
         // The button container
         this.buttonContainer = document.createElement('div');
         this.buttonContainer.className = 'set-buttons';
+
+        
+        // Handle options
+        if(!options) { return; }
+        if('title' in options) {
+            var title = document.createElement('p');
+            title.className = 'set-title';
+            title.innerText = options.title;
+            this.container.appendChild(title);
+        }
+        if('id' in options) {
+            this.container.id = options.id;
+        }
+        if('middle' in options) {
+            if(options['middle']) { this.container.classList.add('middle'); }
+        }
+        this.modal = false;
+        this.modalMask = null;
+        this.menu = require('electron').remote.Menu.getApplicationMenu();
+        if('modal' in options) {
+            this.modal = options['modal'];
+        }
 
         this.container.appendChild(this.inputContainer);
         this.container.appendChild(this.buttonContainer);
@@ -39,9 +58,8 @@ class InputSet {
         title.textContent = label;
         
         var input = document.createElement('input');
-        if(!attrs) {
-            attrNames = Object.keys(attrs);
-            attrNames.forEach((attrName) => {
+        if(attrs) {
+            Object.keys(attrs).forEach((attrName) => {
                 input.setAttribute(attrName, attrs[attrName]);
             })
         }
@@ -49,19 +67,57 @@ class InputSet {
         var p = document.createElement('p');
         p.appendChild(title);
         p.appendChild(input);
-        this.container.appendChild(p);
+        this.inputContainer.appendChild(p);
 
         return input;
     }
 
+    /**
+     * Add textarea.
+     * @param {Object} [attrs=null] - Attributes to be set.
+     * @returns {HTMLTextAreaElement} The textarea element created.
+     * @memberof InputSet
+     */
+    addTextarea(attrs = null) {
+        var textarea = document.createElement('textarea');
+        this.inputContainer.appendChild(textarea);
+
+        if (attrs) {
+            Object.keys(attrs).forEach((attrName) => {
+                textarea.setAttribute(attrName, attrs[attrName]);
+            })
+        }
+
+        return textarea;
+    }
+
+    /**
+     * Add select element.
+     * @param {Array} options - Options provied to user to be chose.
+     * @memberof InputSet
+     */
+    addSelect(options) {
+        var select = document.createElement('select');
+        options.forEach((item) => {
+            var option = document.createElement('option');
+            option.text = item;
+            option.value = item;
+            select.add(option, null);
+        })
+        select.selectedIndex = 0;
+        this.inputContainer.appendChild(select);
+
+        return select;
+    }
+    
     /**
      * 
      * @param {String} text - Inner text of the button.
      * @param {*} onclick - The handler of click event.
      */
     addButton(text, onclick) {
-        var btn = document.createElement('buttion');
-        this.container.appendChild(btn);
+        var btn = document.createElement('button');
+        this.buttonContainer.appendChild(btn);
         btn.innerText = text;
         btn.onclick = onclick;
         return btn;
@@ -74,6 +130,16 @@ class InputSet {
      */
     showOnTop() {
         document.body.appendChild(this.container);
+        if (this.modal) {
+            // Remove application menu
+            const { Menu } = require('electron').remote;
+            this.menu = Menu.getApplicationMenu();
+            Menu.setApplicationMenu(null);
+            // Add modal mask
+            this.modalMask = document.createElement('div');
+            this.modalMask.className = 'modal-mask';
+            this.container.parentNode.insertBefore(this.modalMask, this.container);
+        }
         return this;
     }
 
@@ -82,64 +148,17 @@ class InputSet {
      * @memberof InputSet
      */
     remove() {
-        this.container.parentNode.removeChild(container);
-    }
-}
-
-/**
- * Open customized dialog
- * @param {String} type - Type of dialog 
- * @param {Any} args - Arguments the dialog's initializaion needed
- * @returns {BrowserWindow} Object of dialog window
- */
-function openCustomizedDialog(type, args) {
-    // Customized title
-    const titles = {
-        'select-interface': 'Select Interface of Network',
-        'plot-points': 'Plot points'
-    }
-
-    const sizes = {
-        'select-interface': {
-            height: 150,
-            width: 300
-        },
-        'plot-points': {
-            height: 500,
-            width: 300
+        this.container.parentNode.removeChild(this.container);
+        if(this.modal) {
+            // Remove modal mask
+            this.modalMask.parentNode.removeChild(this.modalMask);
+            // Restore the menu
+            const{ Menu } = require('electron').remote;
+            Menu.setApplicationMenu(this.menu);
         }
     }
-
-    // Load the html file of dialog
-    const { BrowserWindow } = require('electron').remote;
-    var currentWindow = require('electron').remote.getCurrentWindow();
-    localStorage.setItem('dialog-type', type);
-    localStorage.setItem('dialog-args', JSON.stringify(args));
-    var dialog = new BrowserWindow({
-        title: titles[type],
-        width: sizes[type].width,
-        height: sizes[type].height,
-        autoHideMenuBar: true,
-        closable: false,
-        minimizable: false,
-        maximizable: false,
-        parent: currentWindow,
-        modal: true,
-        show: false
-    });
-    dialog.loadURL(require('url').format({
-        pathname: require('path').join(__dirname, '../dialog/dialog.html'),
-        protocol: 'file:',
-        slashes: true
-    }))
-    dialog.once('ready-to-show', () => {
-        dialog.show();
-    });
-
-    return dialog;
 }
 
 module.exports = {
     'InputSet': InputSet,
-    'openCustomizedDialog': openCustomizedDialog
 }
