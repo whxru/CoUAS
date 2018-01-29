@@ -16,7 +16,6 @@ const _drone = Symbol('drone');
 const _publicIp = Symbol('publicIp');
 const _broadcastAddr = Symbol('broadcastAddr');
 // For the use of private methods
-const _sendMsgToPi = Symbol('sendMsgToPi');
 const _addNotification = Symbol('addNotification');
 const _sendSubtasks = Symbol('sendSubtasks');
 
@@ -220,7 +219,7 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     broadcastMsg(msg) {
-        var msg_json = JSON.stringify(msg) + '$$';
+        var msg_json = JSON.stringify(msg);
         this[_drones].forEach((drone) => {
             drone.writeDataToPi(msg_json);
         })
@@ -235,24 +234,10 @@ class DroneCluster {
         drone.on('message-in', (CID, msg_obj) => {
             this[_drone].emit('message-in', CID, msg_obj);
         });
-
+        
         drone.on('message-out', (CID, msg_obj) => {
             this[_drone].emit('message-out', CID, msg_obj);
         })
-    }
-
-    /**
-     * Send message to the Pi specified by the host
-     * @param {string} host - Address of Pi
-     * @param {object} msg - MAVC message
-     * @memberof DroneCluster
-     */
-    [_sendMsgToPi](host, msg) {
-        const s = dgram.createSocket('udp4');
-        msg = JSON.stringify(msg);
-        s.send(msg, 4396, host, (error) => {
-            s.close();
-        });
     }
 
     /**
