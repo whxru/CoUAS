@@ -17,27 +17,24 @@ function hidde() {
 /**
  * Print normal message on console.
  * @param {String} msg - Normal message.
- * @returns {HTMLParagraphElement} The element which contains the msg.
+ * @param {String} [color='white'] - Color of the message.
  */
-function log(msg) {
+function log(msg, color='white') {
     var prefix = timePrefix();
     var p = document.createElement('p');
     p.innerText = `${prefix} ${msg}`;
+    p.style.color = color;
     var consl = document.getElementById('console');
     consl.appendChild(p);
     consl.scrollTop = consl.scrollHeight
-    return p;
 }
 
 /**
  * Print error message on console.
  * @param {String} msg - Error message
- * @returns {HTMLParagraphElement} The element which contains the msg.
  */
 function error(msg) {
-    var p = log(msg);
-    p.classList.add('error');
-    return p;
+    log(msg, 'red');
 }
 
 /**
