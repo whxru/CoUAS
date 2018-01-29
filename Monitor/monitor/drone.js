@@ -14,7 +14,7 @@ const console = require('../monitor-app/module/console')
 const _drone = Symbol('drone');
 const _taskDone = Symbol('taskDone');
 const _host = Symbol('host');
-const _state = Symbol('state');
+const _status = Symbol('status');
 const _home = Symbol('home');
 const _marker = Symbol('marker');
 const _trace = Symbol('trace');
@@ -47,7 +47,7 @@ class Drone {
         this[_taskDone] = false;    // Whether the task has been done
         this[_host] = '';           // Host name of the Pi connected
         this[_sitl] = sitl;
-        this[_state] = {            // Information of state the drone connected
+        this[_status] = {            // Information of state the drone connected
             'CID': CID,
             'Armed': false,
             'Mode': '',
@@ -112,18 +112,18 @@ class Drone {
                     this[_home]['Lat'] = msg_obj[1]['Lat'];
                     this[_home]['Lon'] = msg_obj[1]['Lon'];
                     // Preload map resources
-                    var { marker, trace } = global.mapModule.preloadMap(this[_state].CID, this[_home]);
+                    var { marker, trace } = global.mapModule.preloadMap(this[_status].CID, this[_home]);
                     this[_marker] = marker;
                     this[_trace] = trace;
                     // Send CID back
-                    console.log(this[_state]);
+                    console.log(this[_status]);
                     var msg = [
                         {
                             'Header': 'MAVCluster_Monitor',
                             'Type': MAVC.MAVC_CID
                         },
                         {
-                            'CID': this[_state]['CID']
+                            'CID': this[_status]['CID']
                         }
                     ];
                     s.send(JSON.stringify(msg), port, host, (err) => {
@@ -188,6 +188,7 @@ class Drone {
             // Whether the message is a MAVC message from Pi
             try {
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
+                    this[_drone].emit('message-in', this.getCID(), msg_obj);
                     var Type = msg_obj[0]['Type'];
                     // Message contains the state of drone
                     if (Type === MAVC.MAVC_STAT) {
@@ -233,8 +234,8 @@ class Drone {
                 // Whether the message is a MAVC message from Pi
                 try {
                     if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
+                        this[_drone].emit('message-in', this.getCID(), msg_obj);
                         var Type = msg_obj[0]['Type'];
-                        this[_drone].emit('msg-in', this.getCID(), msg_obj);
                         if (Type === MAVC.MAVC_ARRIVED) {
                             console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
                             if (msg_obj[1]['CID'] === this.getCID()) {
@@ -264,7 +265,7 @@ class Drone {
         // Update data
         var keys = Object.keys(state_obj);
         keys.forEach((attr) => {
-            this[_state][attr] = state_obj[attr];
+            this[_status][attr] = state_obj[attr];
         });
         // Update marker
         var pos_mars = global.mapModule.setPosition(this[_marker], state_obj);
@@ -295,6 +296,19 @@ class Drone {
     }
 
     /**
+     * The status of the drone.
+     * @returns {Object} The status.
+     * @memberof Drone
+     */
+    getStatus() {
+        var st = {};
+        Object.keys(this[_status]).forEach((key) => {
+            st[key] = this[_status][key];
+        })
+        return st;
+    }
+    
+    /**
      * Get the host of Pi connected.
      * @returns - IP address of Pi connected
      * @memberof Drone
@@ -309,11 +323,11 @@ class Drone {
      * @memberof Drone
      */
     getCID() {
-        return this[_state]['CID'];
+        return this[_status]['CID'];
     }
 
     /**
-     * Get the distance.
+     * Get the distance traveled in current task.
      * @returns {Float} The distance.
      * @memberof Drone
      */
@@ -349,8 +363,8 @@ class Drone {
      * @memberof Drone
      */
     writeDataToPi(data, callback) {
-        this[_tcpSock].write(data, callback);
-        this[_drone].emit('message-out', this.getCID(), JSON.dumps(data));
+        this[_tcpSock].write(data + '$$', callback);
+        this[_drone].emit('message-out', this.getCID(), JSON.parse(data));
     }
 }
 
