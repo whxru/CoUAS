@@ -12,13 +12,14 @@ const wd = require('../module/window')
 window.onload = () => {
     // Initialize the map
     global.mapModule = new map.MapModule(AMap, 'map-container');
-    selectInterface();
+    initApplication();
 };
 
 /**
  * Select interface of network and initialize the menu.
  */
-function selectInterface() {
+function initApplication() {
+    // Select interface
     var interfaceNames = Object.keys(require('os').networkInterfaces());
     var inputSet = new wd.InputSet({
         title: 'Select Interface',
@@ -30,9 +31,22 @@ function selectInterface() {
         var interfaceName = select.options[select.selectedIndex].value;
         inputSet.remove();
         var droneCluster = new DroneCluster(interfaceName);
-        // Initialize menu and console
+        // Initialize menu
         menu.initMenu(droneCluster);
+        // Initialize console
         console.show();
+        // Load user's module
+        require('fs').readFile('user-module/load.json', 'utf-8', (err, content) => {
+            if(err) {
+                console.error(err.message);
+            } else {
+                var userModuleList = JSON.parse(content);
+                userModuleList.forEach((name) => {
+                    var mod = require(`../../user-module/${name}`);
+                    mod.init(droneCluster);
+                });
+            }
+        })
     });
 }
 
