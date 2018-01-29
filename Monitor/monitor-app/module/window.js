@@ -20,13 +20,15 @@ class InputSet {
         this.buttonContainer.className = 'set-buttons';
 
         
+        this.container.appendChild(this.inputContainer);
+        this.container.appendChild(this.buttonContainer);
         // Handle options
         if(!options) { return; }
         if('title' in options) {
             var title = document.createElement('p');
             title.className = 'set-title';
             title.innerText = options.title;
-            this.container.appendChild(title);
+            this.container.insertBefore(title, this.inputContainer);
         }
         if('id' in options) {
             this.container.id = options.id;
@@ -41,8 +43,6 @@ class InputSet {
             this.modal = options['modal'];
         }
 
-        this.container.appendChild(this.inputContainer);
-        this.container.appendChild(this.buttonContainer);
     }
 
     /**
