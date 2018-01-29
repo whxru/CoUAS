@@ -1,9 +1,14 @@
 const wd = require('./window')
 const console = require('./console')
-/** Initilize the menu of application */
+const Menu = require('electron').remote.Menu;
+const MenuItem = require('electron').remote.MenuItem;
+
+/**
+ * Initialize the menu of application.
+ * @param {DroneCluster} droneCluster - Instance of DroneCluster. 
+ */
 function initMenu(droneCluster) {
-    const Menu = require('electron').remote.Menu;
-    const template = [
+    var template = [
         {
             label: 'New',
             submenu: [
@@ -24,7 +29,7 @@ function initMenu(droneCluster) {
                             var sitlNum = num.value;
                             inputSet.remove();
                             if( sitlNum ) {
-                                droneCluster.addDrone(num);
+                                droneCluster.addDrone(sitlNum);
                             }
                         });
                     }
@@ -136,7 +141,7 @@ function initMenu(droneCluster) {
                             middle: true,
                             modal: true
                         }).showOnTop();
-                        var textarea = inputSet.addTextarea({ rows: 20 });
+                        var textarea = inputSet.addTextarea({ rows: 15 });
                         textarea.value = JSON.stringify(oldPoints, null, '\t');
                         inputSet.addButton('Confirm', (evt) => {
                             var newPoints = JSON.parse(textarea.value);
@@ -161,6 +166,12 @@ function initMenu(droneCluster) {
             ]
         },
         {
+            label: 'Module',
+            submenu: [
+
+            ]
+        },
+        {
             label: 'Help',
             submenu: [
                 {
@@ -179,8 +190,79 @@ function initMenu(droneCluster) {
             ]
         }
     ];
+
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
 }
 
-module.exports.initMenu = initMenu;
+/**
+ * Get the index of menuitem 'module' in template.
+ * @returns {Int} Index of 'module', -1 if not found.
+ */
+function getUserModuleIndex() {
+    var index = -1;
+    Menu.getApplicationMenu().items.forEach((item, idx) => {
+        if(item.label === 'Module') {
+            index = idx;
+        }
+    })
+    return index;
+}
+
+/**
+ * Add a user's module into the 'module'.
+ * @param {String} name - Name of user's module.
+ */
+function addUserModule(name) {
+    var menu = Menu.getApplicationMenu();
+    var moduleMenu = menu.items[getUserModuleIndex()].submenu;
+    moduleMenu.append(new MenuItem({
+        'label': name,
+        'submenu': []
+    }));
+    Menu.setApplicationMenu(menu);
+}
+
+/**
+ * Get the index of user's module in 'module'.
+ * @param {String} name - Name of user's module.
+ * @returns {Int} The index.
+ */
+function getUserModuleItemIndex(name) {
+    var index = -1;
+    Menu.getApplicationMenu().items[getUserModuleIndex()].submenu.items.forEach((module, idx) => {
+        if(module.label === name) {
+            index = idx;
+        }
+    });
+
+    // No such user's module, add one.
+    if(index === -1) {
+        addUserModule(name);
+        return getUserModuleIndex(name);
+    } else {
+        return index;
+    }
+}
+
+/**
+ * Add an item to the menu of user's module.
+ * @param {String} name - Name of user's module.
+ * @param {String} label - Label of this item.
+ * @param {Function} onclick - Handler of clicking this item.
+ */
+function addUserModuleItem(name, label, onclick) {
+    var menu = Menu.getApplicationMenu();
+    var moduleSubmenu = menu.items[getUserModuleIndex()].submenu.items[getUserModuleItemIndex(name)].submenu;
+    moduleSubmenu.append(new MenuItem({
+        'label': label,
+        'click': onclick
+    }));
+    Menu.setApplicationMenu(menu);
+}
+
+module.exports = {
+    initMenu: initMenu,
+    addUserModule: addUserModule,
+    addUserModuleItem: addUserModuleItem, 
+};
