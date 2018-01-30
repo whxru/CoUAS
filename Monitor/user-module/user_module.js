@@ -18,7 +18,7 @@ class UserModule {
     }
 
     /**
-     * Add a command to the module.
+     * Add a command to the menu.
      * @param {String} name - Name of the command.
      * @param {Function} func - Function of the command.
      * @memberof UserModule
@@ -40,7 +40,7 @@ class UserModule {
 
     /**
      * Execute a task described by a JSON string.
-     * @param {any} task_json 
+     * @param {JSON} task_json - A json string which describes a task.
      * @memberof UserModule
      */
     executeTask(task_json) {
