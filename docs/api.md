@@ -1,7 +1,10 @@
 # API Reference
 
+<a name="UserModule"></a>
+
 ## UserModule
->    Class defined in `CoUAV/monitor/user-module/user_module.js`
+
+>    Class defined in `CoUAV/monitor/user-module/user_module.js` , superclass of all user modules.
 
 * [new UserModule()](#new_UserModule_new)
 * _instance_
@@ -14,8 +17,13 @@
 
 <a name="new_UserModule_new"></a>
 
-### new UserModule()
-Superclass of all user modules.
+### new UserModule(name)
+
+Creates and initializes an instance of UserModule, add an item to menu for this module.
+
+| Param | Type                | Description          |
+| ----- | ------------------- | -------------------- |
+| name  | <code>String</code> | Name of the command. |
 
 <a name="UserModule+addCommand"></a>
 
@@ -134,7 +142,10 @@ Print error message on console.
 | ----- | ------------------- | ------------- |
 | msg   | <code>String</code> | Error message |
 
+<a name="InputSet"></a>
+
 ## InputSet
+
 >   Class defined in `CoUAV/Monitor/monitor-app/module/window.js` to help developer create dialog for user input easily.
 
 * [new InputSet()](#new_InputSet_new)
@@ -147,8 +158,12 @@ Print error message on console.
 
 <a name="new_InputSet_new"></a>
 
-### new InputSet()
-Help user create a set of input elements on top of the window easily.
+### new InputSet(options)
+Creates an instance of InputSetOnTop.
+
+| Param   | Type                | Default | Description         |
+| ------- | ------------------- | ------- | ------------------- |
+| options | <code>Object</code> | null    | Options of the set. |
 
 <a name="InputSet+addInput"></a>
 

@@ -49,15 +49,15 @@ electron .
 
 After selecting a network interface, you could find an menu-item which is named 'module-name' by clicking `Module` in menu: 
 
-![](/img/example-module-menu.png)
+![](img/example-module-menu.png)
 
 ## Example
 
-After the following example module is loaded, the monitor will be like this: ![](/img/example-module.png) it adds two commands to the menu and handle all messages sent by both monitor and drones:
+After the following example module is loaded, the monitor will be like this: ![](img/example-module.png) it adds two commands to the menu and handle all messages sent by both monitor and drones:
 
-*   Command `Console`: Print "This is a message printed by ExampleModule" on console![](/img/console.png)
-*   Command `Input`: Create a modal (which means you can do nothing before closing this dialog) dialog which contains various HTML elements: ![](/img/inputSet.png) After clicking the "Confirm" button, the value of input elements print on the console: ![](/img/inputSet-output.png)
-*   Message-in/out: In-message will be printed in color green and out-message will be pink.![](/img/msg-in.png)
+*   Command `Console`: Print "This is a message printed by ExampleModule" on console![](img/console.png)
+*   Command `Input`: Create a modal (which means you can do nothing before closing this dialog) dialog which contains various HTML elements: ![](img/inputSet.png) After clicking the "Confirm" button, the value of input elements print on the console: ![](img/inputSet-output.png)
+*   Message-in/out: In-message will be printed in color green and out-message will be pink.![](img/msg-in.png)
 
 ```javascript
 const { UserModule, console, wd } = require('./user_module')
