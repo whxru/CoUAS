@@ -127,6 +127,7 @@ class Drone {
                         }
                     ];
                     s.send(JSON.stringify(msg), port, host, (err) => {
+                        this[_drone].emit('message-out', this.getCID(), msg);
                         // Start listeing to Pi
                         if(this[_sitl]) {
                             this[_listenToPi]()
