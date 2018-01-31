@@ -15,3 +15,7 @@ To extend the application or create your own script on RPi, it's import to know 
     *   MAVC_ACTION.
     *   MAVC_SET_GEOFENCE.
     *   MAVC_ARRIVED.
+
+## Close the connection
+
+To do.
