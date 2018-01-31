@@ -17,6 +17,7 @@ The flight monitor is a desktop application built by [Electron](https://github.c
 * [Task file - How to describe a task and how it works](/docs/task_file.md)
 * [User module - Make the monitor your own application](/docs/user_module.md)
 * [API Reference - Functions used in user module](/docs/api.md)
-* [Communication - To create your own script on RPi](/docs/communication.md)
+* [Communication - Process of network communication between monitor and RPi's script](/docs/communication.md)
+* [MAVC messages - Messages used in communication between monitor and RPi's script](docs/mavc_message.md)
 
 
