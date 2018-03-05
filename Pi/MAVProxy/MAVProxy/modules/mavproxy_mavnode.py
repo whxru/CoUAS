@@ -132,7 +132,8 @@ class MAVNode(mp_module.MPModule):
                 cmd_num += 1
 
         # Add dummy command if needed
-        if not data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND:
+        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
+        if not land_finally:
             fn = mavutil.mavlink.MAVLink_mission_item_message
             wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0, 0,
                     0, 0, 0, 0, 0, 0, 0)
@@ -152,6 +153,9 @@ class MAVNode(mp_module.MPModule):
         while not self.module('wp').last_waypoint == cmd_num - 1:
             pass
 
+        if land_finally:
+            self.mode('LAND')
+            
         # Send report back if needed
         if data_dict[-1]['Sync']:
             self.__sock.send(json.dumps([
@@ -256,8 +260,8 @@ class MAVNode(mp_module.MPModule):
         # Add waypoint
         fn = mavutil.mavlink.MAVLink_mission_item_message
         (lat, lon) = (pos['lat'], pos['lon']) if lat == 0 else (lat, lon)
-        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0,
-                0, 0, 0, 0, lat, lon, 1.0)
+        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
+                0, 0, 0, 0, lat, lon, pos['alt'])
         self.module('wp').wploader.add(wp)
 
         return {}
