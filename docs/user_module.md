@@ -1,6 +1,6 @@
 # User Module
 
-To implement various functions, you can develop your own module which is able to interact with users of monitor and control drones in the cluster. We provide a simple guide in this chapter, for more information please check [API Reference](api.doc).
+To implement various functions, you can develop your own module which is able to interact with users of monitor and control drones in the cluster. We provide a simple guide in this chapter, for more information please check [API Reference](api.md).
 
 ## Quick Start
 
