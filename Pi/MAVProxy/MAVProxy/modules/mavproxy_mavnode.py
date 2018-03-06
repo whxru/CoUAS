@@ -181,7 +181,8 @@ class MAVNode(mp_module.MPModule):
 
         # Arm throttle
         self.master.arducopter_arm()
-        time.sleep(1.0)
+        while not self.master.motors_armed():
+            time.sleep(0.7)
 
         # Takeoff
         self.master.mav.command_long_send(
@@ -201,7 +202,7 @@ class MAVNode(mp_module.MPModule):
             print("Altitude: %f" % current_alt)
             if current_alt >= alt * 0.8:
                 break
-            time.sleep(1)
+            time.sleep(0.7)
 
         # Add waypoint
         fn = mavutil.mavlink.MAVLink_mission_item_message
@@ -222,7 +223,6 @@ class MAVNode(mp_module.MPModule):
         d_east = args['E']
         alt = args['Alt']
         current_location = args['O']
-        print 'Go by (N: %d, E:%d)' % (d_north, d_east)
         target_location = get_location_metres(current_location, d_north, d_east)
 
         # Add waypoint
@@ -231,7 +231,11 @@ class MAVNode(mp_module.MPModule):
                 0, 0, 0, 0, target_location['lat'], target_location['lon'], alt)
         self.module('wp').wploader.add(wp)
 
-        return target_location
+        return {
+            'lat': target_location['lat'],
+            'lon': target_location['lon'],
+            'alt': alt
+        }
 
     def action_go_to(self, args):
         """Add go_to waypoint to file of mission"""
