@@ -92,7 +92,7 @@ python mavproxy.py --master=/dev/ttyUSB0 --baudrate=115200 --moddebug=3 --load-m
 6. Establish the connection with monitor via the public IP (e.g. "172.20.10.5") after connecting to the drone:
 
 ```
-mavnode 172.20.10.5
+node-connect 172.20.10.5
 ```
 
 To connect to more drones, repeat step 2~6. Now you can perform tasks by choosing task files.
