@@ -109,7 +109,9 @@ class UserModule {
             marsPos1 = transform.wgs2gcj(pos1.lat,pos1.lng);
             marsPos2 = transform.wgs2gcj(pos2.lat,pos2.lng);
         }
-        return global.mapModule.calDistance(marsPos1, marsPos2);
+        var deltaXY = global.mapModule.calDistance(marsPos1, marsPos2);
+        var deltaH = pos2.alt - pos1.alt;
+        return Math.sqrt(deltaXY*deltaXY + deltaH*deltaH);
     }
 }
 
