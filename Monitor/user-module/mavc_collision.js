@@ -11,19 +11,20 @@ class CollisionModule extends UserModule {
     }
 
     detect2DroneCollision() {
-        var minSafeDist = 3;
+        var minDistance = 100000;
         var drone = new Array(2);
         this.addMsgListener('message-in', (CID, msg_obj) => {
             if(msg_obj[0]['Type'] === 2) {
                 drone[CID - 1] = {
                     'lat': msg_obj[1].Lat,
-                    'lng': msg_obj[1].Lon
+                    'lng': msg_obj[1].Lon,
+                    'alt': msg_obj[1].Alt
                 };
                 if(drone[2 - CID]) {
                     var distance = UserModule.calDistance(drone[0], drone[1]);
-                    if(distance < minSafeDist) {
-                        myConsole.log(distance, 'green');
-                        myConsole.error('Too close');
+                    if(distance < minDistance) {
+                        minDistance = distance;
+                        myConsole.log(`Closer: ${minDistance}m.`, 'red');
                     }
                 }
             }
