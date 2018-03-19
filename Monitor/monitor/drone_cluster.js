@@ -6,9 +6,9 @@
 const { Drone } = require('./drone');
 const dgram = require('dgram');
 const events = require('events');
-const transform = require('./lib/transform')
-const console = require('../monitor-app/module/console')
-const { MAVC } = require('./lib/mavc')
+const transform = require('./lib/transform');
+const myConsole = require('../monitor-app/module/console');
+const { MAVC } = require('./lib/mavc');
 // For the use of private attributes
 const _port = Symbol('port');
 const _drones = Symbol('drones');
@@ -204,12 +204,24 @@ class DroneCluster {
     
     /**
      * Get the object of drone according to the CID.
-     * @param {any} CID - Connection ID
-     * @returns The object of drone.
+     * @param {Number} CID - Connection ID
+     * @returns {Object} The object of drone.
      * @memberof DroneCluster
      */
     getDrone(CID) {
+        if(CID > this[_drones].length -1) {
+            return null;
+        }
         return this[_drones][CID];
+    }
+
+    /**
+     * Get the number of drones in the cluster.
+     * @returns {Number} Number of drones
+     * @memberof DroneCluster
+     */
+    getDroneNum() {
+        return this[_drones].length;
     }
     
 
@@ -232,12 +244,16 @@ class DroneCluster {
      */
     [_addNotification](drone) {
         drone.on('message-in', (CID, msg_obj) => {
-            this[_drone].emit('message-in', CID, msg_obj);
+            this.getNotifier().emit('message-in', CID, msg_obj);
         });
         
         drone.on('message-out', (CID, msg_obj) => {
-            this[_drone].emit('message-out', CID, msg_obj);
-        })
+            this.getNotifier().emit('message-out', CID, msg_obj);
+        });
+
+        drone.on('new-drone-add', () => {
+            this.getNotifier().emit('new-drone-add');
+        });
     }
 
     /**
@@ -258,7 +274,7 @@ class DroneCluster {
             // One of the drones has finished performing actions in current subtask
             notifier.on('arrive', (notifier) => {
                 if (++counter === droneNum) {
-                    console.log("Go to next subtask");
+                    myConsole.log("Go to next subtask");
                     // Empty the counter
                     counter = 0;
                     // Execute next subtask
