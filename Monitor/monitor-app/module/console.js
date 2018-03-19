@@ -1,5 +1,3 @@
-const console = document.getElementById('console');
-
 /**
  * Show the console.
  */

@@ -4,7 +4,7 @@
  */
 
 const { DroneCluster } = require('../../monitor/drone_cluster');
-const console = require('../module/console')
+const myConsole = require('../module/console')
 const menu = require('../module/menu')
 const map = require('../module/map')
 const wd = require('../module/window')
@@ -34,11 +34,11 @@ function initApplication() {
         // Initialize menu
         menu.initMenu(droneCluster);
         // Initialize console
-        console.show();
+        myConsole.show();
         // Load user's module
         require('fs').readFile('user-module/load.json', 'utf-8', (err, content) => {
             if(err) {
-                console.error(err.message);
+                myConsole.error(err.message);
             } else {
                 var userModuleList = JSON.parse(content);
                 userModuleList.forEach((name) => {

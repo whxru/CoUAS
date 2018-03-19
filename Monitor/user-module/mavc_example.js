@@ -1,4 +1,4 @@
-const { UserModule, console, wd } = require('./user_module')
+const { UserModule, myConsole, wd } = require('./user_module')
 
 /**
  * Example of developing a user's own module.
@@ -18,8 +18,8 @@ class ExampleModule extends UserModule {
 
         // Add command to menu
         this.addCommand('Console', () => {
-            // Print message on console.
-            console.log("This is a message printed by ExampleModule");
+            // Print message on myConsole.
+            myConsole.log("This is a message printed by ExampleModule");
         })
 
         this.addCommand('Input', () => {
@@ -47,10 +47,10 @@ class ExampleModule extends UserModule {
                 var textarea_str = textarea.value;
                 // Remove this dialog
                 inputSet.remove()
-                // Print user's input on console
-                console.log('SELECTED: ' + selectedValue);
-                console.log('INPUT: ' + input_str);
-                console.log('TEXTAREA: ' + textarea_str);
+                // Print user's input on myConsole
+                myConsole.log('SELECTED: ' + selectedValue);
+                myConsole.log('INPUT: ' + input_str);
+                myConsole.log('TEXTAREA: ' + textarea_str);
             });
             
             // Add a cancel button to the dialog
@@ -62,12 +62,12 @@ class ExampleModule extends UserModule {
 
         // Handle every message sent by drone
         this.addMsgListener('message-in', (CID, msg_obj) => {
-            console.log(JSON.stringify(msg_obj), 'green');
+            myConsole.log(JSON.stringify(msg_obj), 'green');
         });
         
         // Handle every message sent by monitor
         this.addMsgListener('message-out', (CID, msg_obj) => {
-            console.log(JSON.stringify(msg_obj), 'pink');
+            myConsole.log(JSON.stringify(msg_obj), 'pink');
         })
     }
 }
