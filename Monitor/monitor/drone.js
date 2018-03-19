@@ -8,7 +8,7 @@ const net = require('net');
 const os = require('os');
 const events = require('events');
 const { MAVC } = require('./lib/mavc');
-const console = require('../monitor-app/module/console')
+const myConsole = require('../monitor-app/module/console');
 
 // For the use of private attributes
 const _drone = Symbol('drone');
@@ -86,7 +86,7 @@ class Drone {
 
         // Wait for the request of CID
         s.on('listening', () => {
-            console.log('Waiting the request of CID...');
+            myConsole.log('Waiting the request of CID...');
         });
 
         // Receive UDP diagram on port 4396
@@ -98,7 +98,7 @@ class Drone {
                 if (err instanceof SyntaxError) {
                     return;
                 }
-                console.error(err.message)
+                console.error(err)
             }
             // Whether the message is a MAVC message or not
             try {
@@ -116,7 +116,6 @@ class Drone {
                     this[_marker] = marker;
                     this[_trace] = trace;
                     // Send CID back
-                    console.log(this[_status]);
                     var msg = [
                         {
                             'Header': 'MAVCluster_Monitor',
@@ -142,7 +141,7 @@ class Drone {
                 if( err instanceof TypeError) {
                     return;
                 }
-                console.error(err.message)
+                console.error(err)
                 return;
             }
         });
@@ -184,36 +183,36 @@ class Drone {
                 if(err instanceof SyntaxError) {
                     return;
                 }
-                console.error(err.message)
+                console.error(err)
             }
             // Whether the message is a MAVC message from Pi
             try {
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
-                    this[_drone].emit('message-in', this.getCID(), msg_obj);
                     var Type = msg_obj[0]['Type'];
                     // Message contains the state of drone
                     if (Type === MAVC.MAVC_STAT) {
                         // Update state
                         this[_updateState](msg_obj[1]);
-                        return;
                     }
+                    this[_drone].emit('message-in', this.getCID(), msg_obj);
                 }
             } catch (err) {
                 if (err instanceof TypeError) {
                     return;
                 }
-                console.error(err.message)
+                console.error(err)
             }
         });
 
         // TCP data
         this[_server] = net.createServer((sock) => {
             this[_tcpSock] = sock;
-            console.log(`Establish connection with Pi-${this.getCID()} from ${sock.remoteAddress}:${sock.remotePort}(TCP)`);
+            myConsole.log(`Establish connection with Pi-${this.getCID()} from ${sock.remoteAddress}:${sock.remotePort}(TCP)`);
+            this.getEventNotifier().emit('new-drone-add');
             sock.on('data', (msg_buf) => {
                 if (this[_taskDone]) {
                     this[_server].close(() => {
-                        console.log(`Close the connection with Pi-${this.getCID()}`);
+                        myConsole.log(`Close the connection with Pi-${this.getCID()}`);
                     });
                     return;
                 }
@@ -230,12 +229,11 @@ class Drone {
                     if (err instanceof SyntaxError) {
                         return;
                     }
-                    console.error(err.message)
+                    console.error(err)
                 }
                 // Whether the message is a MAVC message from Pi
                 try {
                     if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
-                        this[_drone].emit('message-in', this.getCID(), msg_obj);
                         var Type = msg_obj[0]['Type'];
                         if (Type === MAVC.MAVC_ARRIVED) {
                             console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
@@ -246,12 +244,13 @@ class Drone {
                                 // to-do: handler for wrone receiver
                             }
                         }
+                        this[_drone].emit('message-in', this.getCID(), msg_obj);
                     }
                 } catch (err) {
                     if (err instanceof TypeError) {
                         return;
                     }
-                    console.error(err.message)
+                    console.error(err)
                 }
             });
         })
