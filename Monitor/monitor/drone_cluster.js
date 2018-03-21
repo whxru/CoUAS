@@ -212,7 +212,7 @@ class DroneCluster {
         if(CID > this[_drones].length) {
             return null;
         }
-        return this[_drones][CID － 1];
+        return this[_drones][CID - 1];
     }
 
     /**
