@@ -209,10 +209,10 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     getDrone(CID) {
-        if(CID > this[_drones].length -1) {
+        if(CID > this[_drones].length) {
             return null;
         }
-        return this[_drones][CID];
+        return this[_drones][CID － 1];
     }
 
     /**
