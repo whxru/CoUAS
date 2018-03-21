@@ -154,6 +154,9 @@ class MAVNode(mp_module.MPModule):
             pass
 
         if land_finally:
+            self.mode('GUIDED')
+            while not self.master.flightmode == 'GUIDED':
+                pass
             self.mode('LAND')
             
         # Send report back if needed
