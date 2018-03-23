@@ -131,14 +131,12 @@ class MAVNode(mp_module.MPModule):
                 pos = self.__action_handler[action_type](action)
                 cmd_num += 1
 
-        # Add dummy command if needed
-        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
-        if not land_finally:
-            fn = mavutil.mavlink.MAVLink_mission_item_message
-            wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0)
-            self.module('wp').wploader.add(wp)
-            cmd_num += 1
+        # Add dummy command
+        fn = mavutil.mavlink.MAVLink_mission_item_message
+        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0, 0,
+                0, 0, 0, 0, 0, 0, 0)
+        self.module('wp').wploader.add(wp)
+        cmd_num += 1
 
         # Upload the mission to APM board
         self.module('wp').save_waypoints('wp.txt')
@@ -153,6 +151,7 @@ class MAVNode(mp_module.MPModule):
         while not self.module('wp').last_waypoint == cmd_num - 1:
             pass
 
+        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
         if land_finally:
             self.mode('GUIDED')
             while not self.master.flightmode == 'GUIDED':
