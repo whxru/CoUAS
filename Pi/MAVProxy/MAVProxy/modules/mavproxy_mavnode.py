@@ -157,6 +157,7 @@ class MAVNode(mp_module.MPModule):
             self.mode('GUIDED')
             while not self.master.flightmode == 'GUIDED':
                 pass
+            time.sleep(2.0)
             self.mode('LAND')
             
         # Send report back if needed
