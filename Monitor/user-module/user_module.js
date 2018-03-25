@@ -78,7 +78,7 @@ class UserModule {
      */
     getStatus(CID) {
         var drone = this.droneCluster.getDrone(CID)
-        if(!drone) {
+        if(drone) {
             return drone.getStatus();
         }
         return null
