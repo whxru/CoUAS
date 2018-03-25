@@ -3,7 +3,7 @@
  * NTP server is recommended.
  */
 
-const { UserModule, MAVC } = require('./user_module');
+const { UserModule, MAVC, myConsole } = require('./user_module');
 
 class ModuleDelayTester extends UserModule {
     constructor(droneCluster) {
@@ -17,7 +17,7 @@ class ModuleDelayTester extends UserModule {
             this.listenAckMsg();
             this.broadcastMsg([
                 {
-                    "Header": "MAVCluster_Drone",
+                    "Header": "MAVCluster_Monitor",
                     "Type": MAVC.MAVC_DELAY_TEST,
                 },
                 {
@@ -30,7 +30,7 @@ class ModuleDelayTester extends UserModule {
     listenAckMsg() {
         this._responses = [];
         this.addMsgListener('message-in', (CID, msg) => {
-            if(msg[0].Type === MAVC.MAVC_DELAY_RESPONSE) {
+            if (msg[0].Type === MAVC.MAVC_DELAY_RESPONSE) {
                 msg[1]['Ack_time'] = Date.now();
                 msg[1]['Get_time'] = Math.floor(msg[1]['Get_time']);
                 this._responses.push(msg[1]);

@@ -177,8 +177,19 @@ class MAVNode(mp_module.MPModule):
 
     def msg_delay_test(self, *args):
         data_dict = args[0]
+        data_dict[0]['Type'] = MAVNode.MAVC_DELAY_RESPONSE
         data_dict[1]['Get_time'] = time.time()
-        self.__sock.send(json.dumps(data_dict))
+        self.__sock.send(json.dumps([
+            {
+                'Header': 'MAVCluster_Drone',
+                'Type': MAVNode.MAVC_DELAY_RESPONSE
+            },
+            {
+                'CID': self.__CID,
+                'Send_time': data_dict[1]['Send_time'],
+                'Get_time': time.time()
+            }
+        ]))
 
     def action_arm_and_takeoff(self, args):
         """Arm and takeoff"""
