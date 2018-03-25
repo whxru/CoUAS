@@ -16,6 +16,8 @@ class MAVNode(mp_module.MPModule):
     MAVC_SET_GEOFENCE = 3  # Set geofence of the drone
     MAVC_ACTION = 4  # Action to be performed
     MAVC_ARRIVED = 5  # Tell the monitor that the drone has arrived at the target
+    MAVC_DELAY_TEST = 101  # To test the communication delay
+    MAVC_DELAY_RESPONSE = 102 # Response to MAVC_DELAY_TEST
 
     # Constant value definition of action type in MAVC_ACTION message
     ACTION_ARM_AND_TAKEOFF = 0  # Ask drone to arm and takeoff
@@ -34,7 +36,8 @@ class MAVNode(mp_module.MPModule):
         self.__wp_str = None
         self.__msg_handler = {
             MAVNode.MAVC_SET_GEOFENCE: self.msg_set_geofence,
-            MAVNode.MAVC_ACTION: self.msg_action
+            MAVNode.MAVC_ACTION: self.msg_action,
+            MAVNode.MAVC_DELAY_TEST: self.msg_delay_test
         }
         self.__action_handler = {
             MAVNode.ACTION_ARM_AND_TAKEOFF: self.action_arm_and_takeoff,
@@ -172,6 +175,11 @@ class MAVNode(mp_module.MPModule):
                 }
             ]))
 
+    def msg_delay_test(self, *args):
+        data_dict = args[0]
+        data_dict[1]['Get_time'] = time.time()
+        self.__sock.send(json.dumps(data_dict))
+
     def action_arm_and_takeoff(self, args):
         """Arm and takeoff"""
         alt = args['Alt']
@@ -203,7 +211,7 @@ class MAVNode(mp_module.MPModule):
         while True:
             current_alt = self.master.messages['GLOBAL_POSITION_INT'].relative_alt * 1.0e-3
             print("Altitude: %f" % current_alt)
-            if current_alt >= alt * 0.8:
+            if current_alt >= alt * 0.7:
                 break
             time.sleep(0.7)
 
