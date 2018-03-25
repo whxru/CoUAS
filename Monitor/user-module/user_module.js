@@ -119,5 +119,6 @@ class UserModule {
 module.exports = {
     UserModule: UserModule,
     myConsole: require('../monitor-app/module/console'),
-    wd: require('../monitor-app/module/window')
+    wd: require('../monitor-app/module/window'),
+    MAVC: require('../monitor/lib/mavc').MAVC
 }
