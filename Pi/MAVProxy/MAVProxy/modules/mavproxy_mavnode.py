@@ -177,8 +177,6 @@ class MAVNode(mp_module.MPModule):
 
     def msg_delay_test(self, *args):
         data_dict = args[0]
-        data_dict[0]['Type'] = MAVNode.MAVC_DELAY_RESPONSE
-        data_dict[1]['Get_time'] = time.time()
         self.__sock.send(json.dumps([
             {
                 'Header': 'MAVCluster_Drone',
@@ -187,7 +185,7 @@ class MAVNode(mp_module.MPModule):
             {
                 'CID': self.__CID,
                 'Send_time': data_dict[1]['Send_time'],
-                'Get_time': time.time()
+                'Get_time': int(round(time.time() * 1000))
             }
         ]))
 
