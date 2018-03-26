@@ -38,20 +38,21 @@ class ModuleDelayTester extends UserModule {
         this.addMsgListener('message-in', (CID, msg) => {
             if (msg[0].Type === MAVC.MAVC_DELAY_RESPONSE) {
                 msg[1]['Ack_time'] = Date.now();
-                // msg[1]['Get_time'] = parseInt(msg[1]['Get_time']*1e3);
-                myConsole.log(`Transfer delay of drone-${CID}: ${msg[1]['Get_time'] - msg[1]['Send_time']}ms`, 'green');
-                myConsole.log(`RTT of drone-${CID}: ${msg[1]['Ack_time'] - msg[1]['Send_time']}ms`, 'green');
+                // myConsole.log(`Monitor → drone-${CID}: ${msg[1]['Get_time'] - msg[1]['Send_time']}ms`, 'green');
+                // myConsole.log(`drone-${CID} → Monitor: ${msg[1]['Ack_time'] - msg[1]['Get_time']}ms`, 'green');
+                myConsole.log(`drone-${CID} RTT: ${msg[1]['Ack_time'] - msg[1]['Send_time']}ms`, 'red');
                 this._responses.push(msg[1]);
                 if (this._responses.length === this.getDroneNum()) {
+                    console.log(this._responses);
                     // After getting all acks
-                    var max = Date.now(),
-                        min = 0;
+                    var max = 0,
+                        min = Date.now() + 1e4;
                     this._responses.forEach(resp => {
                         var gt = resp.Get_time;
                         if (gt > max) max = gt;
                         if (gt < min) min = gt;
                     })
-                    myConsole.log(`Max difference of transfer delay: ${max-min}ms`, 'green');
+                    myConsole.log(`Max difference of transfer delay: ${max-min}ms`, 'red');
                 }
             }
         });
