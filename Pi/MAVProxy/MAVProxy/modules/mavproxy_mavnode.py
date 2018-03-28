@@ -144,7 +144,14 @@ class MAVNode(mp_module.MPModule):
         self.module('wp').wploader.add(wp)
         cmd_num += 1
 
+        # Fix cmd_num
+        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
+        land_locally = land_finally and data_dict[-1]['Lat'] == 0 and data_dict[-1]['Lon'] == 0 
+        if land_locally:
+            cmd_num -= 1
+
         # Upload the mission to APM board
+        print 'Prepare to update waypoints'
         self.module('wp').save_waypoints('wp.txt')
         self.module('wp').send_all_waypoints()
         while self.module('wp').loading_waypoints:
@@ -157,12 +164,11 @@ class MAVNode(mp_module.MPModule):
         while not self.module('wp').last_waypoint == cmd_num - 1:
             pass
 
-        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
         if land_finally:
-            self.mode('GUIDED')
-            while not self.master.flightmode == 'GUIDED':
-                pass
-            time.sleep(2.0)
+            # self.mode('GUIDED')
+            # while not self.master.flightmode == 'GUIDED':
+                # pass
+            # time.sleep(2.0)
             self.mode('LAND')
             
         # Send report back if needed
@@ -196,11 +202,13 @@ class MAVNode(mp_module.MPModule):
         """Arm and takeoff"""
         alt = args['Alt']
 
+        print 'Prepare to arm and takeoff!'
         # Change mode to GUIDED
-        self.mode('GUIDED')
-        while not self.master.flightmode == 'GUIDED':
-            pass
-        print("Mode GUIDED")
+        if self.master.flightmode != 'GUIDED':
+            self.mode('GUIDED')
+            while not self.master.flightmode == 'GUIDED':
+                pass
+            print("Mode GUIDED")
 
         # Arm throttle
         self.master.arducopter_arm()
@@ -285,13 +293,20 @@ class MAVNode(mp_module.MPModule):
         pos = args['O']
 
         # Add waypoint
-        fn = mavutil.mavlink.MAVLink_mission_item_message
-        (lat, lon) = (pos['lat'], pos['lon']) if lat == 0 else (lat, lon)
-        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
-                0, 0, 0, 0, lat, lon, pos['alt'])
-        self.module('wp').wploader.add(wp)
+        land_locally = lat == 0 and lon == 0
+        (lat, lon) = (pos['lat'], pos['lon']) if land_locally else (lat, lon)
+        
+        if not land_locally:
+            fn = mavutil.mavlink.MAVLink_mission_item_message
+            wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
+                    0, 0, 0, 0, lat, lon, pos['alt'])
+            self.module('wp').wploader.add(wp)
 
-        return {}
+        return {
+            'lat': lat,
+            'lon': lon,
+            'alt': 0
+        }
 
     def mode(self, md):
         """set arbitrary mode"""
