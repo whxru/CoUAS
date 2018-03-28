@@ -100,6 +100,7 @@ class MAVNode(mp_module.MPModule):
         self.module('param').cmd_param(['set', 'MIS_RESTART', '1'])
 
         # Start listening and reporting
+        self.mode('GUIDED')
         Thread(target=self.__listen_to_monitor, name='Hear-From-Monitor').start()
         self.__report_to_monitor()
 
@@ -109,9 +110,11 @@ class MAVNode(mp_module.MPModule):
 
     def msg_action(self, *args):
         """Handle the msg of action"""
-        self.mode('GUIDED')
-        while not self.master.flightmode == 'GUIDED':
-            pass
+        if self.master.flightmode != 'GUIDED':
+            self.mode('GUIDED')
+            while not self.master.flightmode == 'GUIDED':
+                pass
+                
         self.master.waypoint_clear_all_send()
         self.module('wp').wploader.clear()
 
