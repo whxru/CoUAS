@@ -1,4 +1,5 @@
 import socket
+import sys
 import json
 import math
 import time
@@ -102,24 +103,26 @@ class MAVNode(mp_module.MPModule):
         # Start listening and reporting
         self.mode('GUIDED')
         Thread(target=self.__listen_to_monitor, name='Hear-From-Monitor').start()
-        self.__report_to_monitor()
+        Thread(target=self.__report_to_monitor, name='Report-To-Monitor').start()
 
-    def msg_set_geofence(self, *args):
+    def msg_set_geofence(self, args):
         """Handle the msg of set_geofence"""
         pass
 
-    def msg_action(self, *args):
+    def msg_action(self, args):
         """Handle the msg of action"""
+        sys.stdout.write('>>>>Prepare to change mode\n')
         if self.master.flightmode != 'GUIDED':
             self.mode('GUIDED')
             while not self.master.flightmode == 'GUIDED':
                 pass
-                
+
+        sys.stdout.write('>>>>Prepare to clear waypoints\n')
         self.master.waypoint_clear_all_send()
         self.module('wp').wploader.clear()
 
         data_dict = args[0]
-        print(json.dumps(data_dict))
+        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
         cmd_num = 0
         pos = self.master.messages['GLOBAL_POSITION_INT']
         pos = {
@@ -127,6 +130,7 @@ class MAVNode(mp_module.MPModule):
             'lon': pos.lon * 1.0e-7,
             'alt': pos.relative_alt * 1.0e-3
         }
+        sys.stdout.write('>>>>Prepare to parse acionts\n')
         for n in range(1, len(data_dict)):
             # Pick actions about this drone out
             if data_dict[n]['CID'] == self.__CID:
@@ -145,19 +149,20 @@ class MAVNode(mp_module.MPModule):
         cmd_num += 1
 
         # Fix cmd_num
-        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
-        land_locally = land_finally and data_dict[-1]['Lat'] == 0 and data_dict[-1]['Lon'] == 0 
+        land_locally = land_finally and data_dict[-1]['Lat'] == 0 and data_dict[-1]['Lon'] == 0
         if land_locally:
             cmd_num -= 1
 
         # Upload the mission to APM board
-        print 'Prepare to update waypoints'
+        sys.stdout.write('>>>>Prepare to send acionts\n')
         self.module('wp').save_waypoints('wp.txt')
         self.module('wp').send_all_waypoints()
         while self.module('wp').loading_waypoints:
-            pass
+            sys.stdout.write('>>>>Sending waypoints\n')
+            time.sleep(0.7)
 
         # Start mission
+        sys.stdout.write('>>>>Prepare to change to mode AUTO\n')
         self.mode('AUTO')
 
         # Block until the end of mission
@@ -165,10 +170,6 @@ class MAVNode(mp_module.MPModule):
             pass
 
         if land_finally:
-            # self.mode('GUIDED')
-            # while not self.master.flightmode == 'GUIDED':
-                # pass
-            # time.sleep(2.0)
             self.mode('LAND')
             
         # Send report back if needed
@@ -184,7 +185,7 @@ class MAVNode(mp_module.MPModule):
                 }
             ]))
 
-    def msg_delay_test(self, *args):
+    def msg_delay_test(self, args):
         data_dict = args[0]
         self.__sock.send(json.dumps([
             {
@@ -202,13 +203,13 @@ class MAVNode(mp_module.MPModule):
         """Arm and takeoff"""
         alt = args['Alt']
 
-        print 'Prepare to arm and takeoff!'
+        sys.stdout.write('>>>>Prepare to arm and take off\n')
         # Change mode to GUIDED
         if self.master.flightmode != 'GUIDED':
             self.mode('GUIDED')
             while not self.master.flightmode == 'GUIDED':
                 pass
-            print("Mode GUIDED")
+                sys.stdout.write('>>>>Change to GUIDED mode\n')
 
         # Arm throttle
         self.master.arducopter_arm()
@@ -384,7 +385,7 @@ class MAVNode(mp_module.MPModule):
                 try:
                     if data_dict[0]['Header'] == 'MAVCluster_Monitor':
                         mavc_type = data_dict[0]['Type']
-                        Thread(target=self.__msg_handler[mavc_type], args=(data_dict,)).start()
+                        self.__msg_handler[mavc_type]((data_dict,))
                 except KeyError:  # This message is not a MAVC message
                     continue
         except socket.error:
