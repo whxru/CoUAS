@@ -117,9 +117,9 @@ class MAVNode(mp_module.MPModule):
             while not self.master.flightmode == 'GUIDED':
                 pass
 
-        sys.stdout.write('>>>>Prepare to clear waypoints\n')
-        self.master.waypoint_clear_all_send()
-        self.module('wp').wploader.clear()
+        # sys.stdout.write('>>>>Prepare to clear waypoints\n')
+        # self.master.waypoint_clear_all_send()
+        # self.module('wp').wploader.clear()
 
         data_dict = args[0]
         land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
@@ -156,7 +156,8 @@ class MAVNode(mp_module.MPModule):
         # Upload the mission to APM board
         sys.stdout.write('>>>>Prepare to send acionts\n')
         self.module('wp').save_waypoints('wp.txt')
-        self.module('wp').send_all_waypoints()
+        # self.module('wp').send_all_waypoints()
+        self.module('wp').update_waypoints('wp.txt')
         while self.module('wp').loading_waypoints:
             sys.stdout.write('>>>>Sending waypoints\n')
             time.sleep(0.7)
@@ -387,6 +388,7 @@ class MAVNode(mp_module.MPModule):
                         mavc_type = data_dict[0]['Type']
                         self.__msg_handler[mavc_type]((data_dict,))
                 except KeyError:  # This message is not a MAVC message
+                    sys.stdout.write('!!!!!!KeyError!!!!!!')
                     continue
         except socket.error:
             self.close_connection()
