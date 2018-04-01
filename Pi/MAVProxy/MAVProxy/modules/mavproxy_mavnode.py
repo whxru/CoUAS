@@ -119,7 +119,7 @@ class MAVNode(mp_module.MPModule):
 
         # sys.stdout.write('>>>>Prepare to clear waypoints\n')
         # self.master.waypoint_clear_all_send()
-        # self.module('wp').wploader.clear()
+        self.module('wp').wploader.clear()
 
         data_dict = args[0]
         land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
@@ -209,12 +209,17 @@ class MAVNode(mp_module.MPModule):
         if self.master.flightmode != 'GUIDED':
             self.mode('GUIDED')
             while not self.master.flightmode == 'GUIDED':
-                pass
-                sys.stdout.write('>>>>Change to GUIDED mode\n')
+                sys.stdout.write('>>>>Changing to GUIDED mode\n')
 
         # Arm throttle
+        counter = 0
         self.master.arducopter_arm()
         while not self.master.motors_armed():
+            sys.stdout.write('>>>>Waiting for arming......\n')
+            counter += 1
+            if counter > 5:
+                self.master.arducopter_arm()
+                counter = 0
             time.sleep(0.7)
 
         # Takeoff
