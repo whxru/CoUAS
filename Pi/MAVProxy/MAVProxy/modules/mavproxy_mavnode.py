@@ -111,19 +111,8 @@ class MAVNode(mp_module.MPModule):
 
     def msg_action(self, args):
         """Handle the msg of action"""
-        sys.stdout.write('>>>>Prepare to change mode\n')
-        if self.master.flightmode != 'GUIDED':
-            self.mode('GUIDED')
-            while not self.master.flightmode == 'GUIDED':
-                pass
-
-        # sys.stdout.write('>>>>Prepare to clear waypoints\n')
-        # self.master.waypoint_clear_all_send()
-        self.module('wp').wploader.clear()
-
         data_dict = args[0]
-        land_finally = data_dict[-1]['Action_type'] == MAVNode.ACTION_LAND
-        cmd_num = 0
+
         pos = self.master.messages['GLOBAL_POSITION_INT']
         pos = {
             'lat': pos.lat * 1.0e-7,
@@ -139,40 +128,7 @@ class MAVNode(mp_module.MPModule):
                 action_type = action['Action_type']
                 action['O'] = pos
                 pos = self.__action_handler[action_type](action)
-                cmd_num += 1
 
-        # Add dummy command
-        fn = mavutil.mavlink.MAVLink_mission_item_message
-        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0, 0,
-                0, 0, 0, 0, 0, 0, 0)
-        self.module('wp').wploader.add(wp)
-        cmd_num += 1
-
-        # Fix cmd_num
-        land_locally = land_finally and data_dict[-1]['Lat'] == 0 and data_dict[-1]['Lon'] == 0
-        if land_locally:
-            cmd_num -= 1
-
-        # Upload the mission to APM board
-        sys.stdout.write('>>>>Prepare to send acionts\n')
-        self.module('wp').save_waypoints('wp.txt')
-        # self.module('wp').send_all_waypoints()
-        self.module('wp').update_waypoints('wp.txt')
-        while self.module('wp').loading_waypoints:
-            sys.stdout.write('>>>>Sending waypoints\n')
-            time.sleep(0.7)
-
-        # Start mission
-        sys.stdout.write('>>>>Prepare to change to mode AUTO\n')
-        self.mode('AUTO')
-
-        # Block until the end of mission
-        while not self.module('wp').last_waypoint == cmd_num - 1:
-            pass
-
-        if land_finally:
-            self.mode('LAND')
-            
         # Send report back if needed
         if data_dict[-1]['Sync']:
             self.__sock.send(json.dumps([
@@ -242,12 +198,6 @@ class MAVNode(mp_module.MPModule):
                 break
             time.sleep(0.7)
 
-        # Add waypoint
-        fn = mavutil.mavlink.MAVLink_mission_item_message
-        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0,
-                0, 0, 0, 0, 0, 0, alt)
-        self.module('wp').wploader.add(wp)
-
         pos = self.master.messages['GLOBAL_POSITION_INT']
         return {
             'lat': pos.lat * 1.0e-7,
@@ -263,11 +213,7 @@ class MAVNode(mp_module.MPModule):
         current_location = args['O']
         target_location = get_location_metres(current_location, d_north, d_east)
 
-        # Add waypoint
-        fn = mavutil.mavlink.MAVLink_mission_item_message
-        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
-                0, 0, 0, 0, target_location['lat'], target_location['lon'], alt)
-        self.module('wp').wploader.add(wp)
+        self.fly_to(target_location)
 
         return {
             'lat': target_location['lat'],
@@ -281,11 +227,7 @@ class MAVNode(mp_module.MPModule):
         lon = args['Lon']
         alt = args['Alt']
 
-        # Add waypoint
-        fn = mavutil.mavlink.MAVLink_mission_item_message
-        wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
-                0, 0, 0, 0, lat, lon, alt)
-        self.module('wp').wploader.add(wp)
+        self.fly_to({'lat': lat, 'lon': lon, 'alt': alt})
 
         return {
             'lat': lat,
@@ -304,10 +246,8 @@ class MAVNode(mp_module.MPModule):
         (lat, lon) = (pos['lat'], pos['lon']) if land_locally else (lat, lon)
         
         if not land_locally:
-            fn = mavutil.mavlink.MAVLink_mission_item_message
-            wp = fn(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
-                    0, 0, 0, 0, lat, lon, pos['alt'])
-            self.module('wp').wploader.add(wp)
+            self.fly_to({'lat': lat, 'lon': lon, 'alt': pos['alt']})
+        self.mode('LAND')
 
         return {
             'lat': lat,
@@ -330,6 +270,43 @@ class MAVNode(mp_module.MPModule):
                 return
             modenum = mode_mapping[mode]
         self.master.set_mode(modenum)
+
+    def fly_to(self, target_pos):
+        if self.master.flightmode != 'GUIDED':
+            self.mode('GUIDED')
+            while not self.master.flightmode == 'GUIDED':
+                pass
+
+        current_pos = self.master.messages['GLOBAL_POSITION_INT']
+        current_pos = {
+            'lat': current_pos.lat * 1.0e-7,
+            'lon': current_pos.lon * 1.0e-7,
+            'alt': current_pos.relative_alt * 1.0e-3
+        }
+        target_distance = get_distance_metres(current_pos, target_pos)
+        sys.stdout.write('Target distance: {}\n'.format(target_distance))
+
+        self.master.mav.mission_item_send(self.settings.target_system,
+                                          self.settings.target_component,
+                                          0,
+                                          self.module('wp').get_default_frame(),
+                                          mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
+                                          2, 0, 0, 0, 0, 0,
+                                          target_pos['lat'], target_pos['lon'], target_pos['alt'])
+
+        while True:
+            current_pos = self.master.messages['GLOBAL_POSITION_INT']
+            current_pos = {
+                'lat': current_pos.lat * 1.0e-7,
+                'lon': current_pos.lon * 1.0e-7,
+                'alt': current_pos.relative_alt * 1.0e-3
+            }
+            remaining_distance = get_distance_metres(current_pos, target_pos)
+            if remaining_distance <= 0.6:
+                sys.stdout.write('>>>>Target reached\n')
+                break
+            sys.stdout.write('>>>>Remaining distance: {}\n'.format(remaining_distance))
+            time.sleep(0.7)
 
     def send_msg_to_monitor(self, msg):
         """Send message to monitor using UDP protocol.
