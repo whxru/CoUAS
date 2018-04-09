@@ -179,6 +179,7 @@ class MAVNode(mp_module.MPModule):
             time.sleep(0.7)
 
         # Takeoff
+        counter = 0
         self.master.mav.command_long_send(
             self.settings.target_system,  # target_system
             mavutil.mavlink.MAV_COMP_ID_SYSTEM_CONTROL,  # target_component
@@ -194,6 +195,11 @@ class MAVNode(mp_module.MPModule):
         while True:
             current_alt = self.master.messages['GLOBAL_POSITION_INT'].relative_alt * 1.0e-3
             print("Altitude: %f" % current_alt)
+            if current_alt < 1:
+                counter += 1
+            if counter == 5:
+                sys.stdout.write('>>>>Re-takeoff!!!!\n')
+                return self.action_arm_and_takeoff(args)
             if current_alt >= alt * 0.7:
                 break
             time.sleep(0.7)
