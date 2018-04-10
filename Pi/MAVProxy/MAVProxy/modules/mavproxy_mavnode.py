@@ -48,6 +48,7 @@ class MAVNode(mp_module.MPModule):
         }
 
         self.add_command('node-connect', self.cmd_connect, "Connect to monitor via IP address")
+        self.add_command('last-update', self.cmd_last_update, "To tell the time of last update")
 
     def cmd_connect(self, args):
         """node-connect command"""
@@ -105,6 +106,10 @@ class MAVNode(mp_module.MPModule):
         Thread(target=self.__listen_to_monitor, name='Hear-From-Monitor').start()
         Thread(target=self.__report_to_monitor, name='Report-To-Monitor').start()
 
+    def cmd_last_update(self, args):
+        print('2018/4/10 9:00am')
+
+        
     def msg_set_geofence(self, args):
         """Handle the msg of set_geofence"""
         pass
