@@ -107,7 +107,7 @@ class MAVNode(mp_module.MPModule):
         Thread(target=self.__report_to_monitor, name='Report-To-Monitor').start()
 
     def cmd_last_update(self, args):
-        print('2018/4/10 9:00am')
+        print('2018/4/17 16:23am')
 
         
     def msg_set_geofence(self, args):
@@ -384,7 +384,8 @@ class MAVNode(mp_module.MPModule):
                     sys.stdout.write('!!!!!!KeyError!!!!!!')
                     continue
         except socket.error:
-            self.close_connection()
+            pass
+            # self.close_connection()
 
     def close_connection(self):
         """Close the connection that maintained by the instance"""
