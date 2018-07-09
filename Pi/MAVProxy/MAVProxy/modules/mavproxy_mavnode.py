@@ -313,7 +313,7 @@ class MAVNode(mp_module.MPModule):
                 'alt': current_pos.relative_alt * 1.0e-3
             }
             remaining_distance = get_distance_metres(current_pos, target_pos)
-            if remaining_distance <= 0.6:
+            if remaining_distance <= 1.0:
                 sys.stdout.write('>>>>Target reached\n')
                 break
             sys.stdout.write('>>>>Remaining distance: {}\n'.format(remaining_distance))
