@@ -24,12 +24,14 @@ if __name__ == '__main__':
     parser.add_argument('--sitl', type=int, help='Number of simulators to start')
     parser.add_argument('--lat', default=31.8871046, type=float, help='Latitude of home-location of the simulator')
     parser.add_argument('--lon', default=118.8134928, type=float, help='Longitude of home-location of the simulator')
+    parser.add_argument('--speed', default=3.0, type=float, help='Speed of the flight')
     parser.add_argument('--baud', default=115200, type=int, help='Baudrate')
     args = parser.parse_args()
     connection_string = args.master
     host = args.host
     port = args.port
     baud = args.baud
+    speed = args.speed
 
     # To create and start simulators of copter
     sitl = None
@@ -65,6 +67,7 @@ if __name__ == '__main__':
 
         # Connect to the Monitor
         mav = drone.Drone(vehicle, host, port)
+        mav.set_speed(speed)
 
     try:
         while True:
