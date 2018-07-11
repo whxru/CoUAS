@@ -51,9 +51,9 @@ def arm_and_takeoff(vehicle, args):
     vehicle.mode = VehicleMode("GUIDED")
     vehicle.armed = True
 
-    print " Waiting for arming..."
     while not vehicle.armed:
-        pass
+        print " Waiting for arming..."
+        time.sleep(1)
     print "Armed, Taking off!"
     vehicle.simple_takeoff(altitude)  # Take off to target altitude
 
@@ -65,12 +65,6 @@ def arm_and_takeoff(vehicle, args):
             print "Reached target altitude"
             break
         time.sleep(1)
-
-    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0,
-                  0, 0, 0, 0, 0, 0, altitude)
-    vehicle.commands.add(cmd)
-
-    return vehicle.location.global_relative_frame
 
 
 def go_by(vehicle, args):
@@ -85,21 +79,15 @@ def go_by(vehicle, args):
         args: Dictionary that contains action information
             * N: Distance at North direction.
             * E: Distance at East direction.
-            * O: The position that the target is relative to.
-    Returns:
-        The target position.
+            * Speed: Expected speed of the drone.
     """
 
     dNorth = args['N']
     dEast = args['E']
-    current_location = args['O']
+    current_location = vehicle.location.global_relative_frame
     print 'Go by (N: %d, E:%d)' % (dNorth, dEast)
     target_location = _get_location_metres(current_location, dNorth, dEast)
-
-    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
-                  0, 0, 0, 0, target_location.lat, target_location.lon, target_location.alt)
-    vehicle.commands.add(cmd)
-    return target_location
+    fly_to(vehicle, target_location)
 
 
 def go_to(vehicle, args):
@@ -114,19 +102,26 @@ def go_to(vehicle, args):
         args: Dictionary that contains action information
             * Lat: Latitude of target position.
             * Lon: Longitude of target position.
-            * Time: Expected time of the task (second).
-    Returns:
-        The target position.
+            * Speed: Expected speed of the drone.
     """
 
     lat = args['Lat']
     lon = args['Lon']
     alt = args['Alt']
+    fly_to(vehicle, LocationGlobalRelative(lat, lon, alt))
 
-    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0,
-                  0, 0, 0, 0, lat, lon, 0)
-    vehicle.commands.add(cmd)
-    return LocationGlobalRelative(lat, lon, alt)
+
+def fly_to(vehicle, target):
+    """Implementation of function go_by and go_to"""
+
+    vehicle.simple_goto(target)
+    while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
+        remaining_distance = _get_distance_metres(vehicle.location.global_relative_frame, target)
+        print "Distance to target: ", remaining_distance
+        if remaining_distance <= 1:  # Just below target, in case of undershoot.
+            print "Reached target"
+            break
+        time.sleep(2)
 
 
 def land(vehicle, args):
@@ -143,45 +138,17 @@ def land(vehicle, args):
     # Get latitude and longitude
     lat = args['Lat']
     lon = args['Lon']
-
-    cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0,
-                  0, 0, 0, 0, lat, lon, 0)
-    vehicle.commands.add(cmd)
-
-
-def wait_next_mission(vehicle):
-    """Wait for sync"""
-    vehicle.commands.add(
-        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_LOITER_UNLIM, 0,
-                0, 0, 0, 0, 0, 0, 0, 0)
-    )
-
-
-def clear_mission(vehicle):
-    """Clear commands in current mission"""
-    cmds = vehicle.commands
-    cmds.clear()
-
-
-def start_mission(vehicle):
-    """Restart a new mission"""
-    cmds = vehicle.commands
-    cmds.upload()
-    print "Commands uploaded!"
-    vehicle.mode = VehicleMode('GUIDED')
-    while not vehicle.mode == 'GUIDED':
-        pass
-    vehicle.mode = VehicleMode('AUTO')
-    print "Start mission!"
-
-
-def current_cmd_index(vehicle):
-    return vehicle.commands.next
+    vehicle.mode = VehicleMode("LAND")
 
 
 def return_to_launch(vehicle):
     """Ask the drone to return to launch"""
     vehicle.mode = VehicleMode('RTL')
+
+
+def set_speed(vehicle, speed):
+    """Set speed of the drone"""
+    vehicle.groundspeed = speed
 
 
 def _get_location_metres(original_location, dNorth, dEast):

@@ -165,6 +165,14 @@ class Drone:
         """
         self.__sock.send(json.dumps(data))
 
+    def set_speed(self, speed):
+        """Set the speed of drone
+
+        Args:
+            speed: Expected speed.
+        """
+        set_speed(self.__vehicle, speed)
+
     def __listen_to_monitor(self):
         """Deal with instructions sent by monitor.
 
@@ -189,8 +197,9 @@ class Drone:
                 try:
                     if data_dict[0]['Header'] == 'MAVCluster_Monitor':
                         mavc_type = data_dict[0]['Type']
-                        handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
-                        handler.start()
+                        # handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
+                        # handler.start()
+                        self.__msg_handler(mavc_type, data_dict)
                 except KeyError:  # This message is not a MAVC message
                     continue
         except socket.error:
@@ -209,10 +218,6 @@ class Drone:
         def mavc_action(args):
             """Perform action."""
 
-            # Prepare to start next mission
-            clear_mission(self.__vehicle)
-
-            # Add commands to the mission
             perform_action = {
                 ACTION_ARM_AND_TAKEOFF: arm_and_takeoff,
                 ACTION_GO_TO: go_to,
@@ -220,29 +225,13 @@ class Drone:
                 ACTION_LAND: land
             }
             data_dict = args[0]
-            cmd_num = 0
-            pos = self.__vehicle.location.global_relative_frame
             for n in range(1, len(data_dict)):
                 # Pick actions about this drone out
                 if data_dict[n]['CID'] == self.__CID:
                     action = data_dict[n]
                     # Perform the action
                     action_type = action['Action_type']
-                    action['O'] = pos
-                    pos = perform_action[action_type](self.__vehicle, action)
-                    cmd_num += 1
-
-            # Add dummy command if needed
-            if not data_dict[-1]['Action_type'] == ACTION_LAND:
-                wait_next_mission(self.__vehicle)
-                cmd_num += 1
-
-            # Upload the mission to APM board
-            start_mission(self.__vehicle)
-
-            # Block until the end of mission
-            while not current_cmd_index(self.__vehicle) == cmd_num - 1:
-                pass
+                    perform_action[action_type](self.__vehicle, action)
 
             # Send report back if needed
             if data_dict[-1]['Sync']:
