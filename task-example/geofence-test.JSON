@@ -25,5 +25,13 @@
         "Time": 3,
         "Step": 2,
         "Sync": false
+    },
+    {
+    	"Action_type": 3,
+    	"CID": 1,
+    	"Lat": 0,
+    	"Lon": 0,
+    	"Step": 3,
+    	"Sync": false
     }
 ]
