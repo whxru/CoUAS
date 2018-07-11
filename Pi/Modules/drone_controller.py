@@ -114,14 +114,33 @@ def go_to(vehicle, args):
 def fly_to(vehicle, target):
     """Implementation of function go_by and go_to"""
 
+    init_location = vehicle.location.global_relative_frame
+    wait_time = 0
+    resend_cmd = False
+
     vehicle.simple_goto(target)
+
     while vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
-        remaining_distance = _get_distance_metres(vehicle.location.global_relative_frame, target)
+        time.sleep(1)
+        wait_time += 1
+        current_location = vehicle.location.global_relative_frame
+
+        # Resend movement cmd if the drone nearly keeps staying in the original position
+        moved_distance = _get_distance_metres(init_location, current_location)
+        # if wait_time > 4 and moved_distance < vehicle.groundspeed * wait_time * 0.3:
+        if wait_time > 4 and moved_distance < 2:
+            resend_cmd = True
+            break
+
+        # To judge whether the drone has arrived the target position
+        remaining_distance = _get_distance_metres(current_location, target)
         print "Distance to target: ", remaining_distance
         if remaining_distance <= 1:  # Just below target, in case of undershoot.
             print "Reached target"
             break
-        time.sleep(2)
+
+    if resend_cmd:
+        fly_to(vehicle, target)
 
 
 def land(vehicle, args):

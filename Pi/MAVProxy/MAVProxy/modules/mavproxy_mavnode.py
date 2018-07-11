@@ -297,6 +297,15 @@ class MAVNode(mp_module.MPModule):
         target_distance = get_distance_metres(current_pos, target_pos)
         sys.stdout.write('Target distance: {}\n'.format(target_distance))
 
+        init_pos = self.master.messages['GLOBAL_POSITION_INT']
+        init_pos = {
+                'lat': init_pos.lat * 1.0e-7,
+                'lon': init_pos.lon * 1.0e-7,
+                'alt': init_pos.relative_alt * 1.0e-3
+        }
+        wait_time = 0
+        resend_cmd = False
+
         self.master.mav.mission_item_send(self.settings.target_system,
                                           self.settings.target_component,
                                           0,
@@ -306,18 +315,30 @@ class MAVNode(mp_module.MPModule):
                                           target_pos['lat'], target_pos['lon'], target_pos['alt'])
 
         while True:
+            time.sleep(0.7)
+            wait_time += 0.7
+
             current_pos = self.master.messages['GLOBAL_POSITION_INT']
             current_pos = {
                 'lat': current_pos.lat * 1.0e-7,
                 'lon': current_pos.lon * 1.0e-7,
                 'alt': current_pos.relative_alt * 1.0e-3
             }
+
+            moved_distance = get_distance_metres(init_pos, current_pos)
+            # if wait_time > 4 and moved_distance < vehicle.groundspeed * wait_time * 0.3:
+            if wait_time > 4 and moved_distance < 2:
+                resend_cmd = True
+                break
+
             remaining_distance = get_distance_metres(current_pos, target_pos)
             if remaining_distance <= 1.0:
                 sys.stdout.write('>>>>Target reached\n')
                 break
             sys.stdout.write('>>>>Remaining distance: {}\n'.format(remaining_distance))
-            time.sleep(0.7)
+
+        if resend_cmd:
+            self.fly_to(target_pos)
 
     def send_msg_to_monitor(self, msg):
         """Send message to monitor using UDP protocol.
