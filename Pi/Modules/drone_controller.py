@@ -129,6 +129,7 @@ def fly_to(vehicle, target):
         moved_distance = _get_distance_metres(init_location, current_location)
         # if wait_time > 4 and moved_distance < vehicle.groundspeed * wait_time * 0.3:
         if wait_time > 4 and moved_distance < 2:
+            print "Redo fly_to"
             resend_cmd = True
             break
 
