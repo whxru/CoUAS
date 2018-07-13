@@ -197,13 +197,14 @@ class Drone:
                 try:
                     if data_dict[0]['Header'] == 'MAVCluster_Monitor':
                         mavc_type = data_dict[0]['Type']
-                        # handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
-                        # handler.start()
-                        self.__msg_handler(mavc_type, data_dict)
+                        handler = Thread(target=self.__msg_handler, args=(mavc_type, data_dict))
+                        handler.start()
+                        # self.__msg_handler(mavc_type, data_dict)
                 except KeyError:  # This message is not a MAVC message
                     continue
         except socket.error:
-            self.close_connection()
+            # self.close_connection()
+            pass
 
     def __msg_handler(self, mavc_type, *opargs):
         """Handle the message received from monitor
