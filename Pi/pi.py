@@ -24,7 +24,7 @@ if __name__ == '__main__':
     parser.add_argument('--sitl', type=int, help='Number of simulators to start')
     parser.add_argument('--lat', default=31.8871046, type=float, help='Latitude of home-location of the simulator')
     parser.add_argument('--lon', default=118.8134928, type=float, help='Longitude of home-location of the simulator')
-    parser.add_argument('--speed', default=3.0, type=float, help='Speed of the flight')
+    parser.add_argument('--speed', default=4.0, type=float, help='Speed of the flight')
     parser.add_argument('--baud', default=115200, type=int, help='Baudrate')
     args = parser.parse_args()
     connection_string = args.master
@@ -50,7 +50,8 @@ if __name__ == '__main__':
             sitl = start_default(args.lat, args.lon)
             connection_string = sitl.connection_string()
             vehicle = connect_vehicle(connection_string)
-            drone.Drone(vehicle, host, port)
+            mav = drone.Drone(vehicle, host, port)
+            mav.set_speed(speed)
         else:
             for i in range(0, args.sitl):
                 sitl = SITL()
