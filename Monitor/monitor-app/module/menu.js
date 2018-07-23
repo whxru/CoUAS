@@ -41,6 +41,7 @@ function initMenu(droneCluster) {
             submenu: [
                 {
                     label: 'Open a task file',
+                    accelerator: 'CmdOrCtrl+O',
                     click: () => {
                         // Clear the previous trace
                         droneCluster.clearTrace();
@@ -99,16 +100,21 @@ function initMenu(droneCluster) {
             label: 'Info',
             submenu: [
                 {
-                    label: 'Distance',
+                    label: 'Task info',
+                    accelerator: 'CmdOrCtrl+I',
                     click: () => {
                         const { app, dialog } = require('electron').remote;
                         var distances = droneCluster.getDistances()
+                        var taskTimes = droneCluster.getTaskTimes()
                         msg = '';
                         distances.forEach((distance, idx) => {
                             msg += `Drone-${idx + 1}: ${distance}m\n`
                         })
+                        taskTimes.forEach((taskTime, idx) => {
+                            msg += `Drone-${idx + 1}: ${taskTime}s\n`
+                        })
                         dialog.showMessageBox({
-                            title: 'Distance',
+                            title: 'Task info',
                             message: msg
                         })
                     }
