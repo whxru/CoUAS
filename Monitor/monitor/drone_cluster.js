@@ -192,6 +192,19 @@ class DroneCluster {
         });
         return distances;
     }
+    
+    /**
+     * Get task time of every drone.
+     * @returns Each task time
+     * @memberof DroneCluster
+     */
+    getTaskTimes() {
+        var taskTimes = [];
+        this[_drones].forEach(drone => {
+            taskTimes.push(drone.getTaskTime());
+        });
+        return taskTimes;
+    }
 
     /**
      * Get the event emitter.

@@ -24,6 +24,8 @@ const _server = Symbol('server');
 const _tcpSock = Symbol('tcpSock');
 const _udpSock = Symbol('udpSock');
 const _distance = Symbol('distance');
+const _taskStartTs = Symbol('taskStartTs');
+const _taskEndTs = Symbol('taskEndTs');
 const _sitl = Symbol('sitl');
 // For the use of private methods
 const _establishConnection = Symbol('establishConnection');
@@ -69,6 +71,8 @@ class Drone {
         this[_udpSock] = null;
 
         this[_distance] = 0;
+        this[_taskEndTs] = 0;
+        this[_taskStartTs] = 0;
         this[_establishConnection]();
     }
 
@@ -292,6 +296,15 @@ class Drone {
                     pos_mars
                 )
             }
+            // Mark the start time of task
+            if (this[_taskStartTs] === 0) {
+                this[_taskStartTs] = Date.now()
+            }
+        } else {
+            // Mark the end time of task
+            if (this[_taskStartTs] !== 0 && this[_taskEndTs] === 0) {
+                this[_taskEndTs] = Date.now()
+            }
         }
     }
 
@@ -336,6 +349,16 @@ class Drone {
     }
 
     /**
+     * Get the time of last task
+     * @returns {Float} The time.
+     * @memberOf Drone
+     */
+    getTaskTime() {
+        var currentTs = this[_taskEndTs] === 0 ? Date.now() : this[_taskEndTs];
+        return (currentTs - this[_taskStartTs]) * 1e-3;
+    }
+
+    /**
      * Get event notifier of the drone
      * @returns Event notifier of the drone
      * @memberof Drone
@@ -350,6 +373,8 @@ class Drone {
      */
     clearTrace() {
         this[_distance] = 0;
+        this[_taskStartTs] = 0;
+        this[_taskEndTs] = 0;
         if (this[_traceArr].length > 1) {
             this[_traceArr] = [];
             this[_trace].setPath([]);
