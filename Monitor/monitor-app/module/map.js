@@ -23,8 +23,9 @@ class MapModule {
             features: ['bg', 'point', 'road', 'building']
         });
         this.geofence_circle = null;
-        this.points = []
-
+        this.tracePlotted = null;
+        this.points = [];
+        
         // Update lat and lon when clicking the map
         this.map.on('click', (evt) => {
             if (this.pick_coordinate_enable) {
@@ -34,8 +35,9 @@ class MapModule {
                 document.getElementById('geofence-lon').value = lon;
             }
         });
-    }
 
+    }
+    
     /**
      * Preload map and the icon of drone according to the location of home.
      * @param {number} CID - Connection ID
@@ -46,7 +48,7 @@ class MapModule {
     preloadMap(CID, home) {
         var map = this.map;
         var Map = this.Map;
-
+        
         // Set the center position of map
         var centerPos_mars = transform.wgs2gcj(home.Lat, home.Lon);
         var centerPos = new Map.LngLat(centerPos_mars.lng, centerPos_mars.lat)
@@ -65,7 +67,7 @@ class MapModule {
             title: `drone-${CID}`,
             autoRotation: true
         });
-
+        
         // Initialize the trace
         var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#f4ea2a"]
         var trace = new Map.Polyline({
@@ -83,7 +85,7 @@ class MapModule {
             'trace': trace
         };
     }
-
+    
     /**
      * Calculate the distance between two positions.
      * @param {Object} prePos_mars - Previous position.
@@ -109,7 +111,7 @@ class MapModule {
         marker.setPosition([pos_mars.lng, pos_mars.lat]);
         return pos_mars;
     }
-
+    
     /**
      * Set the path (polyline).
      * @param {AMap.PolyLine} polyline - Object of path.
@@ -119,7 +121,7 @@ class MapModule {
     setPath(polyline, traceArr) {
         polyline.setPath(traceArr);
     }
-
+    
     /**
      * Set the style of cursor.
      * @param {String} cursor - Style of cursor. 
@@ -128,7 +130,7 @@ class MapModule {
     setCursor(cursor) {
         this.map.setDefaultCursor(cursor);
     }
-
+    
     /**
      * Plot a circle on map.
      * @param {Float} rad - Radius. 
@@ -149,7 +151,7 @@ class MapModule {
         })
         geofence_circle.setMap(global.map);
     }
-
+    
     /**
      * Clear current points.
      * @returns {Array} Old points.
@@ -164,7 +166,7 @@ class MapModule {
         }
         return oldPoints;
     }
-
+    
     /**
      * Plot new points on map.
      * @param {Array} newPoints - Points to be ploted
@@ -204,6 +206,31 @@ class MapModule {
                 position: curPos
             }));
         })
+    }
+    
+    /**
+     * Plot trace on map.
+     * @param {Array} traceArr - Points of the trace to be ploted
+     * @memberof MapModule
+     */
+    plotTrace(traceArr) {
+        var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#f4ea2a"];
+        if (this.tracePlotted === null) {
+            this.tracePlotted = new this.Map.Polyline({
+                map: this.map,
+                path: [],
+                strokeOpacity: 1,
+                strokeWeight: 2,
+                strokeStyle: "solid",
+                strokeDasharray: [10, 5]
+            });
+        }
+        this.tracePlotted.setOptions({
+            strokeColor: trace_color[(parseInt(Math.random() * 10)) % 5],
+            path: traceArr
+        })
+        this.map.setCenter(traceArr[0]);
+        console.log(traceArr[0]);
     }
 }
 

@@ -2,6 +2,8 @@ const wd = require('./window')
 const console = require('./console')
 const Menu = require('electron').remote.Menu;
 const MenuItem = require('electron').remote.MenuItem;
+const transform = require('../../monitor/lib/transform');
+
 
 /**
  * Initialize the menu of application.
@@ -138,7 +140,7 @@ function initMenu(droneCluster) {
             label: 'Plot',
             submenu: [
                 {
-                    label: 'Plot points',
+                    label: 'Points',
                     click: () => {
                         // Clear previous points
                         var oldPoints = global.mapModule.clearPoints();
@@ -154,6 +156,38 @@ function initMenu(droneCluster) {
                             global.mapModule.plotPoints(newPoints);
                             inputSet.remove();
                         });
+                    }
+                },
+                {
+                    label: 'Trace',
+                    click: () => {
+                        const { dialog } = require('electron').remote;
+                        var filepaths = dialog.showOpenDialog({
+                            filters: [{
+                                name: 'Ardupilot log file',
+                                extensions: ['log']
+                            }]
+                        });
+                        if (filepaths !== undefined) {
+                            require('fs').readFile(filepaths[0], 'utf-8', (err, content) => {
+                                if (err) {
+                                    dialog.showErrorBox("Error", err.message);
+                                } else {
+                                    var traceArr = [];
+                                    var lines = content.split('\n');
+                                    lines.forEach(line => {
+                                        if (line.startsWith("GPS,")) {
+                                            var attrValues = line.split(",");
+                                            var lat = parseFloat(attrValues[7]);
+                                            var lng = parseFloat(attrValues[8]);
+                                            var gcjCoord = transform.wgs2gcj(lat, lng);
+                                            traceArr.push([gcjCoord.lng, gcjCoord.lat]);
+                                        }
+                                    })
+                                    global.mapModule.plotTrace(traceArr);
+                                }
+                            });
+                        }
                     }
                 }
             ]
