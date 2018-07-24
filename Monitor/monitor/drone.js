@@ -5,7 +5,7 @@
 
 const dgram = require('dgram');
 const net = require('net');
-const os = require('os');
+const fs = require('fs');
 const events = require('events');
 const { MAVC } = require('./lib/mavc');
 const myConsole = require('../monitor-app/module/console');
@@ -304,6 +304,12 @@ class Drone {
             // Mark the end time of task
             if (this[_taskStartTs] !== 0 && this[_taskEndTs] === 0) {
                 this[_taskEndTs] = Date.now()
+                var content = `${this.getCID()} ${(this[_taskEndTs] - this[_taskStartTs]) * 1e-3} ${this[_distance]}\r\n`
+                fs.writeFile("../result_sitl.txt", content, {flag: 'a'}, err => {
+                    if (!err) {
+                        console.log(`Drone-${this.getCID()} Log ended`);
+                    }
+                })
             }
         }
     }

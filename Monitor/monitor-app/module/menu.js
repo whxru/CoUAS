@@ -60,7 +60,14 @@ function initMenu(droneCluster) {
                                 if (err) {
                                     dialog.showErrorBox("Error", err.message);
                                 } else {
-                                    droneCluster.executeTask(content);
+                                    require('fs').writeFile("../result_sitl.txt", require('path').basename(filepaths[0]) + '\r\n', {flag: 'a'}, err => {
+                                        if (err) {
+                                            dialog.showErrorBox("Error", err.message);
+                                        } else {
+                                            console.log("Start to log");
+                                            droneCluster.executeTask(content);
+                                        }
+                                    })
                                 }
                             });
                         }
