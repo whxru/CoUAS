@@ -42,6 +42,7 @@ if __name__ == '__main__':
         def connect_to_monitor(h, p, idx):
             sitls[idx-1][0].launch(sitls[idx-1][1], await_ready=True)
             vehicle = connect_vehicle(cnt_strs[idx-1])
+            vehicle.groundspeed = speed
             sitls[idx-1] = drone.Drone(vehicle, h, p, idx)
 
         # Preparation for starting multiple separated simulators
