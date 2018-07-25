@@ -275,6 +275,7 @@ class Drone {
         var pos_mars = global.mapModule.setPosition(this[_marker], state_obj);
         // Update trace and distance
         if (state_obj['Armed']) {
+            console.log(`lat:${pos_mars.latl}, lng: ${por_mars.lng}`);
             // Update the trace
             this[_traceArr].push([pos_mars.lng, pos_mars.lat]);
             global.mapModule.setPath(this[_trace], this[_traceArr]);

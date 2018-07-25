@@ -166,33 +166,36 @@ function initMenu(droneCluster) {
                     }
                 },
                 {
-                    label: 'Trace',
+                    label: 'Traces',
                     click: () => {
                         const { dialog } = require('electron').remote;
                         var filepaths = dialog.showOpenDialog({
                             filters: [{
                                 name: 'Ardupilot log file',
                                 extensions: ['log']
-                            }]
+                            }],
+                            properties: ["multiSelections"]
                         });
                         if (filepaths !== undefined) {
-                            require('fs').readFile(filepaths[0], 'utf-8', (err, content) => {
-                                if (err) {
-                                    dialog.showErrorBox("Error", err.message);
-                                } else {
-                                    var traceArr = [];
-                                    var lines = content.split('\n');
-                                    lines.forEach(line => {
-                                        if (line.startsWith("GPS,")) {
-                                            var attrValues = line.split(",");
-                                            var lat = parseFloat(attrValues[7]);
-                                            var lng = parseFloat(attrValues[8]);
-                                            var gcjCoord = transform.wgs2gcj(lat, lng);
-                                            traceArr.push([gcjCoord.lng, gcjCoord.lat]);
-                                        }
-                                    })
-                                    global.mapModule.plotTrace(traceArr);
-                                }
+                            filepaths.forEach(filepath => {
+                                require('fs').readFile(filepath, 'utf-8', (err, content) => {
+                                    if (err) {
+                                        dialog.showErrorBox("Error", err.message);
+                                    } else {
+                                        var traceArr = [];
+                                        var lines = content.split('\n');
+                                        lines.forEach(line => {
+                                            if (line.startsWith("GPS,")) {
+                                                var attrValues = line.split(",");
+                                                var lat = parseFloat(attrValues[7]);
+                                                var lng = parseFloat(attrValues[8]);
+                                                var gcjCoord = transform.wgs2gcj(lat, lng);
+                                                traceArr.push([gcjCoord.lng, gcjCoord.lat]);
+                                            }
+                                        })
+                                        global.mapModule.plotTrace(traceArr);
+                                    }
+                                });
                             });
                         }
                     }

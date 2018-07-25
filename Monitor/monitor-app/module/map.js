@@ -23,7 +23,7 @@ class MapModule {
             features: ['bg', 'point', 'road', 'building']
         });
         this.geofence_circle = null;
-        this.tracePlotted = null;
+        this.tracePlotted = [];
         this.points = [];
         
         // Update lat and lon when clicking the map
@@ -215,20 +215,16 @@ class MapModule {
      */
     plotTrace(traceArr) {
         var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#f4ea2a"];
-        if (this.tracePlotted === null) {
-            this.tracePlotted = new this.Map.Polyline({
-                map: this.map,
-                path: [],
-                strokeOpacity: 1,
-                strokeWeight: 2,
-                strokeStyle: "solid",
-                strokeDasharray: [10, 5]
-            });
-        }
-        this.tracePlotted.setOptions({
+        this.tracePlotted.push(new this.Map.Polyline({
+            map: this.map,
+            path: [],
+            strokeOpacity: 1,
+            strokeWeight: 2,
+            strokeStyle: "solid",
             strokeColor: trace_color[(parseInt(Math.random() * 10)) % 5],
-            path: traceArr
-        })
+            path: traceArr,
+            strokeDasharray: [10, 5]
+        }));
         this.map.setCenter(traceArr[0]);
         console.log(traceArr[0]);
     }
