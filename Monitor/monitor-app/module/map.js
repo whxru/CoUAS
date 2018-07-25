@@ -174,9 +174,9 @@ class MapModule {
      */
     plotPoints(newPoints) {
         var originPos = []
+        var Map = this.Map;
+        var map = this.map;
         newPoints.forEach((point, index) => {
-            var Map = this.Map;
-            var map = this.map;
             // The point O
             var curPos = []
             if (index === 0) {
