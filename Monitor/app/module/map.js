@@ -23,6 +23,7 @@ class MapModule {
             features: ['bg', 'point', 'road', 'building']
         });
         this.geofence_circle = null;
+        this.trace_color = ["#f2ff00", "#ffffff", "#bf08f0", "#73ac53", "#f4ea2a"];
         this.tracePlotted = [];
         this.points = [];
         
@@ -69,11 +70,10 @@ class MapModule {
         });
         
         // Initialize the trace
-        var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#f4ea2a"]
         var trace = new Map.Polyline({
             map: map,
             path: [],
-            strokeColor: trace_color[(CID - 1) % 5],
+            strokeColor: this.trace_color[(CID - 1) % 5],
             strokeOpacity: 1,
             strokeWeight: 2,
             strokeStyle: "solid",
@@ -214,7 +214,6 @@ class MapModule {
      * @memberof MapModule
      */
     plotTrace(traceArr, idx) {
-        var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#f4ea2a"];
         this.tracePlotted.push(new this.Map.Polyline({
             map: this.map,
             path: [],
@@ -222,7 +221,7 @@ class MapModule {
             strokeWeight: 2,
             strokeStyle: "solid",
             // strokeColor: trace_color[(parseInt(Math.random() * 10)) % 5],
-            strokeColor: trace_color[idx],
+            strokeColor: this.trace_color[idx],
             path: traceArr,
             strokeDasharray: [10, 5]
         }));
