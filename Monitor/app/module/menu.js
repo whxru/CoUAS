@@ -1,5 +1,5 @@
 const wd = require('./window')
-const console = require('./console')
+const myConsole = require('./console')
 const Menu = require('electron').remote.Menu;
 const MenuItem = require('electron').remote.MenuItem;
 const transform = require('../../utils/transform');
@@ -180,10 +180,12 @@ function initMenu(droneCluster) {
                                         lines.forEach(line => {
                                             if (line.startsWith("GPS,")) {
                                                 var attrValues = line.split(",");
-                                                var lat = parseFloat(attrValues[7]);
+                                                var lat = parseFloat(attrValues[7]) + 4e-4;
                                                 var lng = parseFloat(attrValues[8]);
                                                 if (traceArr.length === 0) {
-                                                    console.log(`lat: ${lat}, lng: ${lng}`);
+                                                    myConsole.log(`wgsLat: ${lat}, wgsLng: ${lng}`);
+                                                    var gcj = transform.wgs2gcj(lat, lng)
+                                                    myConsole.log(`gcjLat: ${gcj.lat}, gcjLng: ${gcj.lng}`);
                                                 }
                                                 var gcjCoord = transform.wgs2gcj(lat, lng);
                                                 traceArr.push([gcjCoord.lng, gcjCoord.lat]);
