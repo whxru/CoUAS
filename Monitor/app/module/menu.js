@@ -2,7 +2,7 @@ const wd = require('./window')
 const console = require('./console')
 const Menu = require('electron').remote.Menu;
 const MenuItem = require('electron').remote.MenuItem;
-const transform = require('../../monitor/lib/transform');
+const transform = require('../../utils/transform');
 
 
 /**
@@ -60,14 +60,7 @@ function initMenu(droneCluster) {
                                 if (err) {
                                     dialog.showErrorBox("Error", err.message);
                                 } else {
-                                    require('fs').writeFile("../result_sitl.txt", require('path').basename(filepaths[0]) + '\r\n', {flag: 'a'}, err => {
-                                        if (err) {
-                                            dialog.showErrorBox("Error", err.message);
-                                        } else {
-                                            console.log("Start to log");
-                                            droneCluster.executeTask(content);
-                                        }
-                                    })
+                                    droneCluster.executeTask(content);
                                 }
                             });
                         }

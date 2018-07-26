@@ -16,7 +16,7 @@ function createWindow() {
     win.setMenu(null)
 
     win.loadURL(url.format({
-        pathname: path.join(__dirname, '/monitor-app/main/monitor.html'),
+        pathname: path.join(__dirname, '/app/page/monitor.html'),
         protocol: 'file:',
         slashes: true
     }));

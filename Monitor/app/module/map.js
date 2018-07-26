@@ -1,4 +1,4 @@
-const transform = require('../../monitor/lib/transform.js')
+const transform = require('../../utils/transform')
 
 /**
  * Manage the map in application.
@@ -14,7 +14,7 @@ class MapModule {
     constructor(AMap, id) {
         // Create map
         this.Map = AMap
-        this.map = new AMap.Map('map-container', {
+        this.map = new AMap.Map(id, {
             expandZoomRange: true,
             zoom: 18,
             zooms: [3, 20],

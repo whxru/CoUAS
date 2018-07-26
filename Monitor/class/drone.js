@@ -7,8 +7,8 @@ const dgram = require('dgram');
 const net = require('net');
 const fs = require('fs');
 const events = require('events');
-const { MAVC } = require('./lib/mavc');
-const myConsole = require('../monitor-app/module/console');
+const { MAVC } = require('../utils/mavc');
+const myConsole = require('../app/module/console');
 
 /**
  * Manage state of one single drone.
@@ -86,7 +86,7 @@ class Drone {
             try {
                 // MAVC message that request CID
                 if (msg_obj[0]['Header'] === 'MAVCluster_Drone' && msg_obj[0]['Type'] === MAVC.MAVC_REQ_CID) {
-                    console.log(`The request of CID from address:${rinfo.address}:${rinfo.port} has been received!`);
+                    myConsole.log(`The request of CID from address:${rinfo.address}:${rinfo.port} has been received!`);
                     // Extract information 
                     host = rinfo.address;
                     port = rinfo.port;
@@ -218,7 +218,7 @@ class Drone {
                     if (msg_obj[0]['Header'] === 'MAVCluster_Drone') {
                         var Type = msg_obj[0]['Type'];
                         if (Type === MAVC.MAVC_ARRIVED) {
-                            console.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
+                            myConsole.log(`Drone - CID: ${msg_obj[1]['CID']} arrive at step:${msg_obj[1]['Step']}!`)
                             if (msg_obj[1]['CID'] === this.getCID()) {
                                 // Notify that the drone has arrived
                                 this._drone.emit('arrive', this._drone);
@@ -283,11 +283,6 @@ class Drone {
             if (this._taskStartTs !== 0 && this._taskEndTs === 0) {
                 this._taskEndTs = Date.now()
                 var content = `${this.getCID()} ${(this._taskEndTs - this._taskStartTs) * 1e-3} ${this._distance}\r\n`
-                fs.writeFile("../result_sitl.txt", content, {flag: 'a'}, err => {
-                    if (!err) {
-                        console.log(`Drone-${this.getCID()} Log ended`);
-                    }
-                })
             }
         }
     }

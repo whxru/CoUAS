@@ -3,7 +3,7 @@
  * @author whxru
  */
 
-const { DroneCluster } = require('../../monitor/drone_cluster');
+const { DroneCluster } = require('../../class/drone_cluster');
 const myConsole = require('../module/console')
 const menu = require('../module/menu')
 const map = require('../module/map')
@@ -36,13 +36,13 @@ function initApplication() {
         // Initialize console
         myConsole.show();
         // Load user's module
-        require('fs').readFile('user-module/load.json', 'utf-8', (err, content) => {
+        require('fs').readFile('app/user-module/load.json', 'utf-8', (err, content) => {
             if(err) {
                 myConsole.error(err.message);
             } else {
                 var userModuleList = JSON.parse(content);
                 userModuleList.forEach((name) => {
-                    var mod = require(`../../user-module/${name}`);
+                    var mod = require(`../user-module/${name}`);
                     mod.init(droneCluster);
                 });
             }

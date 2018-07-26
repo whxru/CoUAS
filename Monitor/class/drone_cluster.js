@@ -4,10 +4,10 @@
  */
 
 const { Drone } = require('./drone');
-const { MAVC } = require('./lib/mavc');
+const { MAVC } = require('../utils/mavc');
 const events = require('events');
-const transform = require('./lib/transform');
-const myConsole = require('../monitor-app/module/console');
+const transform = require('../utils/transform');
+const myConsole = require('../app/module/console');
 
 /**
  * Management of mulitple drone connections.

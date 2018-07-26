@@ -1,5 +1,5 @@
-const menu = require('../monitor-app/module/menu');
-const transform = require('../monitor/lib/transform');
+const menu = require('../module/menu');
+const transform = require('../../utils/transform');
 /**
  * Superclass of all user modules.
  * @class UserModule
@@ -118,7 +118,7 @@ class UserModule {
 
 module.exports = {
     UserModule: UserModule,
-    myConsole: require('../monitor-app/module/console'),
-    wd: require('../monitor-app/module/window'),
-    MAVC: require('../monitor/lib/mavc').MAVC
+    myConsole: require('../module/console'),
+    wd: require('../module/window'),
+    MAVC: require('../../utils/mavc').MAVC
 }
