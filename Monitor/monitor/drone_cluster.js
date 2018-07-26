@@ -4,20 +4,10 @@
  */
 
 const { Drone } = require('./drone');
-const dgram = require('dgram');
+const { MAVC } = require('./lib/mavc');
 const events = require('events');
 const transform = require('./lib/transform');
 const myConsole = require('../monitor-app/module/console');
-const { MAVC } = require('./lib/mavc');
-// For the use of private attributes
-const _port = Symbol('port');
-const _drones = Symbol('drones');
-const _drone = Symbol('drone');
-const _publicIp = Symbol('publicIp');
-const _broadcastAddr = Symbol('broadcastAddr');
-// For the use of private methods
-const _addNotification = Symbol('addNotification');
-const _sendSubtasks = Symbol('sendSubtasks');
 
 /**
  * Management of mulitple drone connections.
@@ -30,9 +20,9 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     constructor(interfaceName) {
-        this[_port] = 4396; // Port on Pi where the message will be sent to
-        this[_drones] = []; // Container of drones
-        this[_drone] = new events.EventEmitter();
+        this._port = 4396; // Port on Pi where the message will be sent to
+        this._drones = []; // Container of drones
+        this._drone = new events.EventEmitter();
 
         // Calculate broadcast address
         var iface = require('os').networkInterfaces()[interfaceName];
@@ -44,8 +34,8 @@ class DroneCluster {
                 netmask = addr['netmask']
             }
         })
-        this[_publicIp] = ipv4Addr;
-        this[_broadcastAddr] = DroneCluster.getBroadcastAddr(ipv4Addr, netmask);
+        this._publicIp = ipv4Addr;
+        this._broadcastAddr = DroneCluster.getBroadcastAddr(ipv4Addr, netmask);
     }
 
     /**
@@ -57,19 +47,19 @@ class DroneCluster {
      */
     addDrone(num=1) {
         // Generate CID
-        var CID_base = this[_drones].length;
+        var CID_base = this._drones.length;
 
         if(num > 1) {
             // Add sitls to the container
             for(let i=CID_base; i<CID_base + num; i++) {
-                var drone = new Drone(CID_base+i+1, this[_publicIp], true);
-                this[_drones].push(drone);
-                this[_addNotification](drone.getEventNotifier());
+                var drone = new Drone(CID_base+i+1, this._publicIp, true);
+                this._drones.push(drone);
+                this._addNotification(drone.getEventNotifier());
             }
         } else {
-            var drone = new Drone(CID_base + 1, this[_publicIp], false);
-            this[_drones].push(drone)
-            this[_addNotification](drone.getEventNotifier());
+            var drone = new Drone(CID_base + 1, this._publicIp, false);
+            this._drones.push(drone)
+            this._addNotification(drone.getEventNotifier());
         }
     }
 
@@ -98,7 +88,7 @@ class DroneCluster {
         // Decompose current task into several subtasks
         var subtasks = [];
         var indexes = []; // Which subtask the drone currently in 
-        this[_drones].forEach(() => { indexes.push(0) });
+        this._drones.forEach(() => { indexes.push(0) });
         // There is at least one subtask
         subtasks.push([
             {
@@ -133,7 +123,7 @@ class DroneCluster {
         }
 
         // Send subtasks
-        this[_sendSubtasks](subtasks);
+        this._sendSubtasks(subtasks);
     }
 
     /**
@@ -141,7 +131,7 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     clearTrace() {
-        this[_drones].forEach((drone) => {
+        this._drones.forEach((drone) => {
             drone.clearTrace();
         });
     }
@@ -175,8 +165,8 @@ class DroneCluster {
      */
     getConnectionInfo() {
         return {
-            'publicIp': this[_publicIp],
-            'broadcastAddr': this[_broadcastAddr]
+            'publicIp': this._publicIp,
+            'broadcastAddr': this._broadcastAddr
         }
     }
 
@@ -187,7 +177,7 @@ class DroneCluster {
      */
     getDistances() {
         var distances = [];
-        this[_drones].forEach((drone) => {
+        this._drones.forEach((drone) => {
             distances.push(drone.getDistance());
         });
         return distances;
@@ -200,7 +190,7 @@ class DroneCluster {
      */
     getTaskTimes() {
         var taskTimes = [];
-        this[_drones].forEach(drone => {
+        this._drones.forEach(drone => {
             taskTimes.push(drone.getTaskTime());
         });
         return taskTimes;
@@ -212,7 +202,7 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     getNotifier() {
-        return this[_drone];
+        return this._drone;
     }
     
     /**
@@ -222,10 +212,10 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     getDrone(CID) {
-        if(CID > this[_drones].length) {
+        if(CID > this._drones.length) {
             return null;
         }
-        return this[_drones][CID - 1];
+        return this._drones[CID - 1];
     }
 
     /**
@@ -234,7 +224,7 @@ class DroneCluster {
      * @memberof DroneCluster
      */
     getDroneNum() {
-        return this[_drones].length;
+        return this._drones.length;
     }
     
 
@@ -245,7 +235,7 @@ class DroneCluster {
      */
     broadcastMsg(msg) {
         var msg_json = JSON.stringify(msg);
-        this[_drones].forEach((drone) => {
+        this._drones.forEach((drone) => {
             drone.writeDataToPi(msg_json);
         })
     }
@@ -255,7 +245,7 @@ class DroneCluster {
      * @param {EventEmitter} drone - The event emitter of one single drone.
      * @memberof DroneCluster
      */
-    [_addNotification](drone) {
+    _addNotification(drone) {
         drone.on('message-in', (CID, msg_obj) => {
             this.getNotifier().emit('message-in', CID, msg_obj);
         });
@@ -274,15 +264,15 @@ class DroneCluster {
      * @param {Object} subtasks - MAVC.MAVC_ACTION message of subtasks
      * @memberof DroneCluster
      */
-    [_sendSubtasks](subtasks) {
+    _sendSubtasks(subtasks) {
         // Send first subtask
         this.broadcastMsg(subtasks[0]);
         // Wait for all actions having been performed
         var index = 0;                          // Which subtask the cluster currently in.
         var counter = 0;                        // Number of drones which has been ready for next subtask.
-        var droneNum = this[_drones].length;    // Total number of drones.
+        var droneNum = this._drones.length;    // Total number of drones.
         let cls_subtasks = subtasks;            // Used in closure.
-        this[_drones].forEach((drone) => {
+        this._drones.forEach((drone) => {
             var notifier = drone.getEventNotifier();
             // One of the drones has finished performing actions in current subtask
             notifier.on('arrive', (notifier) => {
