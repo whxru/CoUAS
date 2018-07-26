@@ -57,7 +57,8 @@ if __name__ == '__main__':
             for i in range(0, args.sitl):
                 sitl = SITL()
                 sitl.download('copter', '3.3', verbose=True)
-                sitl_args = ['-I%d' % i, '--model', 'quad', '--home=%f,%f,584,353' % (args.lat, args.lon + 5e-5 * i)]
+                sitl_args = ['-I%d' % i, '--model', 'quad', '--home=%f,%f,584,353' % (args.lat, args.lon)]
+                # sitl_args = ['-I%d' % i, '--model', 'quad', '--home=%f,%f,584,353' % (args.lat, args.lon + 5e-5 * i)]
                 sitls.append([sitl, sitl_args])
                 cnt_strs.append('tcp:127.0.0.1:%d' % (5760 + 10*i))
                 c = Thread(target=connect_to_monitor, args=(host, port, i+1), name="SITL_%d" % (i+1))
