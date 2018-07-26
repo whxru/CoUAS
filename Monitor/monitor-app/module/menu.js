@@ -177,7 +177,7 @@ function initMenu(droneCluster) {
                             properties: ["multiSelections"]
                         });
                         if (filepaths !== undefined) {
-                            filepaths.forEach(filepath => {
+                            filepaths.forEach((filepath, idx) => {
                                 require('fs').readFile(filepath, 'utf-8', (err, content) => {
                                     if (err) {
                                         dialog.showErrorBox("Error", err.message);
@@ -189,11 +189,14 @@ function initMenu(droneCluster) {
                                                 var attrValues = line.split(",");
                                                 var lat = parseFloat(attrValues[7]);
                                                 var lng = parseFloat(attrValues[8]);
+                                                if (traceArr.length === 0) {
+                                                    console.log(`lat: ${lat}, lng: ${lng}`);
+                                                }
                                                 var gcjCoord = transform.wgs2gcj(lat, lng);
                                                 traceArr.push([gcjCoord.lng, gcjCoord.lat]);
                                             }
                                         })
-                                        global.mapModule.plotTrace(traceArr);
+                                        global.mapModule.plotTrace(traceArr, idx);
                                     }
                                 });
                             });

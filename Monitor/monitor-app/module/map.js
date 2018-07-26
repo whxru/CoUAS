@@ -196,7 +196,7 @@ class MapModule {
                 curPos = [newLon, newLat];
             }
             // Plot point
-            points.push(new Map.Marker({
+            this.points.push(new Map.Marker({
                 map: map,
                 offset: new Map.Pixel(-8, -8),
                 icon: new Map.Icon({
@@ -213,7 +213,7 @@ class MapModule {
      * @param {Array} traceArr - Points of the trace to be ploted
      * @memberof MapModule
      */
-    plotTrace(traceArr) {
+    plotTrace(traceArr, idx) {
         var trace_color = ["#d71e06", "#bf08f0", "#1392d4", "#73ac53", "#f4ea2a"];
         this.tracePlotted.push(new this.Map.Polyline({
             map: this.map,
@@ -221,12 +221,12 @@ class MapModule {
             strokeOpacity: 1,
             strokeWeight: 2,
             strokeStyle: "solid",
-            strokeColor: trace_color[(parseInt(Math.random() * 10)) % 5],
+            // strokeColor: trace_color[(parseInt(Math.random() * 10)) % 5],
+            strokeColor: trace_color[idx],
             path: traceArr,
             strokeDasharray: [10, 5]
         }));
         this.map.setCenter(traceArr[0]);
-        console.log(traceArr[0]);
     }
 }
 
