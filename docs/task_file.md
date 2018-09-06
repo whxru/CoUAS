@@ -8,12 +8,12 @@ Action is the unit of a task, it is actually a collection of key/value pairs(whi
 
 Every action should contain the following keys: 
 
-* Action_type: Predefined values to identify the type of action. You can find the table of values in [MAVC message](MAVC_Message.md).
+* Action_type: Predefined values to identify the type of action. You can find the table of values in [MAVC message](mavc_message.md).
 * CID: Identifier of connection. It is allocated to one single drone according to the order that drone establish connection to monitor.For example, there are two drones called A and B, A is the first one to try to connect to monitor and succeed, which is followed by B, so the CID of A is 1 and B is 2.
 * Step: Sequence number of action in one single drone's task. Action whose step equals 0 should be a `arm_and_taskoff` action, action whose step is the maximum should be a `land` action.
 * Sync: Boolean value to decide whether waiting for all of drones in the cluster to be ready before performing next action. For the convenience of explanation, we call an action whose `Sync` equals `True` a **synchronization action.**
 
-There are also many different keys in each type of actions, you can find them in the format of [MAVC message](MAVC_Message.md) whose type equals 'MAVC_ACTION'.
+There are also many different keys in each type of actions, you can find them in the format of [MAVC message](mavc_message.md) whose type equals 'MAVC_ACTION'.
 
 ## Task
 
