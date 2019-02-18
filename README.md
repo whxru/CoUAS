@@ -5,6 +5,8 @@ CoUAV is a platform which aims at effectively enabling the cooperation of multip
 1.  Provide a generic interface that can coordinate diversified UAVs by hiding their underlying hardware differences to facilitate the UAV development.
 2.  Offer a set of core cooperation services to support quick design and deployment of multi-UAV applications.
 
+The demo video could be found [here](https://www.youtube.com/watch?v=FC7hE3gI3ck)
+
 ## Overview
 
 Currently the CoUAV platform is made up of monitor and GCS (Ground Control Software, in the form of python script on Raspberry Pi 3) for cluster of drones using MAVLink protocol.
