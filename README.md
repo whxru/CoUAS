@@ -5,6 +5,8 @@ CoUAS is a platform which aims at effectively enabling the cooperation of multip
 1.  Provide a generic interface that can coordinate diversified UAVs by hiding their underlying hardware differences to facilitate the UAV development.
 2.  Offer a set of core cooperation services to support quick design and deployment of multi-UAV applications.
 
+The paper could be found [here](https://arxiv.org/abs/1904.04046)
+
 The demo video could be found [here](https://www.youtube.com/watch?v=FC7hE3gI3ck)
 
 ## Overview
