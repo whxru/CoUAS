@@ -13,10 +13,10 @@ To implement various functions, you can develop your own module which is able to
 npm install -g electron
 ```
 
-3.  Download the source of CoUAV:
+3.  Download the source of CoUAS:
 
 ```shell
-git clone https://github.com/whxru/CoUAV.git
+git clone https://github.com/whxru/CoUAS.git
 ```
 
 ### Create and load an user module
@@ -41,7 +41,7 @@ module.exports.init = function(droneCluster) {
 
 ```
 
-Assume that you create a file which is named `mavc_example.js` and it contains the code above. Now move this file to the path `CoUAV/monitor/user-module`, add the file name to `load.json`, change current work directory to `CoUAV/monitor`, rebuild the application from source: 
+Assume that you create a file which is named `mavc_example.js` and it contains the code above. Now move this file to the path `CoUAS/monitor/user-module`, add the file name to `load.json`, change current work directory to `CoUAS/monitor`, rebuild the application from source: 
 
 ```
 electron .

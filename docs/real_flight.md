@@ -1,6 +1,6 @@
 # Real Flight
 
-Run CoUAV on real drone(s).
+Run CoUAS on real drone(s).
 
 ## Devices
 
@@ -10,11 +10,11 @@ Run CoUAV on real drone(s).
 
 ## Configuration
 
-1. Firstly use git to download CoUAV and change current work directory on both laptop and RPi:
+1. Firstly use git to download CoUAS and change current work directory on both laptop and RPi:
 
 ```
-git clone https://github.com/whxru/CoUAV.git
-cd CoUAV
+git clone https://github.com/whxru/CoUAS.git
+cd CoUAS
 ```
 
 2. Connect to RPi via SSH/VNC and make sure the laptop and RPi have connected to the same WiFi.
@@ -64,7 +64,7 @@ git pull origin master
 
 ## Start
 
-Assume that current work directory on both RPi and laptop are the root of CoUAV's repo.
+Assume that current work directory on both RPi and laptop are the root of CoUAS's repo.
 
 1. Run monitor on laptop:
 

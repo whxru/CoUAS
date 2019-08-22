@@ -1,6 +1,6 @@
-# CoUAV
+# CoUAS
 
-CoUAV is a platform which aims at effectively enabling the cooperation of multiple UAVs in a fleet. The major design targets of the proposed platform include:
+CoUAS is a platform which aims at effectively enabling the cooperation of multiple UAVs in a fleet. The major design targets of the proposed platform include:
 
 1.  Provide a generic interface that can coordinate diversified UAVs by hiding their underlying hardware differences to facilitate the UAV development.
 2.  Offer a set of core cooperation services to support quick design and deployment of multi-UAV applications.
@@ -9,7 +9,7 @@ The demo video could be found [here](https://www.youtube.com/watch?v=FC7hE3gI3ck
 
 ## Overview
 
-Currently the CoUAV platform is made up of monitor and GCS (Ground Control Software, in the form of python script on Raspberry Pi 3) for cluster of drones using MAVLink protocol.
+Currently the CoUAS platform is made up of monitor and GCS (Ground Control Software, in the form of python script on Raspberry Pi 3) for cluster of drones using MAVLink protocol.
 
 The python script runs on the Raspberry Pi 3 to control the drone and the program of flight monitor on the ground. One single RPi is connected to one single drone's fight controller, every of the Pi and the Monitor should be on the same LAN and they communicate with [MAVC messages](/docs/mavc_message.md).
 
@@ -19,8 +19,8 @@ The flight monitor is a desktop application built by [Electron](https://github.c
 
 ## Documentations
 
-* [Real flight - Run CoUAV with real drone(s)](/docs/real_flight.md)
-* [Simulation - Run CoUAV with simulator(s)](/docs/simulation.md)
+* [Real flight - Run CoUAS with real drone(s)](/docs/real_flight.md)
+* [Simulation - Run CoUAS with simulator(s)](/docs/simulation.md)
 * [Task file - How to describe a task and how it works](/docs/task_file.md)
 * [User module - Make the monitor your own application](/docs/user_module.md)
 * [API Reference - Functions used in user module](/docs/api.md)

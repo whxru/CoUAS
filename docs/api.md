@@ -4,7 +4,7 @@
 
 ## UserModule
 
->    Class defined in `CoUAV/monitor/user-module/user_module.js` , superclass of all user modules.
+>    Class defined in `CoUAS/monitor/user-module/user_module.js` , superclass of all user modules.
 
 * [new UserModule()](#new_UserModule_new)
 * _instance_
@@ -146,7 +146,7 @@ Print error message on console.
 
 ## InputSet
 
->   Class defined in `CoUAV/Monitor/monitor-app/module/window.js` to help developer create dialog for user input easily.
+>   Class defined in `CoUAS/Monitor/monitor-app/module/window.js` to help developer create dialog for user input easily.
 
 * [new InputSet()](#new_InputSet_new)
 * [.addInput(label, type, [id], [attrs])](#InputSet+addInput) ⇒ <code>HTMLInputElement</code>
