@@ -6,3 +6,5 @@ task-example/multiple-drones.pptx
 Monitor/node_modules
 Monitor/package-lock.json
 Monitor/.vscode
+*.kmz
+*.bin
